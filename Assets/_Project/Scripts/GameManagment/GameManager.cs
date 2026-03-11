@@ -1,4 +1,6 @@
+using SceneLoaderUtil;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Managers
 {
@@ -6,21 +8,26 @@ namespace Managers
     {
         private static GameManager gameManager;
         public static GameManager Instance => gameManager;
-
-        [SerializeField] private SceneLoader sceneLoader;
+        private SceneLoader sceneLoader;
 
         private void Awake()
         {
             if (GameManager.Instance == null)
             {
+                gameManager = this;
+            }
+            else
+            {
                 DontDestroyOnLoad(gameManager);
             }
+
+            sceneLoader = new(new SceneData(SceneManager.GetActiveScene().buildIndex, SceneManager.GetActiveScene().name));
         }
 
 
         public void ChangeScene(ref SceneData sceneData)
         {
-            sceneLoader.LoadScene(ref sceneData);
+            sceneLoader.LoadScene(sceneData);
         }
 
     }

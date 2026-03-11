@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Managers;
+using SceneLoaderUtil;
 using TMPro;
 
 #if UNITY_EDITOR
@@ -14,6 +16,7 @@ using UnityEngine.UI;
 public class MainMenuUi : MonoBehaviour
 {
     [SerializeField] private Transform buttonHolder = null;
+    [SerializeField] private SceneReference nextScene;
     private List<(string ButtonText, UnityAction subscribingFunction)> buttonList = new();
 
 
@@ -64,7 +67,8 @@ public class MainMenuUi : MonoBehaviour
 
     private void NewGame()
     {
-        // load scene
+        SceneData sceneData = nextScene.SceneData;
+        GameManager.Instance.ChangeScene(ref sceneData);
     }
 
     private void Continue() { }
