@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Entities;
 using SceneLoaderUtil;
-using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,12 +22,12 @@ namespace Managers
         public GameState CurrentGameState => currentGameState;
 
         private SceneLoader sceneLoader;
-        [SerializeField] private SceneReference nextScene;
         [SerializeField] private PauseMenuUi pauseMenuUi;
 
         private List<BaseEntity> activeEntities = new();
         private List<BaseEntity> disabledEntities = new();
         private HashSet<BaseEntity> entitiesChangedQueue = new();
+        private PlayerController playerController;
 
         public void ChangeScene(ref SceneData sceneData)
         {
@@ -40,6 +39,10 @@ namespace Managers
             if (GameManager.Instance == null)
             {
                 gameManager = this;
+                if(transform.parent != null)
+                {
+                    transform.SetParent(null, true);
+                }
                 DontDestroyOnLoad(gameObject);
             }
             else
@@ -91,6 +94,11 @@ namespace Managers
 
             for (int i = 0; i < allEntities.Length; i++)
             {
+                if(allEntities[i] is PlayerController)
+                {
+                    playerController = allEntities[i] as PlayerController; 
+                }
+
                 AddEntity(allEntities[i]);
             }
         }
@@ -115,8 +123,7 @@ namespace Managers
                     ChangePauseMenuState(true);
                     break;
                 case GameState.GameOver:
-                    SceneData sceneData = nextScene.SceneData;
-                    ChangeScene(ref sceneData);
+
                     break;
             }
         }

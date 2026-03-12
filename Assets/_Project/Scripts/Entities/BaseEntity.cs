@@ -1,7 +1,5 @@
 using System;
-using Managers;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Entities
 {
@@ -50,24 +48,8 @@ namespace Entities
 
         public virtual void OnUpdate()
         {
-            transform.position += transform.right * Time.deltaTime * 3;
         }
 
-        // for testing remove later 
-        void Update()
-        {
-            if (Keyboard.current.escapeKey.wasPressedThisFrame)
-            {
-                if(GameManager.Instance.CurrentGameState == GameState.Running)
-                {
-                    GameManager.Instance.ChangeGameState(GameState.Paused);
-                }
-                else if(GameManager.Instance.CurrentGameState == GameState.Paused)
-                {
-                    GameManager.Instance.ChangeGameState(GameState.Running);
-                }
-            }
-        }
     }
 
 }
