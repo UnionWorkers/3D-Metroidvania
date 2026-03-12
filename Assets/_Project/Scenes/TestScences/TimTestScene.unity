@@ -1145,6 +1145,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d64c2a05b0dd95f4fb138e1d41d9700b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterController
+  moveStats:
+    MoveSpeed: 3
   characterController: {fileID: 1486309393}
 --- !u!114 &1486309395
 MonoBehaviour:

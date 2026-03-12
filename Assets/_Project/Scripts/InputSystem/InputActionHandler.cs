@@ -14,6 +14,7 @@ namespace InputHandler
         public void GetAction(string actionMapName, string actionName)
         {
             inputAction = InputSystem.actions.FindActionMap(actionMapName).FindAction(actionName);
+
             if (inputAction == null)
             {
                 Debug.Log(ToString() + ": Action could not be found");

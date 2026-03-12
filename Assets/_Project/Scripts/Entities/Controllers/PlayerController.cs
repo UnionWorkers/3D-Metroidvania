@@ -32,15 +32,17 @@ namespace Entities.Controller
 
         private void OnEnable()
         {
-            string InputMap = "ProjectPlayer";
-            escInput.GetAction(InputMap, "Pause");
-            escInput.OnActionPhaseChanged += PauseGame;
+            //            string InputMap = "ProjectPlayer";
+            string InputMap = "Player";
 
-            interactInput.GetAction(InputMap, "Interact");
-            interactInput.OnActionPhaseChanged += Interact;
+            // escInput.GetAction(InputMap, "Pause");
+            // escInput.OnActionPhaseChanged += PauseGame;
 
-            jumpInput.GetAction(InputMap, "Jump");
-            jumpInput.OnActionPhaseChanged += Jump;
+            // interactInput.GetAction(InputMap, "Interact");
+            // interactInput.OnActionPhaseChanged += Interact;
+
+            // jumpInput.GetAction(InputMap, "Jump");
+            // jumpInput.OnActionPhaseChanged += Jump;
 
             moveInput.GetAction(InputMap, "Move");
             moveInput.OnActionPhaseChanged += PlayerMove;
@@ -63,7 +65,16 @@ namespace Entities.Controller
 
         public override void OnUpdate()
         {
-
+            if (moveInput.IsPressed)
+            {
+                //playerCharacterController.MovePlayer(moveInput.GetReturnValue().normalized);
+                playerCharacterController.SimpleMovePlayer(moveInput.GetReturnValue().normalized);
+            }
+            else
+            {
+                //playerCharacterController.MovePlayer(Vector2.zero);
+                playerCharacterController.SimpleMovePlayer(Vector2.zero);
+            }
         }
 
 
@@ -72,7 +83,8 @@ namespace Entities.Controller
             switch (phase)
             {
                 case InputActionPhase.Performed:
-                    playerCharacterController.MovePlayer(moveInput.GetReturnValue().normalized);
+                    playerCharacterController.SimpleMovePlayer(moveInput.GetReturnValue().normalized);
+
                     break;
             }
         }

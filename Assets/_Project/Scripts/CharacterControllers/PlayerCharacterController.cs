@@ -36,9 +36,16 @@ public class PlayerCharacterController : MonoBehaviour
 
     }
 
+    // fix
     public void MovePlayer(Vector2 inDirection)
     {
-        Vector3 moveDirection = transform.forward * inDirection.y * moveStats.MoveSpeed;
+        Vector3 moveDirection = new Vector3(inDirection.x * moveStats.MoveSpeed, 0, inDirection.y * moveStats.MoveSpeed);
+        characterController.Move(moveDirection);
+    }
+
+    public void SimpleMovePlayer(Vector2 inDirection)
+    {
+        Vector3 moveDirection = new Vector3(inDirection.x * moveStats.MoveSpeed, 0, inDirection.y * moveStats.MoveSpeed);
 
         characterController.SimpleMove(moveDirection);
     }
