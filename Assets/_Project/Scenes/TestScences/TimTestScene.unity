@@ -1145,6 +1145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d64c2a05b0dd95f4fb138e1d41d9700b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterController
+  characterController: {fileID: 1486309393}
 --- !u!114 &1486309395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1159,6 +1160,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   healthComponent:
     maxHealth: 3
+  playerCharacterController: {fileID: 1486309394}
 --- !u!136 &1486309396
 CapsuleCollider:
   m_ObjectHideFlags: 0

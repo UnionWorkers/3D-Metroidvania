@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Entities;
+using Entities.Controller;
 using SceneLoaderUtil;
 using UnityEngine;
 using UnityEngine.SceneManagement;
