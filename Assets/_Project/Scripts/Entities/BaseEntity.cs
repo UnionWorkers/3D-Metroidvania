@@ -50,20 +50,22 @@ namespace Entities
 
         public virtual void OnUpdate()
         {
-
+            transform.position += transform.right * Time.deltaTime * 3;
         }
 
         // for testing remove later 
         void Update()
         {
-            if (Keyboard.current.pKey.wasPressedThisFrame)
+            if (Keyboard.current.escapeKey.wasPressedThisFrame)
             {
-                GameManager.Instance.ChangeGameState(GameState.Paused);
-            }
-
-            if (Keyboard.current.oKey.wasPressedThisFrame)
-            {
-                GameManager.Instance.ChangeGameState(GameState.Running);
+                if(GameManager.Instance.CurrentGameState == GameState.Running)
+                {
+                    GameManager.Instance.ChangeGameState(GameState.Paused);
+                }
+                else if(GameManager.Instance.CurrentGameState == GameState.Paused)
+                {
+                    GameManager.Instance.ChangeGameState(GameState.Running);
+                }
             }
         }
     }

@@ -24,11 +24,11 @@ namespace Managers
 
         private SceneLoader sceneLoader;
         [SerializeField] private SceneReference nextScene;
-
+        [SerializeField] private PauseMenuUi pauseMenuUi;
 
         private List<BaseEntity> activeEntities = new();
         private List<BaseEntity> disabledEntities = new();
-        private HashSet<BaseEntity> entitiesChangedQueue;
+        private HashSet<BaseEntity> entitiesChangedQueue = new();
 
         public void ChangeScene(ref SceneData sceneData)
         {
@@ -48,16 +48,13 @@ namespace Managers
             }
 
             sceneLoader = new(new SceneData(SceneManager.GetActiveScene().buildIndex, SceneManager.GetActiveScene().name));
+
+            sceneLoader.OnFinishedLoading += OnSceneFinnishLoading;
         }
 
         private void Start()
         {
-            BaseEntity[] allEntities = FindObjectsByType<BaseEntity>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-
-            for (int i = 0; i < allEntities.Length; i++)
-            {
-                AddEntity(allEntities[i]);
-            }
+            SceneSetUp();
         }
 
         private void Update()
@@ -68,6 +65,34 @@ namespace Managers
             }
 
             CleanUp();
+        }
+
+        private void OnSceneFinnishLoading(bool couldLoad)
+        {
+            if (!couldLoad)
+            {
+                Debug.LogWarning("What do you mean could not load scene 💀💀💀");
+                return;
+            }
+
+            SceneSetUp();
+        }
+
+        private void SceneSetUp()
+        {
+            activeEntities = new();
+            disabledEntities = new();
+            entitiesChangedQueue = new();
+
+            BaseEntity[] allEntities = FindObjectsByType<BaseEntity>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+            // this can maybe break stuff in the future, scene can have object controlling this 
+            ChangeGameState(GameState.Running);
+
+            for (int i = 0; i < allEntities.Length; i++)
+            {
+                AddEntity(allEntities[i]);
+            }
         }
 
         public void ChangeGameState(GameState newGameState)
@@ -83,9 +108,11 @@ namespace Managers
             {
                 case GameState.Running:
                     enabled = true;
+                    ChangePauseMenuState(false);
                     break;
                 case GameState.Paused:
                     enabled = false;
+                    ChangePauseMenuState(true);
                     break;
                 case GameState.GameOver:
                     SceneData sceneData = nextScene.SceneData;
@@ -159,6 +186,20 @@ namespace Managers
             }
 
             entitiesChangedQueue.Clear();
+        }
+
+        private void ChangePauseMenuState(bool state)
+        {
+            if (pauseMenuUi == null)
+            {
+                pauseMenuUi = FindAnyObjectByType<PauseMenuUi>(FindObjectsInactive.Include);
+                if (pauseMenuUi == null)
+                {
+                    return;
+                }
+            }
+
+            pauseMenuUi.ChangeActiveState(state);
         }
     }
 

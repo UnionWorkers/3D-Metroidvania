@@ -150,6 +150,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Managers.GameManager
   nextScene: {fileID: 98089791}
+  pauseMenuUi: {fileID: 0}
 --- !u!4 &98089790
 Transform:
   m_ObjectHideFlags: 0
@@ -1474,8 +1475,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneLoaderUtil.SceneReference
   sceneData:
-    SceneIndex: 0
-    SceneName: MainMenu
+    SceneIndex: 1
+    SceneName: TimTestScene
 --- !u!1 &1831412970
 GameObject:
   m_ObjectHideFlags: 0
