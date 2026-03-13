@@ -44,7 +44,6 @@ namespace Entities.Controller
             jumpInput.OnActionPhaseChanged += Jump;
 
             moveInput.GetAction(InputMap, "Move");
-            moveInput.OnActionPhaseChanged += PlayerMove;
         }
         private void OnDisable()
         {
@@ -66,25 +65,13 @@ namespace Entities.Controller
         {
             if (moveInput.IsPressed)
             {
-                //playerCharacterController.MovePlayer(moveInput.GetReturnValue().normalized);
-                playerCharacterController.SimpleMovePlayer(moveInput.GetReturnValue().normalized);
+                playerCharacterController.MovePlayer(moveInput.GetReturnValue());
+                //playerCharacterController.SimpleMovePlayer(moveInput.GetReturnValue());
             }
             else
             {
-                //playerCharacterController.MovePlayer(Vector2.zero);
-                playerCharacterController.SimpleMovePlayer(Vector2.zero);
-            }
-        }
-
-
-        private void PlayerMove(InputActionPhase phase)
-        {
-            switch (phase)
-            {
-                case InputActionPhase.Performed:
-                    playerCharacterController.SimpleMovePlayer(moveInput.GetReturnValue().normalized);
-
-                    break;
+                playerCharacterController.MovePlayer(Vector2.zero);
+                //playerCharacterController.SimpleMovePlayer(Vector2.zero);
             }
         }
 
@@ -93,7 +80,7 @@ namespace Entities.Controller
             switch (phase)
             {
                 case InputActionPhase.Performed:
-                    Debug.LogWarning("Jump not implemented");
+                    playerCharacterController.Jump();
                     break;
             }
         }

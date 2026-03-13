@@ -1,17 +1,27 @@
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 [System.Serializable]
 public struct MoveStats
 {
-    public float MoveSpeed;
+    [SerializeField] private float gravityValue;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float jumpHeight;
+
+    public float GravityValue => gravityValue;
+    public float MoveSpeed => moveSpeed;
+    public float JumpHeight => jumpHeight;
+    public float JumpPower => Mathf.Sqrt(jumpHeight * -1 * gravityValue);
+
 }
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerCharacterController : MonoBehaviour
 {
     [SerializeField] private MoveStats moveStats;
-
     [SerializeField] private CharacterController characterController;
+
+    private Vector3 playerVelocity;
 
     private void Awake()
     {
@@ -33,20 +43,36 @@ public class PlayerCharacterController : MonoBehaviour
 
     public void Jump()
     {
-
+        if (characterController.isGrounded)
+        {
+            playerVelocity.y = moveStats.JumpPower;
+        }
     }
 
     // fix
     public void MovePlayer(Vector2 inDirection)
     {
-        Vector3 moveDirection = new Vector3(inDirection.x * moveStats.MoveSpeed, 0, inDirection.y * moveStats.MoveSpeed);
-        characterController.Move(moveDirection);
-    }
 
-    public void SimpleMovePlayer(Vector2 inDirection)
-    {
-        Vector3 moveDirection = new Vector3(inDirection.x * moveStats.MoveSpeed, 0, inDirection.y * moveStats.MoveSpeed);
+        if (characterController.isGrounded)
+        {
+            if (playerVelocity.y < -2f)
+            {
+                playerVelocity.y = -2f;
+            }
+        }
 
-        characterController.SimpleMove(moveDirection);
+        Vector3 move = new Vector3(inDirection.x, 0, inDirection.y);
+        move = Vector3.ClampMagnitude(move, 1f);
+
+        if (move != Vector3.zero)
+        {
+            transform.forward = move;
+        }
+
+        playerVelocity.y += moveStats.GravityValue * Time.deltaTime;
+
+        Vector3 finalMove = (moveStats.MoveSpeed * move + Vector3.up * playerVelocity.y) * Time.deltaTime;
+
+        characterController.Move(finalMove);
     }
 }
