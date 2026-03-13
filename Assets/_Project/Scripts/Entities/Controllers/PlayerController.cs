@@ -32,17 +32,16 @@ namespace Entities.Controller
 
         private void OnEnable()
         {
-            //            string InputMap = "ProjectPlayer";
-            string InputMap = "Player";
+            string InputMap = "ProjectPlayer";
 
-            // escInput.GetAction(InputMap, "Pause");
-            // escInput.OnActionPhaseChanged += PauseGame;
+            escInput.GetAction(InputMap, "Pause");
+            escInput.OnActionPhaseChanged += PauseGame;
 
-            // interactInput.GetAction(InputMap, "Interact");
-            // interactInput.OnActionPhaseChanged += Interact;
+            interactInput.GetAction(InputMap, "Interact");
+            interactInput.OnActionPhaseChanged += Interact;
 
-            // jumpInput.GetAction(InputMap, "Jump");
-            // jumpInput.OnActionPhaseChanged += Jump;
+            jumpInput.GetAction(InputMap, "Jump");
+            jumpInput.OnActionPhaseChanged += Jump;
 
             moveInput.GetAction(InputMap, "Move");
             moveInput.OnActionPhaseChanged += PlayerMove;
@@ -114,16 +113,13 @@ namespace Entities.Controller
             switch (phase)
             {
                 case InputActionPhase.Performed:
-                    if (Keyboard.current.escapeKey.wasPressedThisFrame)
+                    if (GameManager.Instance.CurrentGameState == GameState.Running)
                     {
-                        if (GameManager.Instance.CurrentGameState == GameState.Running)
-                        {
-                            GameManager.Instance.ChangeGameState(GameState.Paused);
-                        }
-                        else if (GameManager.Instance.CurrentGameState == GameState.Paused)
-                        {
-                            GameManager.Instance.ChangeGameState(GameState.Running);
-                        }
+                        GameManager.Instance.ChangeGameState(GameState.Paused);
+                    }
+                    else if (GameManager.Instance.CurrentGameState == GameState.Paused)
+                    {
+                        GameManager.Instance.ChangeGameState(GameState.Running);
                     }
                     break;
             }
