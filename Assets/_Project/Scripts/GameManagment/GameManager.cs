@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Entities;
+using Entities.CameraControl;
 using Entities.Controller;
 using SceneLoaderUtil;
 using UnityEngine;
@@ -29,6 +30,8 @@ namespace Managers
         private List<BaseEntity> disabledEntities = new();
         private HashSet<BaseEntity> entitiesChangedQueue = new();
         private PlayerController playerController;
+        private CameraController cameraController;
+
 
         public void ChangeScene(ref SceneData sceneData)
         {
@@ -95,12 +98,23 @@ namespace Managers
 
             for (int i = 0; i < allEntities.Length; i++)
             {
-                if(allEntities[i] is PlayerController)
+                BaseEntity baseEntity = allEntities[i];
+
+                if(baseEntity is PlayerController)
                 {
-                    playerController = allEntities[i] as PlayerController; 
+                    playerController = baseEntity as PlayerController; 
+                }
+                else if(baseEntity is CameraController)
+                {
+                    cameraController = baseEntity as CameraController;
                 }
 
-                AddEntity(allEntities[i]);
+                AddEntity(baseEntity);
+            }
+
+            if(playerController != null && cameraController != null)
+            {
+                playerController.SetCameraController(cameraController);
             }
         }
 

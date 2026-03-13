@@ -12,8 +12,8 @@ namespace Entities
 
     public class BaseEntity : MonoBehaviour
     {
-        private EntityState currentEntityState = EntityState.Active;
-        private EntityState oldEntityState = EntityState.Active;
+        protected EntityState currentEntityState = EntityState.Active;
+        protected EntityState oldEntityState = EntityState.Active;
         public Action<BaseEntity> OnEntityStateChanged;
         public Action<BaseEntity> OnEntityDestroy;
 

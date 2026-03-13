@@ -1,3 +1,5 @@
+using CustomCharacterController;
+using Entities.CameraControl;
 using InputHandler;
 using Managers;
 using UnityEngine;
@@ -15,7 +17,9 @@ namespace Entities.Controller
         private InputActionHandler<bool> interactInput = new();
 
         [SerializeField] HealthComponent healthComponent;
-        [SerializeField] PlayerCharacterController playerCharacterController;
+        private PlayerCharacterController playerCharacterController;
+        private CameraController cameraController;
+
 
         private void Awake()
         {
@@ -50,6 +54,12 @@ namespace Entities.Controller
             escInput.OnDisable();
         }
 
+        public void SetCameraController(CameraController inCameraController)
+        {
+            cameraController = inCameraController;
+            cameraController.SetTarget(transform);
+        }
+
         public override void OnInitialize()
         {
 
@@ -65,12 +75,12 @@ namespace Entities.Controller
         {
             if (moveInput.IsPressed)
             {
-                playerCharacterController.MovePlayer(moveInput.GetReturnValue());
+                playerCharacterController.MovePlayer(moveInput.GetReturnValue(), cameraController.Rotation);
                 //playerCharacterController.SimpleMovePlayer(moveInput.GetReturnValue());
             }
             else
             {
-                playerCharacterController.MovePlayer(Vector2.zero);
+                playerCharacterController.MovePlayer(Vector2.zero, cameraController.Rotation);
                 //playerCharacterController.SimpleMovePlayer(Vector2.zero);
             }
         }
