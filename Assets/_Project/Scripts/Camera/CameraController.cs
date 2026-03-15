@@ -1,4 +1,5 @@
 
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Entities.CameraControl
@@ -58,9 +59,19 @@ namespace Entities.CameraControl
         private void FollowTarget()
         {
             Vector3 cameraCalc = cameraOffset + transform.position;
-
-
             transform.position = Vector3.Lerp(cameraCalc, targetTransform.position, distanceFromTarget);
+        }
+
+        public void RotateCamera(Vector2 direction)
+        {
+            Vector2 targetPos = targetTransform.position;
+            Vector2 myPos = transform.position;
+            Vector2 newPos = new Vector2(
+                targetPos.x + (myPos.x - targetPos.x) * Mathf.Cos(direction.x) - (myPos.y - targetPos.y) * Mathf.Sin(direction.x),
+                targetPos.y + (myPos.x - targetPos.x) * Mathf.Sin(direction.y) - (myPos.y - targetPos.y) * Mathf.Cos(direction.y)
+            );
+
+            transform.position = newPos;
         }
 
     }

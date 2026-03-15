@@ -48,6 +48,8 @@ namespace Entities.Controller
             jumpInput.OnActionPhaseChanged += Jump;
 
             moveInput.GetAction(InputMap, "Move");
+            lookInput.GetAction(InputMap, "Look");
+
         }
         private void OnDisable()
         {
@@ -73,6 +75,11 @@ namespace Entities.Controller
 
         public override void OnUpdate()
         {
+            if(lookInput.GetReturnValue() != Vector2.zero)
+            {
+                cameraController.RotateCamera(lookInput.GetReturnValue());
+            }
+
             if (moveInput.IsPressed)
             {
                 playerCharacterController.MovePlayer(moveInput.GetReturnValue(), cameraController.Rotation);
