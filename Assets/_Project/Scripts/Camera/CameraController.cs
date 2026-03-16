@@ -1,5 +1,4 @@
 
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace Entities.CameraControl
@@ -12,7 +11,6 @@ namespace Entities.CameraControl
         [SerializeField] private Vector3 cameraOffset;
         [Range(0f, 1f)]
         [SerializeField] private float distanceFromTarget;
-
 
         public Camera MainCamera => mainCamera;
         public Quaternion Rotation => transform.rotation;
@@ -58,20 +56,19 @@ namespace Entities.CameraControl
 
         private void FollowTarget()
         {
-            Vector3 cameraCalc = cameraOffset + transform.position;
-            transform.position = Vector3.Lerp(cameraCalc, targetTransform.position, distanceFromTarget);
+            // Vector3 cameraDir = -targetTransform.forward;
+            // Quaternion rotation = Quaternion.AngleAxis(0.5f * 60f, targetTransform.right);
+            // cameraDir = rotation * cameraDir;
+            // Vector3 cameraCalc = targetTransform.position + cameraDir * 10f;
+
+            transform.position = targetTransform.position - transform.forward * 10f;
+
         }
 
-        public void RotateCamera(Vector2 direction)
+        public void RotateCamera(Vector2 inDirection)
         {
-            Vector2 targetPos = targetTransform.position;
-            Vector2 myPos = transform.position;
-            Vector2 newPos = new Vector2(
-                targetPos.x + (myPos.x - targetPos.x) * Mathf.Cos(direction.x) - (myPos.y - targetPos.y) * Mathf.Sin(direction.x),
-                targetPos.y + (myPos.x - targetPos.x) * Mathf.Sin(direction.y) - (myPos.y - targetPos.y) * Mathf.Cos(direction.y)
-            );
-
-            transform.position = newPos;
+            // smooth this, and remove magic number 
+            transform.eulerAngles += new Vector3(0, inDirection.x * 2f, 0);
         }
 
     }

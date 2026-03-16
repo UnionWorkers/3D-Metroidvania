@@ -9,7 +9,7 @@ namespace CustomCharacterController
         [SerializeField] private float moveSpeed;
         [SerializeField] private float jumpHeight;
 
-        private Camera mainCamera; 
+        private Camera mainCamera;
 
         public float GravityValue => gravityValue;
         public float MoveSpeed => moveSpeed;
@@ -52,7 +52,7 @@ namespace CustomCharacterController
             }
         }
 
-        public void MovePlayer(Vector2 inDirection, Quaternion inCameraRotation)
+        public void MovePlayer(Vector2 inDirection, Transform cameraTransform)
         {
 
             if (characterController.isGrounded)
@@ -68,12 +68,15 @@ namespace CustomCharacterController
 
             if (move != Vector3.zero)
             {
-                transform.forward = move;
+                transform.rotation = Quaternion.Euler(0f, cameraTransform.eulerAngles.y, 0f);
+                move = transform.forward * move.z + transform.right * move.x;
             }
 
+            // applying gravity 
             playerVelocity.y += moveStats.GravityValue * Time.deltaTime;
+            move.y += playerVelocity.y;
 
-            Vector3 finalMove = (moveStats.MoveSpeed * move + Vector3.up * playerVelocity.y) * Time.deltaTime;
+            Vector3 finalMove = (moveStats.MoveSpeed * move) * Time.deltaTime;
 
             characterController.Move(finalMove);
         }
