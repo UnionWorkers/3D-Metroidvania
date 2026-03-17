@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using CustomCharacterController;
 using Entities.CameraControl;
 using InputHandler;
@@ -5,6 +8,7 @@ using Interactable;
 using Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.LowLevelPhysics;
 
 namespace Entities.Controller
 {
@@ -26,7 +30,7 @@ namespace Entities.Controller
         [SerializeField] HealthComponent healthComponent;
         private PlayerCharacterController playerCharacterController;
         private CameraController cameraController;
-        private IInteractable closestInteractable = null;
+        private (IInteractable interactable, int index) closestInteractable = (null, -1);
 
 
         private void Awake()
@@ -106,56 +110,105 @@ namespace Entities.Controller
             RaycastHit[] newInteractablesHit = new RaycastHit[INTERACTABLES_HIT_MAX_AMOUNT];
             int ObjectHit = Physics.SphereCastNonAlloc(transform.position, interactRadius, transform.forward, newInteractablesHit, default, interactLayerMask);
 
+            // May need to check if interactables is maxed out  
+            for (int i = 0; i < interactables.Length; i++)
+            {
+                bool isInCollider = false;
+                bool canAdd = false;
+
+                IInteractable oldInteractable = interactables[i];
+                (IInteractable interactable, int index) newInteractable = (null, -1);
+
+                for (int j = 0; j < ObjectHit; j++)
+                {
+                    if (newInteractablesHit[j].transform == null)
+                    {
+                        continue;
+                    }
+
+                    newInteractable = (newInteractablesHit[j].transform.GetComponent<IInteractable>(), j);
+
+                    if (newInteractable.interactable == null)
+                    {
+                        continue;
+                    }
+
+                    // contains  
+                    if (newInteractable.interactable == oldInteractable || newInteractable.interactable == interactables[j])
+                    {
+                        isInCollider = true;
+                        canAdd = false;
+                        newInteractablesHit[j] = default;
+                        break;
+                    }
+
+                    // add
+                    if (oldInteractable == null && newInteractable.interactable != interactables[j] && newInteractable.interactable.MyItemState != ItemState.Destroyed)
+                    {
+                        canAdd = true;
+                        isInCollider = true;
+                    }
+
+                }
+
+                // remove if not in collider range
+                if (!isInCollider && oldInteractable != null && oldInteractable.MyItemState != ItemState.Destroyed)
+                {
+                    oldInteractable.DeHighlight();
+                    interactables[i] = null;
+                }
+                else if (canAdd && newInteractable.interactable.MyItemState != ItemState.Destroyed)
+                {
+                    newInteractable.interactable.Highlight();
+                    interactables[i] = newInteractable.interactable;
+                    newInteractablesHit[newInteractable.index] = default;
+                }
+            }
+
+            // have all valid object in front of the array, removing nulls in the middle of two valid objects
+            int switchCount = 0;
+            IInteractable[] tmpInteractable = new IInteractable[INTERACTABLES_HIT_MAX_AMOUNT];
             for (int i = 0; i < interactables.Length; i++)
             {
                 if (interactables[i] == null)
                 {
-                    break;
+                    continue;
                 }
 
-                interactables[i].DeHighlight();
+                if(interactables[i].MyItemState == ItemState.None)
+                {
+                    interactables[i].Highlight();
+                }
+
+                tmpInteractable[switchCount] = interactables[i];
+                switchCount++;
                 interactables[i] = null;
             }
+            interactables = tmpInteractable;
 
-            for (int i = 0; i < ObjectHit; i++)
-            {
-                if (newInteractablesHit[i].transform == null)
-                {
-                    break;
-                }
-
-                IInteractable interactable = newInteractablesHit[i].transform.GetComponent<IInteractable>();
-                if (interactable != null)
-                {
-                    interactable.Highlight();
-                    interactables[i] = interactable;
-                }
-            }
         }
 
-        // Set the closestInteractable
-        private void GetClosestInteractable()
+        private (IInteractable, int) GetClosestInteractable()
         {
-            (float distFromPlayer, IInteractable myInteractable) bestInteractable = (Vector3.Distance(transform.position, interactables[0].GetTransform.position), interactables[0]);
+            if (interactables[0] == null)
+            {
+                return (null, -1);
+            }
+
+            (float distFromPlayer, IInteractable myInteractable, int index) bestInteractable = (Vector3.Distance(transform.position, interactables[0].GetTransform.position), interactables[0], 0);
             for (int i = 0; i < interactables.Length; i++)
             {
+                if (interactables[i] == null)
+                {
+                    continue;
+                }
                 float dist = Vector3.Distance(transform.position, interactables[i].GetTransform.position);
                 if (dist < bestInteractable.distFromPlayer)
                 {
-                    bestInteractable = (dist, interactables[i]);
+                    bestInteractable = (dist, interactables[i], i);
                 }
             }
-            closestInteractable = bestInteractable.myInteractable;
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            IInteractable interactable = other.GetComponent<IInteractable>();
-            if (interactable != null)
-            {
-                interactable.Highlight();
-                closestInteractable = interactable;
-            }
+            return (bestInteractable.myInteractable, bestInteractable.index);
         }
 
         private void Jump(InputActionPhase phase)
@@ -173,15 +226,18 @@ namespace Entities.Controller
             switch (phase)
             {
                 case InputActionPhase.Performed:
-                    if (closestInteractable == null)
+
+                    closestInteractable = GetClosestInteractable();
+                    if (closestInteractable.interactable == null)
                     {
                         return;
                     }
+                    closestInteractable.interactable.DeHighlight();
 
-                    GetClosestInteractable();
                     // Gets a delegate, then run its function
-                    closestInteractable.SelectInteractable()();
-
+                    closestInteractable.interactable.SelectInteractable()();
+                    interactables[closestInteractable.index] = null;
+                    closestInteractable = (null, -1);
                     break;
             }
         }
