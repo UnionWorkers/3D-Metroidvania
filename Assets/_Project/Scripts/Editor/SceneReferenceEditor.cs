@@ -1,8 +1,8 @@
-using System.Collections.Generic;
 using SceneLoaderUtil;
 using UnityEditor;
+using Utils.SceneLoader;
 
-namespace SceneLoaderEditor
+namespace Utils.SceneLoaderEditor
 {
     [CustomEditor(typeof(SceneReference), true)]
     public class SceneReferenceEditor : Editor

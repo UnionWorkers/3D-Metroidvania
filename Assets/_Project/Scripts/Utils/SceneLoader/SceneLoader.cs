@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
-namespace SceneLoaderUtil
+namespace Utils.SceneLoader
 {
     [System.Serializable]
     public struct SceneData

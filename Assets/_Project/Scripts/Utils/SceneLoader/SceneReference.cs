@@ -1,4 +1,5 @@
 using UnityEngine;
+using Utils.SceneLoader;
 
 namespace SceneLoaderUtil
 {

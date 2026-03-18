@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using Entities;
 using Entities.CameraControl;
 using Entities.Controller;
-using SceneLoaderUtil;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utils.SceneLoader;
 
 namespace Managers
 {

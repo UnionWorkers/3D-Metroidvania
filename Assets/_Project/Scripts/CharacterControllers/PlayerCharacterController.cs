@@ -1,4 +1,5 @@
 using UnityEngine;
+using Utils.Math;
 
 namespace CustomCharacterController
 {
@@ -24,7 +25,15 @@ namespace CustomCharacterController
         [SerializeField] private MoveStats moveStats;
         [SerializeField] private CharacterController characterController;
 
+        [SerializeField] private EasingFunctionType easingGravityType;
         private Vector3 playerVelocity;
+        private float timeInAir = 0f;
+        [Range(0, 5)]
+        [SerializeField] private float maxAirTimer = 1f;
+        [SerializeField] private float maxFallVelocity = 5f;
+
+
+
 
         private void Awake()
         {
@@ -61,6 +70,14 @@ namespace CustomCharacterController
                 {
                     playerVelocity.y = -2f;
                 }
+                timeInAir = Time.deltaTime;
+            }
+            else
+            {
+                if (timeInAir <= maxAirTimer)
+                {
+                    timeInAir += Time.deltaTime;
+                }
             }
 
             Vector3 move = new Vector3(inDirection.x, 0, inDirection.y);
@@ -73,7 +90,15 @@ namespace CustomCharacterController
             }
 
             // applying gravity 
-            playerVelocity.y += moveStats.GravityValue * Time.deltaTime;
+            if (playerVelocity.y <= maxFallVelocity)
+            {
+                playerVelocity.y += moveStats.GravityValue * EasingFunctions.EasingFunction(easingGravityType, timeInAir);
+            }
+            else
+            {
+                playerVelocity.y = maxFallVelocity;
+            }
+
             move.y += playerVelocity.y;
 
             Vector3 finalMove = (moveStats.MoveSpeed * move) * Time.deltaTime;
