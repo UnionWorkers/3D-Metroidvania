@@ -15,6 +15,7 @@ namespace Entities.Controller
 
     public class PlayerController : BaseEntity
     {
+        // Inputs
         private InputActionHandler<Vector2> moveInput = new();
         private InputActionHandler<Vector2> lookInput = new();
         private InputActionHandler<bool> escInput = new();
@@ -26,12 +27,15 @@ namespace Entities.Controller
         [SerializeField] private LayerMask interactLayerMask;
         private const int INTERACTABLES_HIT_MAX_AMOUNT = 10;
         private IInteractable[] interactables = new IInteractable[INTERACTABLES_HIT_MAX_AMOUNT];
+        private (IInteractable interactable, int index) closestInteractable = (null, -1);
 
+        // Components and other scripts 
         [SerializeField] HealthComponent healthComponent;
         private PlayerCharacterController playerCharacterController;
         private CameraController cameraController;
-        private (IInteractable interactable, int index) closestInteractable = (null, -1);
+        private PlayerInventory inventory = new();
 
+        public PlayerInventory Inventory => inventory;
 
         private void Awake()
         {
@@ -66,6 +70,10 @@ namespace Entities.Controller
         private void OnDisable()
         {
             escInput.OnDisable();
+            interactInput.OnDisable();
+            jumpInput.OnDisable();
+            moveInput.OnDisable();
+            lookInput.OnDisable();
         }
 
         public void SetCameraController(CameraController inCameraController)
@@ -77,7 +85,6 @@ namespace Entities.Controller
         public override void OnInitialize()
         {
             Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = true;
         }
 
         public override void OnBeforeDestroy()
@@ -175,7 +182,7 @@ namespace Entities.Controller
                     continue;
                 }
 
-                if(interactables[i].MyItemState == ItemState.None)
+                if (interactables[i].MyItemState == ItemState.None)
                 {
                     interactables[i].Highlight();
                 }
@@ -235,7 +242,7 @@ namespace Entities.Controller
                     closestInteractable.interactable.DeHighlight();
 
                     // Gets a delegate, then run its function
-                    closestInteractable.interactable.SelectInteractable()();
+                    closestInteractable.interactable.SelectInteractable()(this);
                     interactables[closestInteractable.index] = null;
                     closestInteractable = (null, -1);
                     break;

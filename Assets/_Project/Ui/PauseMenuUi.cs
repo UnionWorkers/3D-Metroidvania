@@ -43,6 +43,7 @@ public class PauseMenuUi : MonoBehaviour
         }
 
         buttonList.Add(("Resume", Resume));
+        buttonList.Add(("Respawn", Respawn));
         buttonList.Add(("Quit", Quit));
     }
 
@@ -82,7 +83,11 @@ public class PauseMenuUi : MonoBehaviour
     {
         GameManager.Instance.ChangeGameState(GameState.Running);
     }
-
+    private void Respawn()
+    {
+        GameManager.Instance.RespawnPlayer();
+        GameManager.Instance.ChangeGameState(GameState.Running);
+    }
     private void Quit()
     {
         SceneData sceneData = mainMenuScene.SceneData;

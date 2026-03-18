@@ -1,4 +1,5 @@
 using System;
+using Entities.Controller;
 using UnityEngine;
 
 namespace Interactable
@@ -22,7 +23,7 @@ namespace Interactable
         }
 
 
-        public delegate void SelectableAction();
+        public delegate void SelectableAction(PlayerController inPlayerController);
         public void Highlight();
         public void DeHighlight();
         public SelectableAction SelectInteractable();

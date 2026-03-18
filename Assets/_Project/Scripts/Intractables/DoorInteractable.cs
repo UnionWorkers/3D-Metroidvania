@@ -1,0 +1,74 @@
+using System;
+using Entities.Controller;
+using Interactable;
+using Interactable.Key;
+using UnityEngine;
+
+public enum DoorState : byte
+{
+    Open,
+    Closed,
+    Locked,
+}
+
+public enum DoorAction : byte
+{
+    OpenOnce,
+    Reusable,
+    Inactive
+}
+
+public class DoorInteractable : BaseInteractable
+{
+    [SerializeField] private DoorState doorState = DoorState.Locked;
+    [SerializeField] private DoorAction doorAction = DoorAction.OpenOnce;
+    [SerializeField] private KeySO keySO;
+    private Key key => keySO.Key;
+
+    protected override void InteractableAction(PlayerController inPlayerController)
+    {
+        if (doorState == DoorState.Locked && !inPlayerController.Inventory.HasKey(key))
+        {
+            return;
+        }
+
+        switch (doorAction)
+        {
+            case DoorAction.OpenOnce:
+                CommitAction(inPlayerController);
+                doorAction = DoorAction.Inactive;
+                break;
+            case DoorAction.Reusable:
+                CommitAction(inPlayerController);
+                break;
+            case DoorAction.Inactive:
+                break;
+        }
+
+        // base.InteractableAction(inPlayerController);
+    }
+
+    protected virtual void CommitAction(PlayerController inPlayerController)
+    {
+        switch (doorState)
+        {
+            case DoorState.Open:
+                transform.RotateAround(transform.position, transform.rotation.eulerAngles, 40f);
+                doorState = DoorState.Closed;
+                break;
+            case DoorState.Closed:
+                transform.RotateAround(transform.position, new Vector3(0, 10, 0), 40f);
+                doorState = DoorState.Open;
+                break;
+            case DoorState.Locked:
+                inPlayerController.Inventory.UseKey(key);
+                doorState = DoorState.Closed;
+                CommitAction(inPlayerController);
+
+                break;
+        }
+
+
+    }
+
+}

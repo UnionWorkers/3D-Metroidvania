@@ -31,6 +31,7 @@ namespace Managers
         private HashSet<BaseEntity> entitiesChangedQueue = new();
         private PlayerController playerController;
         private CameraController cameraController;
+        private PlayerSpawner playerSpawner;
 
 
         public void ChangeScene(ref SceneData sceneData)
@@ -43,7 +44,7 @@ namespace Managers
             if (GameManager.Instance == null)
             {
                 gameManager = this;
-                if(transform.parent != null)
+                if (transform.parent != null)
                 {
                     transform.SetParent(null, true);
                 }
@@ -92,6 +93,7 @@ namespace Managers
             entitiesChangedQueue = new();
 
             BaseEntity[] allEntities = FindObjectsByType<BaseEntity>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            playerSpawner = FindAnyObjectByType<PlayerSpawner>(FindObjectsInactive.Include);
 
             // this can maybe break stuff in the future, scene can have object controlling this 
             ChangeGameState(GameState.Running);
@@ -100,11 +102,11 @@ namespace Managers
             {
                 BaseEntity baseEntity = allEntities[i];
 
-                if(baseEntity is PlayerController)
+                if (baseEntity is PlayerController)
                 {
-                    playerController = baseEntity as PlayerController; 
+                    playerController = baseEntity as PlayerController;
                 }
-                else if(baseEntity is CameraController)
+                else if (baseEntity is CameraController)
                 {
                     cameraController = baseEntity as CameraController;
                 }
@@ -112,7 +114,7 @@ namespace Managers
                 AddEntity(baseEntity);
             }
 
-            if(playerController != null && cameraController != null)
+            if (playerController != null && cameraController != null)
             {
                 playerController.SetCameraController(cameraController);
             }
@@ -131,12 +133,23 @@ namespace Managers
             {
                 case GameState.Running:
                     enabled = true;
+
+                    if (playerController != null)
+                    {
+                        Cursor.lockState = CursorLockMode.Locked;
+                    }
+
                     ChangePauseMenuState(false);
                     break;
+
                 case GameState.Paused:
+
                     enabled = false;
+                    Cursor.lockState = CursorLockMode.Confined;
+                    Cursor.visible = true;
                     ChangePauseMenuState(true);
                     break;
+
                 case GameState.GameOver:
 
                     break;
@@ -222,6 +235,14 @@ namespace Managers
             }
 
             pauseMenuUi.ChangeActiveState(state);
+        }
+
+        public void RespawnPlayer()
+        {
+            if (playerSpawner != null)
+            {
+                playerSpawner.SpawnPlayer(playerController);
+            }
         }
     }
 

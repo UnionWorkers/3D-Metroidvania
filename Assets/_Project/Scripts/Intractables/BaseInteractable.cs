@@ -1,5 +1,7 @@
 using System;
+using Entities.Controller;
 using NUnit.Framework;
+using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
@@ -13,7 +15,7 @@ namespace Interactable
 
         public bool IsHighlighted => isHighlighted;
         public Transform GetTransform => transform;
-        private ItemState itemState = ItemState.None; 
+        protected ItemState itemState = ItemState.None; 
         public ItemState MyItemState
         {
             get => itemState;
@@ -22,31 +24,31 @@ namespace Interactable
 
         private Color defaultColor;
 
-        void Start()
+        private void Start()
         {
             defaultColor = GetComponent<MeshRenderer>().material.GetColor("_BaseColor");
         }
 
-        public void Highlight()
+        public virtual void Highlight()
         {
             GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.blue);
             itemState = ItemState.Highlighted;
             isHighlighted = true;
         }
 
-        public void DeHighlight()
+        public virtual void DeHighlight()
         {
             GetComponent<MeshRenderer>().material.SetColor("_BaseColor", defaultColor);
             itemState = ItemState.None;
             isHighlighted = false;
         }
 
-        public IInteractable.SelectableAction SelectInteractable()
+        public virtual IInteractable.SelectableAction SelectInteractable()
         {
-            return test;
+            return InteractableAction;
         }
 
-        private void test()
+        protected virtual void InteractableAction(PlayerController inPlayerController)
         {
             itemState = ItemState.Destroyed;
             OnActionCompleted?.Invoke();
