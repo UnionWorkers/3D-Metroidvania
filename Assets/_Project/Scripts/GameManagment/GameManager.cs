@@ -66,13 +66,21 @@ namespace Managers
         }
 
         private void Update()
-        {            
+        {
             foreach (var entity in activeEntities)
             {
                 entity.OnUpdate();
             }
 
             CleanUp();
+        }
+
+        private void FixedUpdate()
+        {
+            foreach (var entity in activeEntities)
+            {
+                entity.OnFixedUpdate();
+            }
         }
 
         private void OnSceneFinnishLoading(bool couldLoad)

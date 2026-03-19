@@ -62,10 +62,8 @@ namespace CustomCharacterController
 
         public void MovePlayer(Vector2 inDirection, Transform cameraTransform)
         {
-
             if (characterController.isGrounded)
             {
-                Debug.DrawLine(transform.position, transform.position + (Vector3.down * 2f));
 
                 // Check if there is moving ground under the player 
                 if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 2f, groundLayerMask))
@@ -73,7 +71,7 @@ namespace CustomCharacterController
                     MovingObject movingObject = hit.transform.GetComponent<MovingObject>();
                     if (movingObject != null)
                     {
-                        movingGroundInfo = new(movingObject.CurrentVelocity, movingObject.CurrentMoveDirection + new Vector3(0, 0.1f, 0));
+                        movingGroundInfo = new(movingObject.CurrentVelocity, movingObject.CurrentMoveDirection + new Vector3(0, 0.5f, 0));
                     }
                 }
                 else if (movingGroundInfo.MoveVector != Vector3.zero)
@@ -100,11 +98,11 @@ namespace CustomCharacterController
             // Apply moving ground movement on the player 
 
             // applying gravity 
-            playerVelocity.y += moveStats.GravityValue * Time.deltaTime;
+            playerVelocity.y += moveStats.GravityValue * Time.fixedDeltaTime;
 
             move.y += playerVelocity.y;
 
-            Vector3 finalMove = ((moveStats.MoveSpeed * move) + movingGroundInfo.MoveVector) * Time.deltaTime;
+            Vector3 finalMove = ((moveStats.MoveSpeed * move) + movingGroundInfo.MoveVector) * Time.fixedDeltaTime;
 
             characterController.Move(finalMove);
         }

@@ -16,6 +16,7 @@ namespace Entities
         protected EntityState oldEntityState = EntityState.Active;
         public Action<BaseEntity> OnEntityStateChanged;
         public Action<BaseEntity> OnEntityDestroy;
+        [SerializeField] protected bool debugState = false;
 
         public EntityState EntityState
         {
@@ -37,7 +38,7 @@ namespace Entities
 
         public virtual void OnInitialize()
         {
-
+            return;
         }
 
         public virtual void OnBeforeDestroy()
@@ -48,6 +49,12 @@ namespace Entities
 
         public virtual void OnUpdate()
         {
+            return;
+        }
+
+        public virtual void OnFixedUpdate()
+        {
+            return;
         }
 
     }

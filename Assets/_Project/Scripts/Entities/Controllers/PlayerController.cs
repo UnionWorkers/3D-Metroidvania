@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
 using CustomCharacterController;
 using Entities.CameraControl;
 using InputHandler;
@@ -8,7 +5,6 @@ using Interactable;
 using Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.LowLevelPhysics;
 
 namespace Entities.Controller
 {
@@ -22,6 +18,10 @@ namespace Entities.Controller
         private InputActionHandler<bool> jumpInput = new();
         private InputActionHandler<bool> interactInput = new();
 
+        // Input variables 
+        private Vector2 moveDirection = Vector2.zero;
+        private Vector2 cameraRotationDirection = Vector2.zero;
+
         // Interact Variables
         [SerializeField] private float interactRadius = 2f;
         [SerializeField] private LayerMask interactLayerMask;
@@ -34,7 +34,6 @@ namespace Entities.Controller
         private PlayerCharacterController playerCharacterController;
         private CameraController cameraController;
         private PlayerInventory inventory = new();
-
         public PlayerInventory Inventory => inventory;
 
         private void Awake()
@@ -97,19 +96,32 @@ namespace Entities.Controller
         {
             if (lookInput.GetReturnValue() != Vector2.zero)
             {
-                cameraController.RotateCamera(lookInput.GetReturnValue());
+                cameraRotationDirection = lookInput.GetReturnValue();
+            } else
+            {
+                cameraRotationDirection = Vector2.zero;
             }
 
             if (moveInput.IsPressed)
             {
-                playerCharacterController.MovePlayer(moveInput.GetReturnValue(), cameraController.transform);
+               moveDirection = moveInput.GetReturnValue();
             }
             else
             {
-                playerCharacterController.MovePlayer(Vector2.zero, cameraController.transform);
+                moveDirection = Vector2.zero;
             }
 
             CheckForInteractables();
+        }
+
+        public override void OnFixedUpdate()
+        {
+            if (cameraRotationDirection != Vector2.zero)
+            {
+                cameraController.RotateCamera(cameraRotationDirection);
+            }
+
+            playerCharacterController.MovePlayer(moveDirection, cameraController.transform);
         }
 
         private void CheckForInteractables()

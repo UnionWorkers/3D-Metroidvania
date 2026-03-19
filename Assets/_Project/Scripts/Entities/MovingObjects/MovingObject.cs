@@ -27,6 +27,8 @@ public class MovingObject : BaseEntity
 
     private void OnDrawGizmos()
     {
+        if (!debugState) { return; }
+        
         Gizmos.color = new Color(0.5f, 0f, 0f, 1f);
         Gizmos.DrawSphere(desiredMovePoint, 1f);
 
@@ -37,18 +39,39 @@ public class MovingObject : BaseEntity
         Gizmos.DrawLine(transform.position, transform.position + (currentMoveDirection * 2));
     }
 
-    public override void OnUpdate()
+    // public override void OnUpdate()
+    // {
+    //     if (currentVelocity < maxVelocity)
+    //     {
+    //         currentVelocity += moveSpeed * Time.deltaTime;
+    //     }
+
+    //     float dist = Vector3.Distance(transform.position, desiredMovePoint);
+
+    //     if (dist > 0.15f)
+    //     {
+    //         transform.position += currentMoveDirection * currentVelocity * Time.deltaTime;
+    //     }
+    //     else
+    //     {
+    //         currentMoveDirection = -currentMoveDirection;
+    //         desiredMovePoint = NewDesiredMovePoint();
+    //         currentVelocity = 0;
+    //     }
+    // }
+
+    public override void OnFixedUpdate()
     {
         if (currentVelocity < maxVelocity)
         {
-            currentVelocity += moveSpeed * Time.deltaTime;
+            currentVelocity += moveSpeed * Time.fixedDeltaTime;
         }
 
         float dist = Vector3.Distance(transform.position, desiredMovePoint);
 
         if (dist > 0.15f)
         {
-            transform.position += currentMoveDirection * currentVelocity * Time.deltaTime;
+            transform.position += currentMoveDirection * currentVelocity * Time.fixedDeltaTime;
         }
         else
         {
@@ -56,7 +79,6 @@ public class MovingObject : BaseEntity
             desiredMovePoint = NewDesiredMovePoint();
             currentVelocity = 0;
         }
-
     }
 
     private Vector3 NewDesiredMovePoint()
