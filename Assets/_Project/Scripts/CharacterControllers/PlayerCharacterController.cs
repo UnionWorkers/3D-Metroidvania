@@ -1,5 +1,4 @@
 using UnityEngine;
-using Utils.Math;
 
 namespace CustomCharacterController
 {
@@ -10,13 +9,24 @@ namespace CustomCharacterController
         [SerializeField] private float moveSpeed;
         [SerializeField] private float jumpHeight;
 
-        private Camera mainCamera;
-
         public float GravityValue => gravityValue;
         public float MoveSpeed => moveSpeed;
         public float JumpHeight => jumpHeight;
         public float JumpPower => Mathf.Sqrt(jumpHeight * -1 * gravityValue);
+    }
 
+    public struct MovingGroundInfo
+    {
+        private float velocity;
+        private Vector3 moveDirection;
+
+        public Vector3 MoveVector => velocity * moveDirection;
+
+        public MovingGroundInfo(float inVelocity, Vector3 inMoveDirection)
+        {
+            velocity = inVelocity;
+            moveDirection = inMoveDirection;
+        }
     }
 
     [RequireComponent(typeof(CharacterController))]
@@ -24,16 +34,10 @@ namespace CustomCharacterController
     {
         [SerializeField] private MoveStats moveStats;
         [SerializeField] private CharacterController characterController;
+        private MovingGroundInfo movingGroundInfo = new(0, Vector3.zero);
 
-        [SerializeField] private EasingFunctionType easingGravityType;
         private Vector3 playerVelocity;
-        private float timeInAir = 0f;
-        [Range(0, 5)]
-        [SerializeField] private float maxAirTimer = 1f;
-        [SerializeField] private float maxFallVelocity = 5f;
-
-
-
+        [SerializeField] private LayerMask groundLayerMask;
 
         private void Awake()
         {
@@ -46,11 +50,6 @@ namespace CustomCharacterController
                     Debug.LogError("There is no character controller on Player");
                 }
             }
-        }
-
-        public void Interact()
-        {
-
         }
 
         public void Jump()
@@ -66,17 +65,26 @@ namespace CustomCharacterController
 
             if (characterController.isGrounded)
             {
+                Debug.DrawLine(transform.position, transform.position + (Vector3.down * 2f));
+
+                // Check if there is moving ground under the player 
+                if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 2f, groundLayerMask))
+                {
+                    MovingObject movingObject = hit.transform.GetComponent<MovingObject>();
+                    if (movingObject != null)
+                    {
+                        movingGroundInfo = new(movingObject.CurrentVelocity, movingObject.CurrentMoveDirection + new Vector3(0, 0.1f, 0));
+                    }
+                }
+                else if (movingGroundInfo.MoveVector != Vector3.zero)
+                {
+                    movingGroundInfo = new(0, Vector3.zero);
+                }
+
+
                 if (playerVelocity.y < -2f)
                 {
                     playerVelocity.y = -2f;
-                }
-                timeInAir = Time.deltaTime;
-            }
-            else
-            {
-                if (timeInAir <= maxAirTimer)
-                {
-                    timeInAir += Time.deltaTime;
                 }
             }
 
@@ -89,21 +97,17 @@ namespace CustomCharacterController
                 move = transform.forward * move.z + transform.right * move.x;
             }
 
+            // Apply moving ground movement on the player 
+
             // applying gravity 
-            if (playerVelocity.y <= maxFallVelocity)
-            {
-                playerVelocity.y += moveStats.GravityValue * EasingFunctions.EasingFunction(easingGravityType, timeInAir);
-            }
-            else
-            {
-                playerVelocity.y = maxFallVelocity;
-            }
+            playerVelocity.y += moveStats.GravityValue * Time.deltaTime;
 
             move.y += playerVelocity.y;
 
-            Vector3 finalMove = (moveStats.MoveSpeed * move) * Time.deltaTime;
+            Vector3 finalMove = ((moveStats.MoveSpeed * move) + movingGroundInfo.MoveVector) * Time.deltaTime;
 
             characterController.Move(finalMove);
         }
     }
+
 }

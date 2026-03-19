@@ -66,7 +66,7 @@ namespace Managers
         }
 
         private void Update()
-        {
+        {            
             foreach (var entity in activeEntities)
             {
                 entity.OnUpdate();
