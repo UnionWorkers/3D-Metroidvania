@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace CustomCharacterController
@@ -6,12 +7,22 @@ namespace CustomCharacterController
     public struct MoveStats
     {
         [SerializeField] private float gravityValue;
-        [SerializeField] private float moveSpeed;
+
+        [SerializeField] private float maxSpeed;
+        [Range(0f, 0.99f)]
+        [SerializeField] private float accelerationTime;
+
+        [Range(0f, 0.99f)]
+        [SerializeField] private float decelerationTime;
+
         [SerializeField] private float jumpHeight;
 
         public float GravityValue => gravityValue;
-        public float MoveSpeed => moveSpeed;
+        public float MaxSpeed => maxSpeed;
         public float JumpHeight => jumpHeight;
+        public float AccelerationTime => accelerationTime;
+        public float DecelerationTime => decelerationTime;
+
         public float JumpPower => Mathf.Sqrt(jumpHeight * -1 * gravityValue);
     }
 
@@ -35,15 +46,16 @@ namespace CustomCharacterController
         [SerializeField] private MoveStats moveStats;
         [SerializeField] private CharacterController characterController;
         private MovingGroundInfo movingGroundInfo = new(0, Vector3.zero);
+
         private bool isGrounded;
         private Vector3 hitNormal;
         [SerializeField] private float slideFriction = 0.3f;
         [SerializeField] private float slidSpeed = 1f;
-
-
-
-        private Vector3 playerVelocity;
         [SerializeField] private LayerMask groundLayerMask;
+
+        private float currentVelocityTime = 0;
+        // find better name? 
+        private Vector3 currentMoveVector;
 
         private void Awake()
         {
@@ -67,7 +79,7 @@ namespace CustomCharacterController
         {
             if (isGrounded)
             {
-                playerVelocity.y = moveStats.JumpPower;
+                currentMoveVector.y = moveStats.JumpPower;
             }
         }
 
@@ -75,60 +87,103 @@ namespace CustomCharacterController
         {
             if (isGrounded)
             {
+                // reset hit slope velocity when grounded
                 hitNormal = Vector3.zero;
-                playerVelocity.x = 0;
-                playerVelocity.z = 0; 
+                
+                currentMoveVector.x = 0;
+                currentMoveVector.z = 0;
 
-                // Check if there is moving ground under the player 
-                if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 2f, groundLayerMask))
+                WhenPlayerGrounded();
+            }
+            else
+            {
+                // Check if on slope  
+                if (hitNormal != Vector3.zero)
                 {
-                    MovingObject movingObject = hit.transform.GetComponent<MovingObject>();
-                    if (movingObject != null)
-                    {
-                        movingGroundInfo = new(movingObject.CurrentVelocity, movingObject.CurrentMoveDirection + new Vector3(0, 0.5f, 0));
-                    }
+                    CalculateSlopeVector();
+                    hitNormal = Vector3.zero;
                 }
-                else if (movingGroundInfo.MoveVector != Vector3.zero)
-                {
-                    movingGroundInfo = new(0, Vector3.zero);
-                }
+            }
 
-                if (playerVelocity.y < -2f)
+            Vector3 moveVector = new Vector3(inDirection.x, 0, inDirection.y);
+            moveVector = Vector3.ClampMagnitude(moveVector, 1f);
+
+            // move in the direction of player input 
+            if (moveVector != Vector3.zero)
+            {
+                // Have same forward as camera
+                transform.rotation = Quaternion.Euler(0f, cameraTransform.eulerAngles.y, 0f);
+
+                moveVector = transform.forward * moveVector.z + transform.right * moveVector.x;
+
+                // calculate velocity time
+                if (currentVelocityTime < 1f)
                 {
-                    playerVelocity.y = -2f;
+                    currentVelocityTime += (1 - moveStats.AccelerationTime);
+                }
+                else
+                {
+                    currentVelocityTime = 1f;
                 }
             }
             else
             {
-                // when the player is on a slope 
-                playerVelocity.x += (1f - hitNormal.y) * hitNormal.x  * (slidSpeed - slideFriction);
-                playerVelocity.z += (1f - hitNormal.y) * hitNormal.z  * (slidSpeed - slideFriction);
-                hitNormal = Vector3.zero;
+                if (currentVelocityTime > 0f)
+                {
+                    currentVelocityTime -= (1 - moveStats.DecelerationTime);
+                }
+                else
+                {
+                    currentVelocityTime = 0f;
+                }
             }
-
-            Vector3 move = new Vector3(inDirection.x, 0, inDirection.y);
-            move = Vector3.ClampMagnitude(move, 1f);
-
-            if (move != Vector3.zero)
-            {
-                transform.rotation = Quaternion.Euler(0f, cameraTransform.eulerAngles.y, 0f);
-                move = transform.forward * move.z + transform.right * move.x;
-            }
-
-            // Apply moving ground movement on the player 
 
             // applying gravity 
-            playerVelocity.y += moveStats.GravityValue * Time.fixedDeltaTime;
+            currentMoveVector.y += moveStats.GravityValue * Time.fixedDeltaTime;
 
-            move += playerVelocity;
+            // currentMoveVector.x += (moveStats.MaxSpeed * currentVelocityTime) + currentMoveVector.x;
+            // currentMoveVector.z += (moveStats.MaxSpeed * currentVelocityTime) + currentMoveVector.z;
 
-            Vector3 finalMove = ((moveStats.MoveSpeed * move) + movingGroundInfo.MoveVector) * Time.fixedDeltaTime;
+            moveVector += currentMoveVector;
 
-            characterController.Move(finalMove);
+            // add moving ground velocity
+            moveVector = ((moveStats.MaxSpeed * moveVector) + movingGroundInfo.MoveVector) * Time.fixedDeltaTime;
+
+            characterController.Move(moveVector);
 
             // is the angel of the ground lower then the slop limit 
             isGrounded = Vector3.Angle(Vector3.up, hitNormal) <= characterController.slopeLimit;
         }
+
+        private void WhenPlayerGrounded()
+        {
+            // Check if there is moving ground under the player 
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 2f, groundLayerMask))
+            {
+                MovingObject movingObject = hit.transform.GetComponent<MovingObject>();
+                if (movingObject != null)
+                {
+                    movingGroundInfo = new(movingObject.CurrentVelocity, movingObject.CurrentMoveDirection + new Vector3(0, 0.5f, 0));
+                }
+            }
+            else if (movingGroundInfo.MoveVector != Vector3.zero)
+            {
+                movingGroundInfo = new(0, Vector3.zero);
+            }
+
+            if (currentMoveVector.y < -2f)
+            {
+                currentMoveVector.y = -2f;
+            }
+        }
+
+        // when the player is on a slope 
+        private void CalculateSlopeVector()
+        {
+            currentMoveVector.x += (1f - hitNormal.y) * hitNormal.x * (slidSpeed - slideFriction);
+            currentMoveVector.z += (1f - hitNormal.y) * hitNormal.z * (slidSpeed - slideFriction);
+        }
+
     }
 
 }
