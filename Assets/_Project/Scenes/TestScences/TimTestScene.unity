@@ -2826,6 +2826,8 @@ MonoBehaviour:
     moveSpeed: 6
     jumpHeight: 3
   characterController: {fileID: 1486309393}
+  slideFriction: 0.7
+  slidSpeed: 1
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 128

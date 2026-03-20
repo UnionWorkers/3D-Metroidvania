@@ -35,6 +35,12 @@ namespace CustomCharacterController
         [SerializeField] private MoveStats moveStats;
         [SerializeField] private CharacterController characterController;
         private MovingGroundInfo movingGroundInfo = new(0, Vector3.zero);
+        private bool isGrounded;
+        private Vector3 hitNormal;
+        [SerializeField] private float slideFriction = 0.3f;
+        [SerializeField] private float slidSpeed = 1f;
+
+
 
         private Vector3 playerVelocity;
         [SerializeField] private LayerMask groundLayerMask;
@@ -52,9 +58,14 @@ namespace CustomCharacterController
             }
         }
 
+        private void OnControllerColliderHit(ControllerColliderHit hit)
+        {
+            hitNormal = hit.normal;
+        }
+
         public void Jump()
         {
-            if (characterController.isGrounded)
+            if (isGrounded)
             {
                 playerVelocity.y = moveStats.JumpPower;
             }
@@ -62,8 +73,11 @@ namespace CustomCharacterController
 
         public void MovePlayer(Vector2 inDirection, Transform cameraTransform)
         {
-            if (characterController.isGrounded)
+            if (isGrounded)
             {
+                hitNormal = Vector3.zero;
+                playerVelocity.x = 0;
+                playerVelocity.z = 0; 
 
                 // Check if there is moving ground under the player 
                 if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 2f, groundLayerMask))
@@ -79,11 +93,17 @@ namespace CustomCharacterController
                     movingGroundInfo = new(0, Vector3.zero);
                 }
 
-
                 if (playerVelocity.y < -2f)
                 {
                     playerVelocity.y = -2f;
                 }
+            }
+            else
+            {
+                // when the player is on a slope 
+                playerVelocity.x += (1f - hitNormal.y) * hitNormal.x  * (slidSpeed - slideFriction);
+                playerVelocity.z += (1f - hitNormal.y) * hitNormal.z  * (slidSpeed - slideFriction);
+                hitNormal = Vector3.zero;
             }
 
             Vector3 move = new Vector3(inDirection.x, 0, inDirection.y);
@@ -100,11 +120,14 @@ namespace CustomCharacterController
             // applying gravity 
             playerVelocity.y += moveStats.GravityValue * Time.fixedDeltaTime;
 
-            move.y += playerVelocity.y;
+            move += playerVelocity;
 
             Vector3 finalMove = ((moveStats.MoveSpeed * move) + movingGroundInfo.MoveVector) * Time.fixedDeltaTime;
 
             characterController.Move(finalMove);
+
+            // is the angel of the ground lower then the slop limit 
+            isGrounded = Vector3.Angle(Vector3.up, hitNormal) <= characterController.slopeLimit;
         }
     }
 
