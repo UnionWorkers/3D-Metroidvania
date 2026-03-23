@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace CustomCharacterController
@@ -7,23 +9,31 @@ namespace CustomCharacterController
     public struct MoveStats
     {
         [SerializeField] private float gravityValue;
+        [Range(1f, 10f)]
 
-        [SerializeField] private float maxSpeed;
-        [Range(0f, 0.99f)]
-        [SerializeField] private float accelerationTime;
-
-        [Range(0f, 0.99f)]
-        [SerializeField] private float decelerationTime;
-
+        [SerializeField] private float gravityMultiplier;
         [SerializeField] private float jumpHeight;
 
+        [Space(15)]
+        [SerializeField] private float maxSpeed;
+
+        [Header("Time to reach max speed")]
+        [Range(0.01f, 0.99f)]
+        [SerializeField] private float accelerationTime;
+
+        [Header("Time to reach 0 speed")]
+        [Range(0.01f, 0.99f)]
+        [SerializeField] private float decelerationTime;
+
         public float GravityValue => gravityValue;
+        public float GravityMultiplier => gravityMultiplier;
         public float MaxSpeed => maxSpeed;
         public float JumpHeight => jumpHeight;
         public float AccelerationTime => accelerationTime;
         public float DecelerationTime => decelerationTime;
-
+        //        public float JumpPower => Mathf.Sqrt(jumpHeight * -1 * gravityValue);
         public float JumpPower => Mathf.Sqrt(jumpHeight * -1 * gravityValue);
+
     }
 
     public struct MovingGroundInfo
@@ -44,18 +54,24 @@ namespace CustomCharacterController
     public class PlayerCharacterController : MonoBehaviour
     {
         [SerializeField] private MoveStats moveStats;
+
+        [Space(15)]
         [SerializeField] private CharacterController characterController;
         private MovingGroundInfo movingGroundInfo = new(0, Vector3.zero);
 
-        private bool isGrounded;
+        private bool isOnSlope;
+
         private Vector3 hitNormal;
         [SerializeField] private float slideFriction = 0.3f;
         [SerializeField] private float slidSpeed = 1f;
         [SerializeField] private LayerMask groundLayerMask;
 
+        private float targetRotation = 0;
+
         private float currentVelocityTime = 0;
         // find better name? 
         private Vector3 currentMoveVector;
+
 
         private void Awake()
         {
@@ -75,84 +91,80 @@ namespace CustomCharacterController
             hitNormal = hit.normal;
         }
 
-        public void Jump()
-        {
-            if (isGrounded)
-            {
-                currentMoveVector.y = moveStats.JumpPower;
-            }
-        }
-
         public void MovePlayer(Vector2 inDirection, Transform cameraTransform)
         {
-            if (isGrounded)
+            if (!isOnSlope)
             {
                 // reset hit slope velocity when grounded
                 hitNormal = Vector3.zero;
-                
                 currentMoveVector.x = 0;
                 currentMoveVector.z = 0;
-
-                WhenPlayerGrounded();
             }
             else
             {
-                // Check if on slope  
+                // Check for slope 
                 if (hitNormal != Vector3.zero)
                 {
                     CalculateSlopeVector();
+                    currentVelocityTime = 0;
                     hitNormal = Vector3.zero;
                 }
             }
 
-            Vector3 moveVector = new Vector3(inDirection.x, 0, inDirection.y);
-            moveVector = Vector3.ClampMagnitude(moveVector, 1f);
+            if (characterController.isGrounded && !isOnSlope)
+            {
+                WhenPlayerGrounded();
+            }
+
+            // Input direction
+            Vector3 moveVector = new Vector3(inDirection.x, 0, inDirection.y).normalized;
 
             // move in the direction of player input 
             if (moveVector != Vector3.zero)
             {
-                // Have same forward as camera
-                transform.rotation = Quaternion.Euler(0f, cameraTransform.eulerAngles.y, 0f);
+                // Face direction of input based on camera forward 
+                targetRotation = Mathf.Atan2(moveVector.x, moveVector.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
+                transform.rotation = Quaternion.Euler(0f, targetRotation, 0f);
 
-                moveVector = transform.forward * moveVector.z + transform.right * moveVector.x;
-
-                // calculate velocity time
-                if (currentVelocityTime < 1f)
-                {
-                    currentVelocityTime += (1 - moveStats.AccelerationTime);
-                }
-                else
-                {
-                    currentVelocityTime = 1f;
-                }
+                Accelerate();
             }
             else
             {
-                if (currentVelocityTime > 0f)
-                {
-                    currentVelocityTime -= (1 - moveStats.DecelerationTime);
-                }
-                else
-                {
-                    currentVelocityTime = 0f;
-                }
+                Decelerate();
             }
 
-            // applying gravity 
-            currentMoveVector.y += moveStats.GravityValue * Time.fixedDeltaTime;
+            Vector3 targetMoveDirection = (Quaternion.Euler(0f, targetRotation, 0f) * Vector3.forward).normalized;
 
-            // currentMoveVector.x += (moveStats.MaxSpeed * currentVelocityTime) + currentMoveVector.x;
-            // currentMoveVector.z += (moveStats.MaxSpeed * currentVelocityTime) + currentMoveVector.z;
-
-            moveVector += currentMoveVector;
+            ApplyGravity();
 
             // add moving ground velocity
-            moveVector = ((moveStats.MaxSpeed * moveVector) + movingGroundInfo.MoveVector) * Time.fixedDeltaTime;
+            Vector3 finalMoveVector = (targetMoveDirection * (moveStats.MaxSpeed * currentVelocityTime) + movingGroundInfo.MoveVector + currentMoveVector) * Time.fixedDeltaTime;
 
-            characterController.Move(moveVector);
+            characterController.Move(finalMoveVector);
 
             // is the angel of the ground lower then the slop limit 
-            isGrounded = Vector3.Angle(Vector3.up, hitNormal) <= characterController.slopeLimit;
+            isOnSlope = Vector3.Angle(Vector3.up, hitNormal) >= characterController.slopeLimit;
+        }
+
+        private void ApplyGravity()
+        {
+            if (!characterController.isGrounded && currentMoveVector.y < 0f)
+            {
+                currentMoveVector.y += moveStats.GravityValue * moveStats.GravityMultiplier * Time.fixedDeltaTime;
+            }
+            else
+            {
+                currentMoveVector.y += moveStats.GravityValue * Time.fixedDeltaTime;
+
+            }
+        }
+
+        public void Jump()
+        {
+            if (characterController.isGrounded)
+            {
+                currentMoveVector.y = moveStats.JumpPower;
+            }
         }
 
         private void WhenPlayerGrounded()
@@ -182,6 +194,30 @@ namespace CustomCharacterController
         {
             currentMoveVector.x += (1f - hitNormal.y) * hitNormal.x * (slidSpeed - slideFriction);
             currentMoveVector.z += (1f - hitNormal.y) * hitNormal.z * (slidSpeed - slideFriction);
+        }
+
+        private void Accelerate()
+        {
+            if (currentVelocityTime < 1f)
+            {
+                currentVelocityTime += Time.fixedDeltaTime / moveStats.AccelerationTime;
+            }
+            else
+            {
+                currentVelocityTime = 1f;
+            }
+        }
+
+        private void Decelerate()
+        {
+            if (currentVelocityTime > 0f)
+            {
+                currentVelocityTime -= Time.fixedDeltaTime / moveStats.DecelerationTime;
+            }
+            else
+            {
+                currentVelocityTime = 0f;
+            }
         }
 
     }

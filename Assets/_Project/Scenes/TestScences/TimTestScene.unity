@@ -2823,10 +2823,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterController
   moveStats:
     gravityValue: -9
+    gravityMultiplier: 3
+    jumpHeight: 10
     maxSpeed: 10
-    accelerationTime: 0.99
-    decelerationTime: 0.99
-    jumpHeight: 3
+    accelerationTime: 0.3
+    decelerationTime: 0.3
   characterController: {fileID: 1486309393}
   slideFriction: 0.7
   slidSpeed: 1
