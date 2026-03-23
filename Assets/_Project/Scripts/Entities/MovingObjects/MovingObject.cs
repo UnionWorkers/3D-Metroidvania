@@ -1,4 +1,5 @@
 using Entities;
+using Managers;
 using UnityEngine;
 
 public class MovingObject : BaseEntity
@@ -13,6 +14,7 @@ public class MovingObject : BaseEntity
     [SerializeField] private float maxVelocity;
     [SerializeField] private float moveDistance;
     [SerializeField] private Vector3 moveDirection;
+    private float realMaxVelocity => maxVelocity * GameManager.Instance.ObjectsGameSpeed;
 
     public float CurrentVelocity => currentVelocity;
     public Vector3 CurrentMoveDirection => currentMoveDirection;
@@ -28,7 +30,7 @@ public class MovingObject : BaseEntity
     private void OnDrawGizmos()
     {
         if (!debugState) { return; }
-        
+
         Gizmos.color = new Color(0.5f, 0f, 0f, 1f);
         Gizmos.DrawSphere(desiredMovePoint, 1f);
 
@@ -62,16 +64,16 @@ public class MovingObject : BaseEntity
 
     public override void OnFixedUpdate()
     {
-        if (currentVelocity < maxVelocity)
+        if (currentVelocity < realMaxVelocity)
         {
-            currentVelocity += moveSpeed * Time.fixedDeltaTime;
+            currentVelocity += moveSpeed * Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
         }
 
         float dist = Vector3.Distance(transform.position, desiredMovePoint);
 
         if (dist > 0.15f)
         {
-            transform.position += currentMoveDirection * currentVelocity * Time.fixedDeltaTime;
+            transform.position += currentVelocity * Time.fixedDeltaTime * currentMoveDirection;
         }
         else
         {

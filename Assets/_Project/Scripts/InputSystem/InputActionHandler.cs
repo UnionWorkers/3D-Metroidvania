@@ -24,7 +24,6 @@ namespace InputHandler
             inputAction.started += PerformedAction;
             inputAction.performed += PerformedAction;
             inputAction.canceled += PerformedAction;
-
         }
         public InputAction GetInputAction => inputAction;
         public bool WasPressedThisFrame => inputAction.WasPressedThisFrame();

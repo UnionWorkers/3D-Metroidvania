@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Entities;
 using Entities.CameraControl;
 using Entities.Controller;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils.SceneLoader;
@@ -33,6 +34,14 @@ namespace Managers
         private CameraController cameraController;
         private PlayerSpawner playerSpawner;
 
+        private int timeDirection = 0;
+        private float objectsGameSpeed = 1;
+
+        [SerializeField] private float objectsGameSpeedChangeRate = 2f;
+        [SerializeField] private float maxObjectsGameSlowDown = 0.3f;
+        [SerializeField] private float maxObjectsGameSpeedUp = 1.7f;
+
+        public float ObjectsGameSpeed => objectsGameSpeed;
 
         public void ChangeScene(ref SceneData sceneData)
         {
@@ -67,6 +76,33 @@ namespace Managers
 
         private void Update()
         {
+            
+            // Change objects game speed depending on player input 
+            if (timeDirection != 0)
+            {
+                if (timeDirection == 1 && objectsGameSpeed >= maxObjectsGameSpeedUp)
+                {
+                    objectsGameSpeed = maxObjectsGameSpeedUp;
+                }
+                else if (timeDirection == -1 && objectsGameSpeed <= maxObjectsGameSlowDown)
+                {
+                    objectsGameSpeed = maxObjectsGameSlowDown;
+                }
+                else
+                {
+                    objectsGameSpeed += Time.deltaTime * objectsGameSpeedChangeRate * timeDirection;
+                }
+            }
+            else if (objectsGameSpeed != 1f)
+            {
+                if (objectsGameSpeed > 0.95f && objectsGameSpeed < 1.05f)
+                {
+                    objectsGameSpeed = 1f;
+                }
+                objectsGameSpeed += Time.deltaTime * objectsGameSpeedChangeRate * (objectsGameSpeed < 0.99f ? 1 : -1);
+            }
+
+
             foreach (var entity in activeEntities)
             {
                 entity.OnUpdate();
@@ -251,6 +287,19 @@ namespace Managers
             {
                 playerSpawner.SpawnPlayer(playerController);
             }
+        }
+
+        public void ChangeTimeSpeed(int inTimeDirection)
+        {
+            if (timeDirection == inTimeDirection)
+            {
+                Debug.Log(timeDirection);
+                timeDirection = 0;
+                return;
+            }
+
+
+            timeDirection = inTimeDirection;
         }
     }
 

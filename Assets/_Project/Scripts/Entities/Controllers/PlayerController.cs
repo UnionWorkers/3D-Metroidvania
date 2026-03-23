@@ -14,6 +14,7 @@ namespace Entities.Controller
         // Inputs
         private InputActionHandler<Vector2> moveInput = new();
         private InputActionHandler<Vector2> lookInput = new();
+        private InputActionHandler<float> timeManipulateInput = new();
         private InputActionHandler<bool> escInput = new();
         private InputActionHandler<bool> jumpInput = new();
         private InputActionHandler<bool> interactInput = new();
@@ -62,8 +63,12 @@ namespace Entities.Controller
             jumpInput.GetAction(InputMap, "Jump");
             jumpInput.OnActionPhaseChanged += Jump;
 
+            timeManipulateInput.GetAction(InputMap, "TimeManipulate");
+            timeManipulateInput.OnActionPhaseChanged += TimeManipulate;
+
             moveInput.GetAction(InputMap, "Move");
             lookInput.GetAction(InputMap, "Look");
+
 
         }
         private void OnDisable()
@@ -97,14 +102,15 @@ namespace Entities.Controller
             if (lookInput.GetReturnValue() != Vector2.zero)
             {
                 cameraRotationDirection = lookInput.GetReturnValue();
-            } else
+            }
+            else
             {
                 cameraRotationDirection = Vector2.zero;
             }
 
             if (moveInput.IsPressed)
             {
-               moveDirection = moveInput.GetReturnValue();
+                moveDirection = moveInput.GetReturnValue();
             }
             else
             {
@@ -274,6 +280,18 @@ namespace Entities.Controller
                     {
                         GameManager.Instance.ChangeGameState(GameState.Running);
                     }
+                    break;
+            }
+        }
+
+        private void TimeManipulate(InputActionPhase phase)
+        {
+            switch (phase)
+            {
+                case InputActionPhase.Performed:
+                    int inputDir = timeManipulateInput.GetReturnValue() < 0 ? -1 : 1;
+                    GameManager.Instance.ChangeTimeSpeed(inputDir);
+
                     break;
             }
         }
