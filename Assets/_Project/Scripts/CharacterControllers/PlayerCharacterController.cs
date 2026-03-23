@@ -10,9 +10,10 @@ namespace CustomCharacterController
     {
         [SerializeField] private float gravityValue;
         [Range(1f, 10f)]
-
         [SerializeField] private float gravityMultiplier;
         [SerializeField] private float jumpHeight;
+        [Range(0.2f, 2f)]
+        [SerializeField] private float timeToApex;
 
         [Space(15)]
         [SerializeField] private float maxSpeed;
@@ -31,8 +32,9 @@ namespace CustomCharacterController
         public float JumpHeight => jumpHeight;
         public float AccelerationTime => accelerationTime;
         public float DecelerationTime => decelerationTime;
-        //        public float JumpPower => Mathf.Sqrt(jumpHeight * -1 * gravityValue);
-        public float JumpPower => Mathf.Sqrt(jumpHeight * -1 * gravityValue);
+        // public float JumpPower => Mathf.Sqrt(jumpHeight * -1 * gravityValue);
+        public float JumpPower => jumpHeight;
+        public float TimeToApex => timeToApex;
 
     }
 
@@ -62,6 +64,7 @@ namespace CustomCharacterController
         private bool isOnSlope;
 
         private Vector3 hitNormal;
+        private float gravityScale = 1f;
         [SerializeField] private float slideFriction = 0.3f;
         [SerializeField] private float slidSpeed = 1f;
         [SerializeField] private LayerMask groundLayerMask;
@@ -148,27 +151,37 @@ namespace CustomCharacterController
 
         private void ApplyGravity()
         {
+            float downVelocity = 0;
+
+            float newGravityScale = (-2 * moveStats.JumpPower) / (moveStats.TimeToApex * moveStats.TimeToApex);
+            gravityScale = newGravityScale / moveStats.GravityValue;
+
             if (!characterController.isGrounded && currentMoveVector.y < 0f)
             {
-                currentMoveVector.y += moveStats.GravityValue * moveStats.GravityMultiplier * Time.fixedDeltaTime;
+                gravityScale = gravityScale * moveStats.GravityMultiplier;
+                downVelocity += moveStats.GravityValue * moveStats.GravityMultiplier;
             }
             else
             {
-                currentMoveVector.y += moveStats.GravityValue * Time.fixedDeltaTime;
-
+                gravityScale = gravityScale * 1;
+                downVelocity += moveStats.GravityValue;
             }
+
+            currentMoveVector.y += downVelocity * gravityScale * Time.fixedDeltaTime;
         }
 
         public void Jump()
         {
             if (characterController.isGrounded)
             {
-                currentMoveVector.y = moveStats.JumpPower;
+                currentMoveVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpPower);
             }
         }
 
         private void WhenPlayerGrounded()
         {
+            gravityScale = 1f;
+
             // Check if there is moving ground under the player 
             if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 2f, groundLayerMask))
             {
