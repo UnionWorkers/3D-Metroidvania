@@ -1,6 +1,4 @@
 using System;
-using System.Threading;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace CustomCharacterController
@@ -12,7 +10,7 @@ namespace CustomCharacterController
         [Range(1f, 10f)]
         [SerializeField] private float gravityMultiplier;
         [SerializeField] private float jumpHeight;
-        [Range(0.2f, 2f)]
+        [Range(0.2f, 8f)]
         [SerializeField] private float timeToApex;
 
         [Space(15)]
@@ -62,7 +60,6 @@ namespace CustomCharacterController
         private MovingGroundInfo movingGroundInfo = new(0, Vector3.zero);
 
         private bool isOnSlope;
-
         private Vector3 hitNormal;
         private float gravityScale = 1f;
         [SerializeField] private float slideFriction = 0.3f;
@@ -70,7 +67,6 @@ namespace CustomCharacterController
         [SerializeField] private LayerMask groundLayerMask;
 
         private float targetRotation = 0;
-
         private float currentVelocityTime = 0;
         // find better name? 
         private Vector3 currentMoveVector;
@@ -153,18 +149,18 @@ namespace CustomCharacterController
         {
             float downVelocity = 0;
 
-            float newGravityScale = (-2 * moveStats.JumpPower) / (moveStats.TimeToApex * moveStats.TimeToApex);
-            gravityScale = newGravityScale / moveStats.GravityValue;
+            float newGravityScale = (2 * moveStats.JumpPower) / (moveStats.TimeToApex * moveStats.TimeToApex);
+            gravityScale = newGravityScale;
 
             if (!characterController.isGrounded && currentMoveVector.y < 0f)
             {
                 gravityScale = gravityScale * moveStats.GravityMultiplier;
-                downVelocity += moveStats.GravityValue * moveStats.GravityMultiplier;
+                downVelocity = moveStats.GravityValue * moveStats.GravityMultiplier;
             }
             else
             {
                 gravityScale = gravityScale * 1;
-                downVelocity += moveStats.GravityValue;
+                downVelocity = moveStats.GravityValue * 1;
             }
 
             currentMoveVector.y += downVelocity * gravityScale * Time.fixedDeltaTime;

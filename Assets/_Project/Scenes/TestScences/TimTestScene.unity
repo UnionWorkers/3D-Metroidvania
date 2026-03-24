@@ -2823,9 +2823,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterController
   moveStats:
     gravityValue: -9
-    gravityMultiplier: 3
+    gravityMultiplier: 1.1
     jumpHeight: 10
-    timeToApex: 0.5
+    timeToApex: 1.1
     maxSpeed: 10
     accelerationTime: 0.3
     decelerationTime: 0.3
