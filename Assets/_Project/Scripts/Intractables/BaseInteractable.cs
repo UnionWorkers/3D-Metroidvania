@@ -1,19 +1,14 @@
 using System;
 using Entities.Controller;
-using NUnit.Framework;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 
 namespace Interactable
 {
     public class BaseInteractable : MonoBehaviour, IInteractable
     {
-        protected bool isHighlighted = false;
 
         public event Action OnActionCompleted;
 
-        public bool IsHighlighted => isHighlighted;
         public Transform GetTransform => transform;
         protected ItemState itemState = ItemState.None; 
         public ItemState MyItemState
@@ -22,9 +17,9 @@ namespace Interactable
             set => itemState = value;
         }
 
-        private Color defaultColor;
+        protected Color defaultColor;
 
-        private void Start()
+        protected virtual void Start()
         {
             defaultColor = GetComponent<MeshRenderer>().material.GetColor("_BaseColor");
         }
@@ -33,14 +28,12 @@ namespace Interactable
         {
             GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.blue);
             itemState = ItemState.Highlighted;
-            isHighlighted = true;
         }
 
         public virtual void DeHighlight()
         {
             GetComponent<MeshRenderer>().material.SetColor("_BaseColor", defaultColor);
             itemState = ItemState.None;
-            isHighlighted = false;
         }
 
         public virtual IInteractable.SelectableAction SelectInteractable()

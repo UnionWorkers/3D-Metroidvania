@@ -8,7 +8,6 @@ using UnityEngine.InputSystem;
 
 namespace Entities.Controller
 {
-
     public class PlayerController : BaseEntity
     {
         // Inputs
@@ -35,7 +34,9 @@ namespace Entities.Controller
         private PlayerCharacterController playerCharacterController;
         private CameraController cameraController;
         private PlayerInventory inventory = new();
+        
         public PlayerInventory Inventory => inventory;
+        public PlayerCharacterController CharacterController => playerCharacterController;
 
         private void Awake()
         {
@@ -84,6 +85,11 @@ namespace Entities.Controller
         {
             cameraController = inCameraController;
             cameraController.SetTarget(transform);
+        }
+
+        public void SwitchMoveType(MoveType inMoveType)
+        {
+            playerCharacterController.MoveType = inMoveType;
         }
 
         public override void OnInitialize()
@@ -251,6 +257,11 @@ namespace Entities.Controller
             switch (phase)
             {
                 case InputActionPhase.Performed:
+                    if (playerCharacterController.MoveType != MoveType.Normal)
+                    {
+                        SwitchMoveType(MoveType.Normal);
+                        return;
+                    }
 
                     closestInteractable = GetClosestInteractable();
                     if (closestInteractable.interactable == null)

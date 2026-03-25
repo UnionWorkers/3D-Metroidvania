@@ -3,6 +3,12 @@ using UnityEngine;
 
 namespace CustomCharacterController
 {
+    public enum MoveType
+    {
+        Normal,
+        OnRope
+    }
+
     [System.Serializable]
     public struct MoveStats
     {
@@ -54,22 +60,47 @@ namespace CustomCharacterController
     public class PlayerCharacterController : MonoBehaviour
     {
         [SerializeField] private MoveStats moveStats;
+        private float gravityScale = 1f;
 
         [Space(15)]
         [SerializeField] private CharacterController characterController;
-        private MovingGroundInfo movingGroundInfo = new(0, Vector3.zero);
 
-        private bool isOnSlope;
-        private Vector3 hitNormal;
-        private float gravityScale = 1f;
-        [SerializeField] private float slideFriction = 0.3f;
-        [SerializeField] private float slidSpeed = 1f;
+        // Moving ground variables 
+        private MovingGroundInfo movingGroundInfo = new(0, Vector3.zero);
         [SerializeField] private LayerMask groundLayerMask;
 
+        // Slope variables 
+        private bool isOnSlope;
+        private Vector3 hitNormal;
+        [SerializeField] private float slideFriction = 0.3f;
+        [SerializeField] private float slidSpeed = 1f;
+
+        // Movement variables 
         private float targetRotation = 0;
         private float currentVelocityTime = 0;
-        // find better name? 
-        private Vector3 currentMoveVector;
+        private Vector3 currentMoveVector; // find better name?
+
+        private MoveType moveType = MoveType.Normal;
+        [NonSerialized] public MagnetObjectInteractable MagnetObject = null;
+
+        public MoveType MoveType
+        {
+            get => moveType;
+            set
+            {
+                switch (value)
+                {
+                    case MoveType.Normal:
+                        MagnetObject = null;
+                        break;
+                    case MoveType.OnRope:
+
+                        break;
+                }
+                moveType = value;
+                Debug.Log(moveType);
+            }
+        }
 
 
         private void Awake()
@@ -91,6 +122,19 @@ namespace CustomCharacterController
         }
 
         public void MovePlayer(Vector2 inDirection, Transform cameraTransform)
+        {
+            switch (moveType)
+            {
+                case MoveType.Normal:
+                    NormalMovement(ref inDirection, ref cameraTransform);
+                    break;
+                case MoveType.OnRope:
+                    RopeMovement(ref inDirection, ref cameraTransform);
+                    break;
+            }
+        }
+
+        private void NormalMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         {
             if (!isOnSlope)
             {
@@ -145,9 +189,23 @@ namespace CustomCharacterController
             isOnSlope = Vector3.Angle(Vector3.up, hitNormal) >= characterController.slopeLimit;
         }
 
+        private void RopeMovement(ref Vector2 inDirection, ref Transform cameraTransform)
+        {
+            if (MagnetObject == null)
+            {
+                MoveType = MoveType.Normal;
+                return;
+            }
+
+            Vector3 finalMoveVector = MagnetObject.GetClosestPointOnSegment(transform.position);
+
+            transform.position = finalMoveVector;
+//            characterController.Move(finalMoveVector);
+        }
+
         private void ApplyGravity()
         {
-            float downVelocity = 0;
+            float downVelocity;
 
             float newGravityScale = (2 * moveStats.JumpPower) / (moveStats.TimeToApex * moveStats.TimeToApex);
             gravityScale = newGravityScale;
@@ -168,6 +226,8 @@ namespace CustomCharacterController
 
         public void Jump()
         {
+            MoveType = MoveType.Normal;
+
             if (characterController.isGrounded)
             {
                 currentMoveVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpPower);

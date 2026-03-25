@@ -9,6 +9,7 @@ namespace Interactable
     {
         None,
         Highlighted,
+        BeingUsed,
         Destroyed
     }
 
