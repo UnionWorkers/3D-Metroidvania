@@ -11,6 +11,8 @@ public class MagnetObjectInteractable : BaseInteractable
     [SerializeField] private Vector3 startPoint;
     [SerializeField] private Vector3 endPoint;
 
+    public Vector3 MoveForward => (endPoint - startPoint).normalized;
+
 
     public Vector3 StartPoint
     {

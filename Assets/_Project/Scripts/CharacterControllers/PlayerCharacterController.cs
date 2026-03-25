@@ -81,7 +81,9 @@ namespace CustomCharacterController
         private Vector3 currentMoveVector; // find better name?
 
         private MoveType moveType = MoveType.Normal;
+        private bool canMove = true;
         [NonSerialized] public MagnetObjectInteractable MagnetObject = null;
+        public bool CanMove => canMove;
 
         public MoveType MoveType
         {
@@ -91,14 +93,15 @@ namespace CustomCharacterController
                 switch (value)
                 {
                     case MoveType.Normal:
+                        canMove = true;
                         MagnetObject = null;
                         break;
                     case MoveType.OnRope:
-
+                        AttachToRope();
                         break;
                 }
+
                 moveType = value;
-                Debug.Log(moveType);
             }
         }
 
@@ -189,6 +192,20 @@ namespace CustomCharacterController
             isOnSlope = Vector3.Angle(Vector3.up, hitNormal) >= characterController.slopeLimit;
         }
 
+        private void AttachToRope()
+        {
+            canMove = false;
+            characterController.enabled = false; // fixed so the player gets set in the right position;
+
+            transform.position = MagnetObject.GetClosestPointOnSegment(transform.position);
+
+            canMove = true;
+            characterController.enabled = true;
+        }
+
+        
+        // Fix so the player moves with the camera forward
+        // Fix sp player can jump off the rope;
         private void RopeMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         {
             if (MagnetObject == null)
@@ -197,10 +214,38 @@ namespace CustomCharacterController
                 return;
             }
 
-            Vector3 finalMoveVector = MagnetObject.GetClosestPointOnSegment(transform.position);
+            if (!canMove)
+            {
+                return;
+            }
 
-            transform.position = finalMoveVector;
-//            characterController.Move(finalMoveVector);
+            // Input direction
+            Vector3 moveVector = new Vector3(inDirection.x, 0, inDirection.y).normalized;
+
+            // move in the direction of player input 
+            if (moveVector != Vector3.zero)
+            {
+
+
+
+                // Face direction of input based on camera forward 
+                // targetRotation = Mathf.Atan2(moveVector.x, moveVector.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
+                // transform.rotation = Quaternion.Euler(0f, targetRotation, 0f);
+
+                Accelerate();
+            }
+            else
+            {
+                Decelerate();
+            }
+
+            Vector3 targetMoveDirection = MagnetObject.MoveForward * moveVector.z;
+            //Vector3 targetMoveDirection = (Quaternion.Euler(0f, targetRotation, 0f) * Vector3.forward).normalized;
+
+
+            Vector3 finalMoveVector = (targetMoveDirection * (moveStats.MaxSpeed * currentVelocityTime) + movingGroundInfo.MoveVector) * Time.fixedDeltaTime;
+
+            characterController.Move(finalMoveVector);
         }
 
         private void ApplyGravity()
@@ -226,7 +271,10 @@ namespace CustomCharacterController
 
         public void Jump()
         {
-            MoveType = MoveType.Normal;
+            if (moveType != MoveType.Normal)
+            {
+                MoveType = MoveType.Normal;
+            }
 
             if (characterController.isGrounded)
             {

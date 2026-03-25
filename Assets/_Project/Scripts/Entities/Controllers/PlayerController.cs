@@ -34,7 +34,7 @@ namespace Entities.Controller
         private PlayerCharacterController playerCharacterController;
         private CameraController cameraController;
         private PlayerInventory inventory = new();
-        
+
         public PlayerInventory Inventory => inventory;
         public PlayerCharacterController CharacterController => playerCharacterController;
 
@@ -133,7 +133,11 @@ namespace Entities.Controller
                 cameraController.RotateCamera(cameraRotationDirection);
             }
 
-            playerCharacterController.MovePlayer(moveDirection, cameraController.transform);
+            if (playerCharacterController.CanMove)
+            {
+                playerCharacterController.MovePlayer(moveDirection, cameraController.transform);
+            }
+ 
         }
 
         private void CheckForInteractables()
