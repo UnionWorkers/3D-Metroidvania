@@ -3,11 +3,22 @@ using UnityEngine;
 
 namespace CustomCharacterController
 {
-    public enum MoveType
+    public enum MoveType : byte
     {
         Normal,
         OnRope
     }
+
+    public enum JumpStage : byte
+    {
+        CanJump,
+        CommitJump,
+        HasJumped,
+        CommitDoubleJump,
+        Reset
+    }
+
+
 
     [System.Serializable]
     public struct MoveStats
@@ -18,6 +29,7 @@ namespace CustomCharacterController
         [SerializeField] private float jumpHeight;
         [Range(0.2f, 8f)]
         [SerializeField] private float timeToApex;
+
 
         [Space(15)]
         [SerializeField] private float maxSpeed;
@@ -36,7 +48,6 @@ namespace CustomCharacterController
         public float JumpHeight => jumpHeight;
         public float AccelerationTime => accelerationTime;
         public float DecelerationTime => decelerationTime;
-        // public float JumpPower => Mathf.Sqrt(jumpHeight * -1 * gravityValue);
         public float JumpPower => jumpHeight;
         public float TimeToApex => timeToApex;
 
@@ -61,6 +72,9 @@ namespace CustomCharacterController
     {
         [SerializeField] private MoveStats moveStats;
         private float gravityScale = 1f;
+        public bool PressingJump = false;
+        public JumpStage JumpStage = JumpStage.CanJump;
+
 
         [Space(15)]
         [SerializeField] private CharacterController characterController;
@@ -80,9 +94,10 @@ namespace CustomCharacterController
         private float currentVelocityTime = 0;
         private Vector3 currentMoveVector; // find better name?
 
+        // Movement type variables 
+        [NonSerialized] public MagnetObjectInteractable MagnetObject = null;
         private MoveType moveType = MoveType.Normal;
         private bool canMove = true;
-        [NonSerialized] public MagnetObjectInteractable MagnetObject = null;
         public bool CanMove => canMove;
 
         public MoveType MoveType
@@ -139,6 +154,19 @@ namespace CustomCharacterController
 
         private void NormalMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         {
+            if (JumpStage == JumpStage.CommitJump || JumpStage == JumpStage.CommitDoubleJump)
+            {
+                CommitJump();
+            }
+
+            // if (PressingJump && JumpStage == JumpStage.HasJumped)
+            // {
+            //     if (currentMoveVector.y > 0.01)
+            //     {
+            //         currentMoveVector.y *= 1.2f;
+            //     }
+            // }
+
             if (!isOnSlope)
             {
                 // reset hit slope velocity when grounded
@@ -203,9 +231,8 @@ namespace CustomCharacterController
             characterController.enabled = true;
         }
 
-        
+
         // Fix so the player moves with the camera forward
-        // Fix sp player can jump off the rope;
         private void RopeMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         {
             if (MagnetObject == null)
@@ -225,8 +252,6 @@ namespace CustomCharacterController
             // move in the direction of player input 
             if (moveVector != Vector3.zero)
             {
-
-
 
                 // Face direction of input based on camera forward 
                 // targetRotation = Mathf.Atan2(moveVector.x, moveVector.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
@@ -269,22 +294,36 @@ namespace CustomCharacterController
             currentMoveVector.y += downVelocity * gravityScale * Time.fixedDeltaTime;
         }
 
-        public void Jump()
+        public void CommitJump()
         {
-            if (moveType != MoveType.Normal)
+            if (JumpStage == JumpStage.CommitJump)
             {
-                MoveType = MoveType.Normal;
+                if (moveType != MoveType.Normal)
+                {
+                    MoveType = MoveType.Normal;
+                }
+                if (characterController.isGrounded || moveType == MoveType.OnRope)
+                {
+                    currentMoveVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpPower);
+                    JumpStage = JumpStage.HasJumped;
+                }
             }
-
-            if (characterController.isGrounded)
+            else if (JumpStage == JumpStage.CommitDoubleJump)
             {
                 currentMoveVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpPower);
+                JumpStage = JumpStage.Reset;
             }
+
+            Debug.Log(currentMoveVector.y);
         }
 
         private void WhenPlayerGrounded()
         {
             gravityScale = 1f;
+            if (JumpStage != JumpStage.CommitJump)
+            {
+                JumpStage = JumpStage.CanJump;
+            }
 
             // Check if there is moving ground under the player 
             if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 2f, groundLayerMask))

@@ -114,6 +114,8 @@ namespace Entities.Controller
                 cameraRotationDirection = Vector2.zero;
             }
 
+
+
             if (moveInput.IsPressed)
             {
                 moveDirection = moveInput.GetReturnValue();
@@ -137,7 +139,7 @@ namespace Entities.Controller
             {
                 playerCharacterController.MovePlayer(moveDirection, cameraController.transform);
             }
- 
+
         }
 
         private void CheckForInteractables()
@@ -250,8 +252,24 @@ namespace Entities.Controller
         {
             switch (phase)
             {
-                case InputActionPhase.Performed:
-                    playerCharacterController.Jump();
+                case InputActionPhase.Started:
+                    if (playerCharacterController.JumpStage != JumpStage.Reset)
+                    {
+                        if (playerCharacterController.JumpStage == JumpStage.CanJump)
+                        {
+                            playerCharacterController.JumpStage = JumpStage.CommitJump;
+                            playerCharacterController.PressingJump = true;
+                        }
+                        else if (playerCharacterController.JumpStage == JumpStage.HasJumped)
+                        {
+                            playerCharacterController.JumpStage = JumpStage.CommitDoubleJump;
+                        }
+                    }
+
+                    break;
+
+                case InputActionPhase.Canceled:
+                    playerCharacterController.PressingJump = false;
                     break;
             }
         }
