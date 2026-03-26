@@ -27,8 +27,16 @@ namespace CustomCharacterController
         [Range(1f, 10f)]
         [SerializeField] private float gravityMultiplier;
         [SerializeField] private float jumpHeight;
+
+        [Range(0.1f, 2f)]
+        [SerializeField] private float doubleJumpEffect;
+
         [Range(0.2f, 8f)]
         [SerializeField] private float timeToApex;
+        
+        [Range(1f, 5f)]
+        [SerializeField] private float variableJumpGravityIncrease;
+
 
 
         [Space(15)]
@@ -45,11 +53,12 @@ namespace CustomCharacterController
         public float GravityValue => gravityValue;
         public float GravityMultiplier => gravityMultiplier;
         public float MaxSpeed => maxSpeed;
-        public float JumpHeight => jumpHeight;
         public float AccelerationTime => accelerationTime;
         public float DecelerationTime => decelerationTime;
-        public float JumpPower => jumpHeight;
+        public float JumpHeight => jumpHeight;
+        public float DoubleJumpEffect => doubleJumpEffect;
         public float TimeToApex => timeToApex;
+        public float VariableJumpGravityIncrease => variableJumpGravityIncrease;
 
     }
 
@@ -73,7 +82,21 @@ namespace CustomCharacterController
         [SerializeField] private MoveStats moveStats;
         private float gravityScale = 1f;
         public bool PressingJump = false;
-        public JumpStage JumpStage = JumpStage.CanJump;
+        private JumpStage jumpStage = JumpStage.CanJump;
+        public JumpStage JumpStage
+        {
+            get => jumpStage;
+            set
+            {
+                if (jumpStage == value)
+                {
+                    return;
+                }
+
+                jumpStage = value;
+            }
+        }
+
 
 
         [Space(15)]
@@ -119,7 +142,6 @@ namespace CustomCharacterController
                 moveType = value;
             }
         }
-
 
         private void Awake()
         {
@@ -277,13 +299,19 @@ namespace CustomCharacterController
         {
             float downVelocity;
 
-            float newGravityScale = (2 * moveStats.JumpPower) / (moveStats.TimeToApex * moveStats.TimeToApex);
+            float newGravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
             gravityScale = newGravityScale;
 
             if (!characterController.isGrounded && currentMoveVector.y < 0f)
             {
                 gravityScale = gravityScale * moveStats.GravityMultiplier;
-                downVelocity = moveStats.GravityValue * moveStats.GravityMultiplier;
+                downVelocity = moveStats.GravityValue;
+            }
+            else if (!PressingJump && currentMoveVector.y > 0.05f && JumpStage == JumpStage.HasJumped)
+            {
+                Debug.Log("work");
+                gravityScale = gravityScale * moveStats.GravityMultiplier * moveStats.VariableJumpGravityIncrease;
+                downVelocity = moveStats.GravityValue;
             }
             else
             {
@@ -304,23 +332,21 @@ namespace CustomCharacterController
                 }
                 if (characterController.isGrounded || moveType == MoveType.OnRope)
                 {
-                    currentMoveVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpPower);
+                    currentMoveVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight);
                     JumpStage = JumpStage.HasJumped;
                 }
             }
             else if (JumpStage == JumpStage.CommitDoubleJump)
             {
-                currentMoveVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpPower);
+                currentMoveVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight) * moveStats.DoubleJumpEffect;
                 JumpStage = JumpStage.Reset;
             }
-
-            Debug.Log(currentMoveVector.y);
         }
 
         private void WhenPlayerGrounded()
         {
             gravityScale = 1f;
-            if (JumpStage != JumpStage.CommitJump)
+            if (currentMoveVector.y < 0.1f && JumpStage != JumpStage.CommitJump)
             {
                 JumpStage = JumpStage.CanJump;
             }

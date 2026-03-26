@@ -161,10 +161,13 @@ MonoBehaviour:
     gravityValue: -9
     gravityMultiplier: 1.1
     jumpHeight: 10
+    doubleJumpEffect: 0.5
     timeToApex: 1.1
+    variableJumpGravityIncrease: 3
     maxSpeed: 10
     accelerationTime: 0.3
     decelerationTime: 0.3
+  PressingJump: 0
   characterController: {fileID: 2010560559569310025}
   groundLayerMask:
     serializedVersion: 2

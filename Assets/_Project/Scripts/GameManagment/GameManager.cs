@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Entities;
 using Entities.CameraControl;
 using Entities.Controller;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils.SceneLoader;
@@ -14,6 +13,16 @@ namespace Managers
         Running,
         Paused,
         GameOver
+    }
+
+    [System.Serializable]
+    public struct DebugStats
+    {
+        [SerializeField] private bool isActive;
+        [SerializeField] private float timeScale;
+
+        public bool IsActive => isActive;
+        public float TimeScale => timeScale;
     }
 
     public class GameManager : MonoBehaviour
@@ -37,9 +46,11 @@ namespace Managers
         private int timeDirection = 0;
         private float objectsGameSpeed = 1;
 
+        [SerializeField] private DebugStats debugStats;
         [SerializeField] private float objectsGameSpeedChangeRate = 2f;
         [SerializeField] private float maxObjectsGameSlowDown = 0.3f;
         [SerializeField] private float maxObjectsGameSpeedUp = 1.7f;
+
 
         public float ObjectsGameSpeed => objectsGameSpeed;
 
@@ -69,6 +80,18 @@ namespace Managers
             sceneLoader.OnFinishedLoading += OnSceneFinnishLoading;
         }
 
+        private void OnValidate()
+        {
+            if (debugStats.IsActive)
+            {
+                Time.timeScale = debugStats.TimeScale;
+            }
+            else
+            {
+                Time.timeScale = 1f;
+            }
+        }
+
         private void Start()
         {
             SceneSetUp();
@@ -76,7 +99,6 @@ namespace Managers
 
         private void Update()
         {
-            
             // Change objects game speed depending on player input 
             if (timeDirection != 0)
             {

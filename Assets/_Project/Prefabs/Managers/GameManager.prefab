@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 840215294868954495}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 542.8317, y: 518.5381, z: -4.01894}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -45,3 +45,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Managers.GameManager
   pauseMenuUi: {fileID: 0}
+  debugStats:
+    isActive: 0
+    timeScale: 1
+  objectsGameSpeedChangeRate: 2
+  maxObjectsGameSlowDown: 0.3
+  maxObjectsGameSpeedUp: 1.7
