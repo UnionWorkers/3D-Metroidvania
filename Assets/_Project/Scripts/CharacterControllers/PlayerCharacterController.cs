@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace CustomCharacterController
@@ -13,7 +14,7 @@ namespace CustomCharacterController
     {
         CanJump,
         CommitJump,
-        HasJumped,
+        CanDoubleJump,
         CommitDoubleJump,
         Reset
     }
@@ -23,9 +24,18 @@ namespace CustomCharacterController
     [System.Serializable]
     public struct MoveStats
     {
+        // Gravity values 
+        [Header("Gravity values")]
         [SerializeField] private float gravityValue;
         [Range(1f, 10f)]
         [SerializeField] private float gravityMultiplier;
+        [Range(0.1f, 5f)]
+        [SerializeField] private float variableJumpGravityIncrease;
+        [SerializeField] private float maxFallSpeed;
+
+        // Jump values
+        [Space(15)]
+        [Header("Jump values")]
         [SerializeField] private float jumpHeight;
 
         [Range(0.1f, 2f)]
@@ -33,13 +43,12 @@ namespace CustomCharacterController
 
         [Range(0.2f, 8f)]
         [SerializeField] private float timeToApex;
-        
-        [Range(1f, 5f)]
-        [SerializeField] private float variableJumpGravityIncrease;
+        [Range(0.1f, 1f)]
+        [SerializeField] private float maxCoyoteTime;
 
-
-
+        // Move values
         [Space(15)]
+        [Header("Move values")]
         [SerializeField] private float maxSpeed;
 
         [Header("Time to reach max speed")]
@@ -59,7 +68,9 @@ namespace CustomCharacterController
         public float DoubleJumpEffect => doubleJumpEffect;
         public float TimeToApex => timeToApex;
         public float VariableJumpGravityIncrease => variableJumpGravityIncrease;
-
+        // Get a negative value 
+        public float MaxFallSpeed => Mathf.Abs(maxFallSpeed) * -1;
+        public float MaxCoyoteTime => maxCoyoteTime;
     }
 
     public struct MovingGroundInfo
@@ -107,6 +118,8 @@ namespace CustomCharacterController
         [SerializeField] private LayerMask groundLayerMask;
 
         // Slope variables 
+        [Space(15)]
+        [Header("Slope Variables")]
         private bool isOnSlope;
         private Vector3 hitNormal;
         [SerializeField] private float slideFriction = 0.3f;
@@ -116,6 +129,7 @@ namespace CustomCharacterController
         private float targetRotation = 0;
         private float currentVelocityTime = 0;
         private Vector3 currentMoveVector; // find better name?
+        private float currentCoyoteTime = 0;
 
         // Movement type variables 
         [NonSerialized] public MagnetObjectInteractable MagnetObject = null;
@@ -176,18 +190,10 @@ namespace CustomCharacterController
 
         private void NormalMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         {
-            if (JumpStage == JumpStage.CommitJump || JumpStage == JumpStage.CommitDoubleJump)
+            if (jumpStage == JumpStage.CommitJump || jumpStage == JumpStage.CommitDoubleJump)
             {
                 CommitJump();
             }
-
-            // if (PressingJump && JumpStage == JumpStage.HasJumped)
-            // {
-            //     if (currentMoveVector.y > 0.01)
-            //     {
-            //         currentMoveVector.y *= 1.2f;
-            //     }
-            // }
 
             if (!isOnSlope)
             {
@@ -210,6 +216,14 @@ namespace CustomCharacterController
             if (characterController.isGrounded && !isOnSlope)
             {
                 WhenPlayerGrounded();
+            }
+            else if (currentCoyoteTime <= moveStats.MaxCoyoteTime)
+            {
+                currentCoyoteTime += Time.fixedDeltaTime;
+            }
+            else if (jumpStage != JumpStage.Reset && jumpStage != JumpStage.CanDoubleJump)
+            {
+                JumpStage = JumpStage.CanDoubleJump;
             }
 
             // Input direction
@@ -307,9 +321,8 @@ namespace CustomCharacterController
                 gravityScale = gravityScale * moveStats.GravityMultiplier;
                 downVelocity = moveStats.GravityValue;
             }
-            else if (!PressingJump && currentMoveVector.y > 0.05f && JumpStage == JumpStage.HasJumped)
+            else if (!PressingJump && currentMoveVector.y > 0.05f && jumpStage == JumpStage.CanDoubleJump)
             {
-                Debug.Log("work");
                 gravityScale = gravityScale * moveStats.GravityMultiplier * moveStats.VariableJumpGravityIncrease;
                 downVelocity = moveStats.GravityValue;
             }
@@ -319,24 +332,30 @@ namespace CustomCharacterController
                 downVelocity = moveStats.GravityValue * 1;
             }
 
-            currentMoveVector.y += downVelocity * gravityScale * Time.fixedDeltaTime;
+            if (currentMoveVector.y >= moveStats.MaxFallSpeed)
+            {
+                currentMoveVector.y += downVelocity * gravityScale * Time.fixedDeltaTime;
+            }
+            else
+            {
+                currentMoveVector.y = moveStats.MaxFallSpeed;
+            }
+
         }
 
         public void CommitJump()
         {
-            if (JumpStage == JumpStage.CommitJump)
+            if (jumpStage == JumpStage.CommitJump || moveType == MoveType.OnRope)
             {
                 if (moveType != MoveType.Normal)
                 {
                     MoveType = MoveType.Normal;
                 }
-                if (characterController.isGrounded || moveType == MoveType.OnRope)
-                {
-                    currentMoveVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight);
-                    JumpStage = JumpStage.HasJumped;
-                }
+
+                currentMoveVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight);
+                JumpStage = JumpStage.CanDoubleJump;
             }
-            else if (JumpStage == JumpStage.CommitDoubleJump)
+            else if (jumpStage == JumpStage.CommitDoubleJump)
             {
                 currentMoveVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight) * moveStats.DoubleJumpEffect;
                 JumpStage = JumpStage.Reset;
@@ -346,7 +365,8 @@ namespace CustomCharacterController
         private void WhenPlayerGrounded()
         {
             gravityScale = 1f;
-            if (currentMoveVector.y < 0.1f && JumpStage != JumpStage.CommitJump)
+            currentCoyoteTime = 0;
+            if (currentMoveVector.y < 0.1f && jumpStage != JumpStage.CommitJump)
             {
                 JumpStage = JumpStage.CanJump;
             }

@@ -139,6 +139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   debugState: 0
+  jumpInputBufferTimer: 0.1
   interactRadius: 4
   interactLayerMask:
     serializedVersion: 2
@@ -160,10 +161,12 @@ MonoBehaviour:
   moveStats:
     gravityValue: -9
     gravityMultiplier: 1.1
-    jumpHeight: 10
-    doubleJumpEffect: 0.5
-    timeToApex: 1.1
-    variableJumpGravityIncrease: 3
+    variableJumpGravityIncrease: 2
+    maxFallSpeed: 45
+    jumpHeight: 8
+    doubleJumpEffect: 0.75
+    timeToApex: 1.3
+    maxCoyoteTime: 0.15
     maxSpeed: 10
     accelerationTime: 0.3
     decelerationTime: 0.3

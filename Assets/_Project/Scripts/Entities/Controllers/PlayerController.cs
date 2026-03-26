@@ -18,6 +18,13 @@ namespace Entities.Controller
         private InputActionHandler<bool> jumpInput = new();
         private InputActionHandler<bool> interactInput = new();
 
+        // Input variables
+        private bool jumpedQueued = false;
+        [Range(0.01f, 0.5f)]
+        [SerializeField] private float jumpInputBufferTimer;
+        private float currentJumpBufferTimer;
+
+
         // Input variables 
         private Vector2 moveDirection = Vector2.zero;
         private Vector2 cameraRotationDirection = Vector2.zero;
@@ -105,6 +112,17 @@ namespace Entities.Controller
 
         public override void OnUpdate()
         {
+            if (jumpedQueued && currentJumpBufferTimer < jumpInputBufferTimer)
+            {
+                currentJumpBufferTimer += Time.deltaTime;
+                JumpRequest();
+            }
+            else
+            {
+                jumpedQueued = false;
+                currentJumpBufferTimer = 0f;
+            }
+
             if (lookInput.GetReturnValue() != Vector2.zero)
             {
                 cameraRotationDirection = lookInput.GetReturnValue();
@@ -113,8 +131,6 @@ namespace Entities.Controller
             {
                 cameraRotationDirection = Vector2.zero;
             }
-
-
 
             if (moveInput.IsPressed)
             {
@@ -253,24 +269,31 @@ namespace Entities.Controller
             switch (phase)
             {
                 case InputActionPhase.Started:
-                    if (playerCharacterController.JumpStage != JumpStage.Reset)
-                    {
-                        if (playerCharacterController.JumpStage == JumpStage.CanJump)
-                        {
-                            playerCharacterController.JumpStage = JumpStage.CommitJump;
-                            playerCharacterController.PressingJump = true;
-                        }
-                        else if (playerCharacterController.JumpStage == JumpStage.HasJumped)
-                        {
-                            playerCharacterController.JumpStage = JumpStage.CommitDoubleJump;
-                        }
-                    }
-
+                    JumpRequest();
                     break;
 
                 case InputActionPhase.Canceled:
                     playerCharacterController.PressingJump = false;
                     break;
+            }
+        }
+
+        private void JumpRequest()
+        {
+            jumpedQueued = true;
+            if (playerCharacterController.JumpStage != JumpStage.Reset)
+            {
+                if (playerCharacterController.JumpStage == JumpStage.CanJump)
+                {
+                    playerCharacterController.JumpStage = JumpStage.CommitJump;
+                    playerCharacterController.PressingJump = true;
+                    jumpedQueued = false;
+                }
+                else if (playerCharacterController.JumpStage == JumpStage.CanDoubleJump)
+                {
+                    playerCharacterController.JumpStage = JumpStage.CommitDoubleJump;
+                    jumpedQueued = false;
+                }
             }
         }
 
