@@ -1,5 +1,4 @@
 using System;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace CustomCharacterController
@@ -59,6 +58,18 @@ namespace CustomCharacterController
         [Range(0.01f, 0.99f)]
         [SerializeField] private float decelerationTime;
 
+        // Air control values
+        [Space(15)]
+        [Header("Air control values")]
+
+        [Range(0f, 1f)]
+        [SerializeField] private float airAccelerateLimiter;
+
+        [Range(0f, 1f)]
+        [SerializeField] private float airTurnLimiter;
+
+
+
         public float GravityValue => gravityValue;
         public float GravityMultiplier => gravityMultiplier;
         public float MaxSpeed => maxSpeed;
@@ -71,6 +82,8 @@ namespace CustomCharacterController
         // Get a negative value 
         public float MaxFallSpeed => Mathf.Abs(maxFallSpeed) * -1;
         public float MaxCoyoteTime => maxCoyoteTime;
+        public float AirAccelerateLimiter => airAccelerateLimiter;
+        public float AirTurnLimiter => airTurnLimiter;
     }
 
     public struct MovingGroundInfo
@@ -90,6 +103,8 @@ namespace CustomCharacterController
     [RequireComponent(typeof(CharacterController))]
     public class PlayerCharacterController : MonoBehaviour
     {
+        [SerializeField] bool debugState = false;
+
         [SerializeField] private MoveStats moveStats;
         private float gravityScale = 1f;
         public bool PressingJump = false;
@@ -107,8 +122,6 @@ namespace CustomCharacterController
                 jumpStage = value;
             }
         }
-
-
 
         [Space(15)]
         [SerializeField] private CharacterController characterController;
@@ -128,7 +141,8 @@ namespace CustomCharacterController
         // Movement variables 
         private float targetRotation = 0;
         private float currentVelocityTime = 0;
-        private Vector3 currentMoveVector; // find better name?
+        private Vector3 externalVectorEffect;
+        private Vector3 currentVelocityVector;
         private float currentCoyoteTime = 0;
 
         // Movement type variables 
@@ -154,6 +168,20 @@ namespace CustomCharacterController
                 }
 
                 moveType = value;
+            }
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (debugState)
+            {
+                characterController.Move(currentVelocityVector);
+
+                Gizmos.color = new Color(0.5f, 0f, 0f, 1f);
+                Gizmos.DrawSphere(transform.position + currentVelocityVector, 0.4f);
+
+                Gizmos.color = new Color(0f, 0.5f, 0f, 1f);
+                Gizmos.DrawLine(transform.position, transform.position + currentVelocityVector);
             }
         }
 
@@ -199,8 +227,8 @@ namespace CustomCharacterController
             {
                 // reset hit slope velocity when grounded
                 hitNormal = Vector3.zero;
-                currentMoveVector.x = 0;
-                currentMoveVector.z = 0;
+                externalVectorEffect.x = 0;
+                externalVectorEffect.z = 0;
             }
             else
             {
@@ -248,7 +276,9 @@ namespace CustomCharacterController
             ApplyGravity();
 
             // add moving ground velocity
-            Vector3 finalMoveVector = (targetMoveDirection * (moveStats.MaxSpeed * currentVelocityTime) + movingGroundInfo.MoveVector + currentMoveVector) * Time.fixedDeltaTime;
+            Vector3 finalMoveVector = (targetMoveDirection * (moveStats.MaxSpeed * currentVelocityTime) + movingGroundInfo.MoveVector + externalVectorEffect) * Time.fixedDeltaTime;
+
+            currentVelocityVector = finalMoveVector;
 
             characterController.Move(finalMoveVector);
 
@@ -303,7 +333,6 @@ namespace CustomCharacterController
             Vector3 targetMoveDirection = MagnetObject.MoveForward * moveVector.z;
             //Vector3 targetMoveDirection = (Quaternion.Euler(0f, targetRotation, 0f) * Vector3.forward).normalized;
 
-
             Vector3 finalMoveVector = (targetMoveDirection * (moveStats.MaxSpeed * currentVelocityTime) + movingGroundInfo.MoveVector) * Time.fixedDeltaTime;
 
             characterController.Move(finalMoveVector);
@@ -316,12 +345,12 @@ namespace CustomCharacterController
             float newGravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
             gravityScale = newGravityScale;
 
-            if (!characterController.isGrounded && currentMoveVector.y < 0f)
+            if (!characterController.isGrounded && externalVectorEffect.y < 0f)
             {
                 gravityScale = gravityScale * moveStats.GravityMultiplier;
                 downVelocity = moveStats.GravityValue;
             }
-            else if (!PressingJump && currentMoveVector.y > 0.05f && jumpStage == JumpStage.CanDoubleJump)
+            else if (!PressingJump && externalVectorEffect.y > 0.05f && jumpStage == JumpStage.CanDoubleJump)
             {
                 gravityScale = gravityScale * moveStats.GravityMultiplier * moveStats.VariableJumpGravityIncrease;
                 downVelocity = moveStats.GravityValue;
@@ -332,13 +361,13 @@ namespace CustomCharacterController
                 downVelocity = moveStats.GravityValue * 1;
             }
 
-            if (currentMoveVector.y >= moveStats.MaxFallSpeed)
+            if (externalVectorEffect.y >= moveStats.MaxFallSpeed)
             {
-                currentMoveVector.y += downVelocity * gravityScale * Time.fixedDeltaTime;
+                externalVectorEffect.y += downVelocity * gravityScale * Time.fixedDeltaTime;
             }
             else
             {
-                currentMoveVector.y = moveStats.MaxFallSpeed;
+                externalVectorEffect.y = moveStats.MaxFallSpeed;
             }
 
         }
@@ -352,12 +381,12 @@ namespace CustomCharacterController
                     MoveType = MoveType.Normal;
                 }
 
-                currentMoveVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight);
+                externalVectorEffect.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight);
                 JumpStage = JumpStage.CanDoubleJump;
             }
             else if (jumpStage == JumpStage.CommitDoubleJump)
             {
-                currentMoveVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight) * moveStats.DoubleJumpEffect;
+                externalVectorEffect.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight) * moveStats.DoubleJumpEffect;
                 JumpStage = JumpStage.Reset;
             }
         }
@@ -366,7 +395,7 @@ namespace CustomCharacterController
         {
             gravityScale = 1f;
             currentCoyoteTime = 0;
-            if (currentMoveVector.y < 0.1f && jumpStage != JumpStage.CommitJump)
+            if (externalVectorEffect.y < 0.1f && jumpStage != JumpStage.CommitJump)
             {
                 JumpStage = JumpStage.CanJump;
             }
@@ -385,17 +414,17 @@ namespace CustomCharacterController
                 movingGroundInfo = new(0, Vector3.zero);
             }
 
-            if (currentMoveVector.y < -2f)
+            if (externalVectorEffect.y < -2f)
             {
-                currentMoveVector.y = -2f;
+                externalVectorEffect.y = -2f;
             }
         }
 
         // when the player is on a slope 
         private void CalculateSlopeVector()
         {
-            currentMoveVector.x += (1f - hitNormal.y) * hitNormal.x * (slidSpeed - slideFriction);
-            currentMoveVector.z += (1f - hitNormal.y) * hitNormal.z * (slidSpeed - slideFriction);
+            externalVectorEffect.x += (1f - hitNormal.y) * hitNormal.x * (slidSpeed - slideFriction);
+            externalVectorEffect.z += (1f - hitNormal.y) * hitNormal.z * (slidSpeed - slideFriction);
         }
 
         private void Accelerate()
