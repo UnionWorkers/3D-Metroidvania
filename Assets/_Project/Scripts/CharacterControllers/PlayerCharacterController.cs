@@ -175,7 +175,7 @@ namespace CustomCharacterController
         {
             if (debugState)
             {
-                characterController.Move(currentVelocityVector);
+                Debug.Log(currentVelocityVector);
 
                 Gizmos.color = new Color(0.5f, 0f, 0f, 1f);
                 Gizmos.DrawSphere(transform.position + currentVelocityVector, 0.4f);
