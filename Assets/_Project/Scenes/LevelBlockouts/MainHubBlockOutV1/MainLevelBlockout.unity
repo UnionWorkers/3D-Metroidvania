@@ -4216,7 +4216,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7742064846895679233, guid: 1ebabb582acf97641aa2a831322fd38b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.570001
+      value: 3.0000005
       objectReference: {fileID: 0}
     - target: {fileID: 7742064846895679233, guid: 1ebabb582acf97641aa2a831322fd38b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5136,7 +5136,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7742064846895679233, guid: 1ebabb582acf97641aa2a831322fd38b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.57
+      value: 2.9999995
       objectReference: {fileID: 0}
     - target: {fileID: 7742064846895679233, guid: 1ebabb582acf97641aa2a831322fd38b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6939,7 +6939,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7742064846895679233, guid: 1ebabb582acf97641aa2a831322fd38b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.5700004
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7742064846895679233, guid: 1ebabb582acf97641aa2a831322fd38b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -7049,18 +7049,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3549192795970613671, guid: c3a6e0dfa5468084badab4472d5bfc1d, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3549192795970613671, guid: c3a6e0dfa5468084badab4472d5bfc1d, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3549192795970613671, guid: c3a6e0dfa5468084badab4472d5bfc1d, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3549192795970613671, guid: c3a6e0dfa5468084badab4472d5bfc1d, type: 3}
       propertyPath: m_LocalPosition.x
       value: -67.596565
       objectReference: {fileID: 0}
@@ -7100,17 +7088,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3549192795970613671, guid: c3a6e0dfa5468084badab4472d5bfc1d, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4182318652059839261, guid: c3a6e0dfa5468084badab4472d5bfc1d, type: 3}
       propertyPath: m_Name
       value: HatKidGreg
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 3900840087746428960, guid: c3a6e0dfa5468084badab4472d5bfc1d, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c3a6e0dfa5468084badab4472d5bfc1d, type: 3}
@@ -7837,7 +7820,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7742064846895679233, guid: 1ebabb582acf97641aa2a831322fd38b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.5700002
+      value: 2.9999998
       objectReference: {fileID: 0}
     - target: {fileID: 7742064846895679233, guid: 1ebabb582acf97641aa2a831322fd38b, type: 3}
       propertyPath: m_LocalPosition.z
