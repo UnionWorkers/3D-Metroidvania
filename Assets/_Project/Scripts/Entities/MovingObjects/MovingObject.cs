@@ -7,7 +7,6 @@ public class MovingObject : BaseEntity
     private float currentVelocity = 0f;
     private Vector3 currentMoveDirection = Vector3.zero;
     private Vector3 desiredMovePoint = Vector3.zero;
-    private float movePoint = 0f;
 
 
     [SerializeField] private float moveSpeed;

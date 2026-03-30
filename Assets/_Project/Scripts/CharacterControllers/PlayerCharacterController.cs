@@ -149,7 +149,6 @@ namespace CustomCharacterController
         private Vector3 externalVector;
         private Vector3 moveTargetPoint;
         private float currentCoyoteTime = 0;
-        private float turnVelocity = 0;
 
         // Movement type variables 
         [NonSerialized] public MagnetObjectInteractable MagnetObject = null;
