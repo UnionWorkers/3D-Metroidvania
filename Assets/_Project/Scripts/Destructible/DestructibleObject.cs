@@ -19,7 +19,7 @@ public class DestructibleObject : MonoBehaviour, IHealth
     public void TakeDamage(int inDamage)
     {
         healthComponent.CurrentHealth -= 1;
-
+        OnHealthChanged?.Invoke(healthComponent.CurrentHealth);
         if (!healthComponent.IsAlive)
         {
             healthComponent.CurrentHealth = 0;

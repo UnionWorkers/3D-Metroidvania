@@ -112,6 +112,21 @@ namespace Entities.Controller
 
         public override void OnUpdate()
         {
+            if (debugState)
+            {
+                if (Keyboard.current.pKey.wasPressedThisFrame)
+                {
+                    if (playerCharacterController.MoveType == MoveType.Normal)
+                    {
+                        playerCharacterController.MoveType = MoveType.TestNormal;
+                    }
+                    else if(playerCharacterController.MoveType == MoveType.TestNormal)
+                    {
+                        playerCharacterController.MoveType = MoveType.Normal;
+                    }
+                }
+            }
+
             if (jumpedQueued && currentJumpBufferTimer < jumpInputBufferTimer)
             {
                 currentJumpBufferTimer += Time.deltaTime;
