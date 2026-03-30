@@ -1,3 +1,4 @@
+using System;
 using CustomCharacterController;
 using Entities.CameraControl;
 using InputHandler;
@@ -8,7 +9,7 @@ using UnityEngine.InputSystem;
 
 namespace Entities.Controller
 {
-    public class PlayerController : BaseEntity
+    public class PlayerController : BaseEntity, IHealth
     {
         // Inputs
         private InputActionHandler<Vector2> moveInput = new();
@@ -36,14 +37,22 @@ namespace Entities.Controller
         private IInteractable[] interactables = new IInteractable[INTERACTABLES_HIT_MAX_AMOUNT];
         private (IInteractable interactable, int index) closestInteractable = (null, -1);
 
+        // Health related
+        public event Action<int> OnHealthChanged;
+        public event Action OnDeath;
+        public int GetHealth => healthComponent.CurrentHealth;
+
         // Components and other scripts 
-        [SerializeField] HealthComponent healthComponent;
+        [SerializeField] private HealthComponent healthComponent;
+
         private PlayerCharacterController playerCharacterController;
         private CameraController cameraController;
         private PlayerInventory inventory = new();
 
+        public Transform GetTransform => transform;
         public PlayerInventory Inventory => inventory;
         public PlayerCharacterController CharacterController => playerCharacterController;
+        public HealthComponent HealthComponent => healthComponent;
 
         private void Awake()
         {
@@ -88,6 +97,22 @@ namespace Entities.Controller
             lookInput.OnDisable();
         }
 
+        public void Heal(int inHealth)
+        {
+            healthComponent.CurrentHealth += inHealth;
+            OnHealthChanged(healthComponent.CurrentHealth);
+        }
+        public void TakeDamage(int inDamage)
+        {
+            healthComponent.CurrentHealth -= inDamage;
+            OnHealthChanged(healthComponent.CurrentHealth);
+
+            if (healthComponent.CurrentHealth <= 0)
+            {
+                OnDeath?.Invoke();
+            }
+        }
+
         public void SetCameraController(CameraController inCameraController)
         {
             cameraController = inCameraController;
@@ -102,11 +127,12 @@ namespace Entities.Controller
         public override void OnInitialize()
         {
             Cursor.lockState = CursorLockMode.Locked;
+            healthComponent.Initialize();
+            GameManager.Instance.PlayerUiHandler.OnInitialize(this);
         }
 
         public override void OnBeforeDestroy()
         {
-
             OnEntityStateChanged?.Invoke(this);
         }
 
@@ -120,7 +146,7 @@ namespace Entities.Controller
                     {
                         playerCharacterController.MoveType = MoveType.TestNormal;
                     }
-                    else if(playerCharacterController.MoveType == MoveType.TestNormal)
+                    else if (playerCharacterController.MoveType == MoveType.TestNormal)
                     {
                         playerCharacterController.MoveType = MoveType.Normal;
                     }
@@ -170,7 +196,6 @@ namespace Entities.Controller
             {
                 playerCharacterController.MovePlayer(moveDirection, cameraController.transform);
             }
-
         }
 
         private void CheckForInteractables()

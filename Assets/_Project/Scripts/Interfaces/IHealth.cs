@@ -13,8 +13,9 @@ public interface IHealth
 public class HealthComponent
 {
     [UnityEngine.SerializeField] private int maxHealth = 3;
-    [NonSerialized]public int CurrentHealth;
+    [NonSerialized] public int CurrentHealth;
     public bool IsAlive => CurrentHealth > 0;
+    public int MaxHealth => maxHealth;
 
     public HealthComponent()
     {

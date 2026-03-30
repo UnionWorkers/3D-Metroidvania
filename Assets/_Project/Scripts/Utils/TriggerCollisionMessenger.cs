@@ -1,0 +1,28 @@
+using System;
+using UnityEngine;
+
+public enum CollisionTriggerType : byte
+{
+    Enter,
+    Exit,
+    Stay
+}
+
+public class TriggerCollisionMessenger : MonoBehaviour
+{
+    public Action<Collider, CollisionTriggerType> OnTriggerCollision;
+    private void OnTriggerEnter(Collider other)
+    {
+        OnTriggerCollision?.Invoke(other, CollisionTriggerType.Enter);
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        OnTriggerCollision?.Invoke(other, CollisionTriggerType.Exit);
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        OnTriggerCollision?.Invoke(other, CollisionTriggerType.Stay);
+    }
+}

@@ -35,6 +35,7 @@ namespace Managers
 
         private SceneLoader sceneLoader;
         [SerializeField] private PauseMenuUi pauseMenuUi;
+        [SerializeField] private PlayerUiHandler playerUiHandler;
 
         private List<BaseEntity> activeEntities = new();
         private List<BaseEntity> disabledEntities = new();
@@ -51,8 +52,21 @@ namespace Managers
         [SerializeField] private float maxObjectsGameSlowDown = 0.3f;
         [SerializeField] private float maxObjectsGameSpeedUp = 1.7f;
 
-
+        
         public float ObjectsGameSpeed => objectsGameSpeed;
+        public PlayerController PlayerController => playerController; 
+        public PlayerUiHandler PlayerUiHandler
+        {
+            get
+            {
+                if(playerUiHandler == null)
+                {
+                    playerUiHandler = FindAnyObjectByType<PlayerUiHandler>(FindObjectsInactive.Include);
+                }
+                return playerUiHandler;
+            }
+        }
+
 
         public void ChangeScene(ref SceneData sceneData)
         {
@@ -164,6 +178,7 @@ namespace Managers
             // this can maybe break stuff in the future, scene can have object controlling this 
             ChangeGameState(GameState.Running);
 
+            // find specific components
             for (int i = 0; i < allEntities.Length; i++)
             {
                 BaseEntity baseEntity = allEntities[i];
@@ -177,6 +192,11 @@ namespace Managers
                     cameraController = baseEntity as CameraController;
                 }
 
+            }
+
+            // add and init
+            foreach (var baseEntity in allEntities)
+            {
                 AddEntity(baseEntity);
             }
 
