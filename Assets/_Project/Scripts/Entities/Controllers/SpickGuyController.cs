@@ -1,28 +1,66 @@
+using System;
 using Entities;
 using Managers;
 using UnityEngine;
+using UnityEngine.Splines;
 
-public class SpickGuyController : BaseEntity
+public class SpickGuyController : BaseEntity, IHealth
 {
     [SerializeField] private DamageStruct damageStruct;
     [SerializeField] private Transform playerTransform;
+    [SerializeField] private HealthComponent healthComponent;
+    [SerializeField] private SplineAnimate splineAnimate = null;
+    [SerializeField] private float maxSpeed = 4f;
+    private float previousGameSpeed = 1f;
+    private float previousNormalizedSpeed = 1f;
+
+    public event Action<int> OnHealthChanged;
+    public event Action OnDeath;
 
     private void OnTriggerEnter(Collider collision)
     {
         if (collision.CompareTag("Player"))
         {
-            IHealth healthComponent = collision.GetComponent<IHealth>();
-            healthComponent.TakeDamage(damageStruct.DamageAmount);
+            IHealth playerHealth = collision.GetComponent<IHealth>();
+            playerHealth.TakeDamage(damageStruct.DamageAmount);
+        }
+    }
+
+    public void Heal(int inHealth) { return; }
+
+    public void TakeDamage(int inDamage)
+    {
+        healthComponent.CurrentHealth -= inDamage;
+        OnHealthChanged?.Invoke(healthComponent.CurrentHealth);
+        if (healthComponent.CurrentHealth <= 0)
+        {
+            OnDeath?.Invoke();
+            EntityState = EntityState.ToDestroy;
+            splineAnimate.enabled = false;
         }
     }
 
     public override void OnInitialize()
     {
         playerTransform = GameManager.Instance.PlayerController.GetTransform;
+        splineAnimate = GetComponent<SplineAnimate>();
+
+        previousGameSpeed = GameManager.Instance.ObjectsGameSpeed;
+        previousNormalizedSpeed = splineAnimate.NormalizedTime;
+        splineAnimate.MaxSpeed = maxSpeed * previousGameSpeed;
+
     }
 
     public override void OnUpdate()
     {
+        if (previousGameSpeed != GameManager.Instance.ObjectsGameSpeed)
+        {
+            previousNormalizedSpeed = splineAnimate.NormalizedTime;
+            previousGameSpeed = GameManager.Instance.ObjectsGameSpeed;
+            splineAnimate.MaxSpeed = maxSpeed * previousGameSpeed;
+            splineAnimate.NormalizedTime = previousNormalizedSpeed;
+        }
+
         transform.forward = playerTransform.position - transform.position;
     }
 }

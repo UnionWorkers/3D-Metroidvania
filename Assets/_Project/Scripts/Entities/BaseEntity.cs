@@ -43,8 +43,7 @@ namespace Entities
 
         public virtual void OnBeforeDestroy()
         {
-
-            OnEntityStateChanged?.Invoke(this);
+            OnEntityDestroy?.Invoke(this);
         }
 
         public virtual void OnUpdate()

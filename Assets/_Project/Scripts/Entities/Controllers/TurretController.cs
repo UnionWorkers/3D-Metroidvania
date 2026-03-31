@@ -1,12 +1,14 @@
 using System;
 using Entities;
+using Managers;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class TurretController : BaseEntity
+public class TurretController : BaseEntity, IHealth
 {
     [SerializeField] private Transform poleTransform = null;
-    [SerializeField] private TriggerCollisionMessenger collisionMessenger;
+    [SerializeField] private TriggerCollisionMessenger visionCone;
+    [SerializeField] private HealthComponent healthComponent;
     private Transform playerTransform;
     private IHealth targetHealth = null;
 
@@ -32,10 +34,27 @@ public class TurretController : BaseEntity
     [SerializeField] private float shootTimer = 2f;
     private float currentShootTimer = 0;
 
+    public event Action<int> OnHealthChanged;
+    public event Action OnDeath;
+
     private void Awake()
     {
-        collisionMessenger.OnTriggerCollision += CollisionMessage;
+        visionCone.OnTriggerCollision += CollisionMessage;
         rotationDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+    }
+
+    public void Heal(int inHealth) { return; }
+
+    public void TakeDamage(int inDamage)
+    {
+        healthComponent.CurrentHealth -= inDamage;
+        OnHealthChanged?.Invoke(healthComponent.CurrentHealth);
+        if (healthComponent.CurrentHealth <= 0)
+        {
+            OnDeath?.Invoke();
+            EntityState = EntityState.Disabled;
+            visionCone.gameObject.SetActive(false);
+        }
     }
 
     public override void OnUpdate()
@@ -70,9 +89,7 @@ public class TurretController : BaseEntity
                 rotationDirection *= -1;
             }
 
-            currentRotation += Time.deltaTime * rotationSpeed * rotationDirection;
-
-            poleTransform.rotation = Quaternion.Euler(0, currentRotation, 0);
+            RotateTurret();
         }
     }
 
@@ -99,7 +116,13 @@ public class TurretController : BaseEntity
             rotationDirection = 0;
         }
 
-        currentRotation += Time.deltaTime * rotationSpeed * rotationDirection;
+        RotateTurret();
+    }
+
+    private void RotateTurret()
+    {
+
+        currentRotation += (rotationSpeed * GameManager.Instance.ObjectsGameSpeed) * rotationDirection * Time.deltaTime;
         poleTransform.rotation = Quaternion.Euler(0, currentRotation, 0);
     }
 
@@ -139,7 +162,6 @@ public class TurretController : BaseEntity
                 break;
         }
     }
-
 
 
 }

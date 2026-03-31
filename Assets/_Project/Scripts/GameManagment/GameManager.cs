@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Entities;
 using Entities.CameraControl;
 using Entities.Controller;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils.SceneLoader;
@@ -52,14 +53,14 @@ namespace Managers
         [SerializeField] private float maxObjectsGameSlowDown = 0.3f;
         [SerializeField] private float maxObjectsGameSpeedUp = 1.7f;
 
-        
+
         public float ObjectsGameSpeed => objectsGameSpeed;
-        public PlayerController PlayerController => playerController; 
+        public PlayerController PlayerController => playerController;
         public PlayerUiHandler PlayerUiHandler
         {
             get
             {
-                if(playerUiHandler == null)
+                if (playerUiHandler == null)
                 {
                     playerUiHandler = FindAnyObjectByType<PlayerUiHandler>(FindObjectsInactive.Include);
                 }
@@ -131,11 +132,12 @@ namespace Managers
             }
             else if (objectsGameSpeed != 1f)
             {
-                if (objectsGameSpeed > 0.95f && objectsGameSpeed < 1.05f)
+                objectsGameSpeed += Time.deltaTime * objectsGameSpeedChangeRate * (objectsGameSpeed < 0.99f ? 1 : -1);
+                if (objectsGameSpeed >= 0.95f && objectsGameSpeed <= 1.05f)
                 {
                     objectsGameSpeed = 1f;
+
                 }
-                objectsGameSpeed += Time.deltaTime * objectsGameSpeedChangeRate * (objectsGameSpeed < 0.99f ? 1 : -1);
             }
 
 
@@ -335,7 +337,6 @@ namespace Managers
         {
             if (timeDirection == inTimeDirection)
             {
-                Debug.Log(timeDirection);
                 timeDirection = 0;
                 return;
             }
