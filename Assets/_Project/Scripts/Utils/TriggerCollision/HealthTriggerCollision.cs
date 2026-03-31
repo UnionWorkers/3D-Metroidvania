@@ -1,26 +1,30 @@
 using System;
 using UnityEngine;
 
-public class HealthTriggerCollision : TriggerCollisionMessenger, IHealth
+namespace Utils.Triggers
 {
-    public event Action<int> OnHealthChanged;
-    public event Action OnDeath;
-    [SerializeField] private HealthComponent healthComponent;
-
-    private void Awake()
+    public class HealthTriggerCollision : TriggerCollisionMessenger, IHealth
     {
-        healthComponent.Initialize();
-    }
+        public event Action<int> OnHealthChanged;
+        public event Action OnDeath;
+        [SerializeField] private HealthComponent healthComponent;
 
-    public void Heal(int inHealth) { return; }
-
-    public void TakeDamage(int inDamage)
-    {
-        healthComponent.CurrentHealth -= inDamage;
-        OnHealthChanged?.Invoke(healthComponent.CurrentHealth);
-        if (healthComponent.CurrentHealth <= 0)
+        private void Awake()
         {
-            OnDeath?.Invoke();
+            healthComponent.Initialize();
+        }
+
+        public void Heal(int inHealth) { return; }
+
+        public void TakeDamage(int inDamage)
+        {
+            healthComponent.CurrentHealth -= inDamage;
+            OnHealthChanged?.Invoke(healthComponent.CurrentHealth);
+            if (healthComponent.CurrentHealth <= 0)
+            {
+                OnDeath?.Invoke();
+            }
         }
     }
+
 }

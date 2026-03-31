@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using Entities;
 using Entities.CameraControl;
 using Entities.Controller;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Utils.Checkpoint;
 using Utils.SceneLoader;
 
 namespace Managers
@@ -325,12 +325,21 @@ namespace Managers
             pauseMenuUi.ChangeActiveState(state);
         }
 
-        public void RespawnPlayer()
+        public void RespawnPlayer(RespawnType inRespawnType)
         {
-            if (playerSpawner != null)
+            switch (inRespawnType)
             {
-                playerSpawner.SpawnPlayer(playerController);
+                case RespawnType.FullRespawn:
+                    if (playerSpawner != null)
+                    {
+                        playerSpawner.SpawnPlayer(playerController);
+                    }
+                    break;
+                case RespawnType.CheckpointRespawn:
+                    playerController.CheckPoint.SpawnPlayer(ref playerController);
+                    break;
             }
+
         }
 
         public void ChangeTimeSpeed(int inTimeDirection)

@@ -1,6 +1,7 @@
 using Entities;
 using Managers;
 using UnityEngine;
+using Utils.Triggers;
 
 [System.Serializable]
 public struct SpotlightMove

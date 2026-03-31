@@ -6,6 +6,7 @@ using Interactable;
 using Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Utils.Checkpoint;
 
 namespace Entities.Controller
 {
@@ -48,11 +49,18 @@ namespace Entities.Controller
         private PlayerCharacterController playerCharacterController;
         private CameraController cameraController;
         private PlayerInventory inventory = new();
+        private CheckPoint currentCheckPoint;
 
         public Transform GetTransform => transform;
         public PlayerInventory Inventory => inventory;
         public PlayerCharacterController CharacterController => playerCharacterController;
         public HealthComponent HealthComponent => healthComponent;
+        public CheckPoint CheckPoint
+        {
+            get => currentCheckPoint;
+            set => currentCheckPoint = value;
+        }
+
 
         private void Awake()
         {

@@ -86,7 +86,7 @@ public class PauseMenuUi : MonoBehaviour
     }
     private void Respawn()
     {
-        GameManager.Instance.RespawnPlayer();
+        GameManager.Instance.RespawnPlayer(Utils.Checkpoint.RespawnType.FullRespawn);
         GameManager.Instance.ChangeGameState(GameState.Running);
     }
     private void Quit()
