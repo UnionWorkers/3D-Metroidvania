@@ -15,7 +15,6 @@ public class TurretController : BaseEntity, IHealth
     private float currentRotation = 0;
     //1 = left, -1 = right
     private int rotationDirection = 1;
-    private int oldRotationDirection = 0;
     private bool canReset = false;
 
 
@@ -135,7 +134,7 @@ public class TurretController : BaseEntity, IHealth
         }
         else
         {
-            currentShootTimer += Time.deltaTime;
+            currentShootTimer += Time.deltaTime * GameManager.Instance.ObjectsGameSpeed;
         }
     }
 
@@ -147,7 +146,6 @@ public class TurretController : BaseEntity, IHealth
                 if (collider.CompareTag("Player"))
                 {
                     playerTransform = collider.transform;
-                    oldRotationDirection = rotationDirection;
                     targetHealth = collider.GetComponent<IHealth>();
                 }
                 break;

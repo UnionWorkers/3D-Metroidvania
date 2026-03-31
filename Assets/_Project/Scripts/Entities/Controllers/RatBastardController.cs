@@ -87,7 +87,7 @@ public class RatBastardController : BaseEntity
 
         if (currentShootTimer < shootCooldownTimer)
         {
-            currentShootTimer += Time.deltaTime;
+            currentShootTimer += Time.deltaTime * GameManager.Instance.ObjectsGameSpeed;
         }
         else
         {
@@ -107,7 +107,7 @@ public class RatBastardController : BaseEntity
                 }
                 else
                 {
-                    currentTargetTimerToShoot += Time.deltaTime;
+                    currentTargetTimerToShoot += Time.deltaTime * GameManager.Instance.ObjectsGameSpeed;
                 }
             }
         }
