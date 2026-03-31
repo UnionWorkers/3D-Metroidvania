@@ -3791,6 +3791,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1107203905}
   - component: {fileID: 1107203904}
+  - component: {fileID: 1107203906}
   m_Layer: 0
   m_Name: DeathPlane
   m_TagString: Untagged
@@ -3834,6 +3835,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1107203906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1107203903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f82b995eda1d2c4fb25a169230f138e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeathPlane
 --- !u!1 &1154248017
 GameObject:
   m_ObjectHideFlags: 0
@@ -7443,7 +7456,7 @@ PrefabInstance:
       objectReference: {fileID: 409501944}
     - target: {fileID: 5821160701782369228, guid: ea32d5253ab403644bd36193543392ea, type: 3}
       propertyPath: m_VersionIndex
-      value: 6575
+      value: 6578
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7578,7 +7591,7 @@ PrefabInstance:
       objectReference: {fileID: 1012515912}
     - target: {fileID: 1124507777307742120, guid: 68f380ef517f80c4b893f17de7612176, type: 3}
       propertyPath: m_VersionIndex
-      value: 4021
+      value: 4024
       objectReference: {fileID: 0}
     - target: {fileID: 1505324205079304389, guid: 68f380ef517f80c4b893f17de7612176, type: 3}
       propertyPath: m_Mesh
