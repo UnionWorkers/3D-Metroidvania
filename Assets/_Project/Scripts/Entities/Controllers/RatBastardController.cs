@@ -37,7 +37,7 @@ public class RatBastardController : BaseEntity
     [Space(15)]
     [Header("Rat hole")]
     [SerializeField] LineRenderer lineRenderer;
-    [SerializeField] Transform rateHole = null;
+    [SerializeField] Transform ratHole = null;
 
 
     // Shoot variables
@@ -93,7 +93,7 @@ public class RatBastardController : BaseEntity
         {
             if (playerTransform != null)
             {
-                lineRenderer.SetPosition(0, rateHole.position);
+                lineRenderer.SetPosition(0, ratHole.position);
                 lineRenderer.SetPosition(1, playerTransform.position);
                 lineRenderer.enabled = true;
 

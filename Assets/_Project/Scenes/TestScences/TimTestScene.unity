@@ -7222,14 +7222,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SpickGuyContainer
       objectReference: {fileID: 0}
-    - target: {fileID: 7440273122565289634, guid: caf7d2be928213149abf92fff61cf64e, type: 3}
-      propertyPath: m_Duration
-      value: 14.960792
-      objectReference: {fileID: 0}
-    - target: {fileID: 7440273122565289634, guid: caf7d2be928213149abf92fff61cf64e, type: 3}
-      propertyPath: m_EasingMode
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8298753699698111971, guid: caf7d2be928213149abf92fff61cf64e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -12.715651
@@ -7398,7 +7390,7 @@ PrefabInstance:
       objectReference: {fileID: 409501944}
     - target: {fileID: 5821160701782369228, guid: ea32d5253ab403644bd36193543392ea, type: 3}
       propertyPath: m_VersionIndex
-      value: 6560
+      value: 6575
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7470,18 +7462,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: debugState
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: moveStats.decelerationTime
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7250933298476244927, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: debugState
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7754730086136922038, guid: 21344e9368908814a95becf5e617ece5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.62
@@ -7545,7 +7525,7 @@ PrefabInstance:
       objectReference: {fileID: 1012515912}
     - target: {fileID: 1124507777307742120, guid: 68f380ef517f80c4b893f17de7612176, type: 3}
       propertyPath: m_VersionIndex
-      value: 4015
+      value: 4021
       objectReference: {fileID: 0}
     - target: {fileID: 1505324205079304389, guid: 68f380ef517f80c4b893f17de7612176, type: 3}
       propertyPath: m_Mesh
