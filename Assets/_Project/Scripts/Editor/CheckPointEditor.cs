@@ -9,6 +9,16 @@ public class CheckPointEditor : Editor
     {
         CheckPoint checkPoint = target as CheckPoint;
 
-        checkPoint.SpawnPoint = Handles.PositionHandle(checkPoint.SpawnPoint + checkPoint.transform.position, Quaternion.identity) - checkPoint.transform.position;
+        Vector3 spawnPos = checkPoint.SpawnPoint + checkPoint.transform.position;
+
+        checkPoint.SpawnPoint = Handles.PositionHandle(spawnPos, Quaternion.identity) - checkPoint.transform.position;
+
+        Handles.color = new Color(0.3f, 1.0f, 0.3f);
+        Handles.SphereHandleCap(0, spawnPos, Quaternion.identity, 0.7f, EventType.Repaint);
+
+        Handles.Label(spawnPos + Vector3.up * 1f, "Check point spawn point");
+
+
+
     }
 }

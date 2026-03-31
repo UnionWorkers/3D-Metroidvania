@@ -5,8 +5,7 @@ namespace Utils.Checkpoint
 {
     public class DeathPlane : MonoBehaviour
     {
-
-        private void OnTriggerEffect(Collider collider)
+        void OnTriggerEnter(Collider collider)
         {
             if (collider.CompareTag("Player"))
             {

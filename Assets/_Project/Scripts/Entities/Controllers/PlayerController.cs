@@ -58,7 +58,7 @@ namespace Entities.Controller
         public CheckPoint CheckPoint
         {
             get => currentCheckPoint;
-            set => currentCheckPoint = value;
+            set { currentCheckPoint = value; Debug.Log(currentCheckPoint); }
         }
 
 

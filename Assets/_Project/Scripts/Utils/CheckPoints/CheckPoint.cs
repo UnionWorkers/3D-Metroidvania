@@ -13,12 +13,12 @@ namespace Utils.Checkpoint
 
     public class CheckPoint : MonoBehaviour
     {
-        public Vector3 SpawnPoint; 
+        public Vector3 SpawnPoint;
 
         public virtual void SpawnPlayer(ref PlayerController inPlayerController)
         {
             inPlayerController.gameObject.SetActive(false);
-            inPlayerController.transform.position = SpawnPoint;
+            inPlayerController.transform.position = (SpawnPoint + transform.position) + new Vector3(0, 1.5f, 0);
             inPlayerController.gameObject.SetActive(true);
         }
 
