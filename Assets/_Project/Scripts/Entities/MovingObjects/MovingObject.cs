@@ -4,29 +4,34 @@ using UnityEngine;
 
 public class MovingObject : BaseEntity
 {
-    private float currentVelocity = 0f;
-    private Vector3 currentMoveDirection = Vector3.zero;
-    private Vector3 desiredMovePoint = Vector3.zero;
+    protected float currentVelocity = 0f;
+    protected Vector3 currentMoveDirection = Vector3.zero;
+    protected Vector3 desiredMovePoint = Vector3.zero;
 
 
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private float maxVelocity;
-    [SerializeField] private float moveDistance;
-    [SerializeField] private Vector3 moveDirection;
-    private float realMaxVelocity => maxVelocity * GameManager.Instance.ObjectsGameSpeed;
+    [SerializeField] protected float moveSpeed;
+    [SerializeField] protected float maxVelocity;
+    [SerializeField] protected float moveDistance;
+    [SerializeField] protected Vector3 moveDirection;
+    protected virtual float realMaxVelocity => maxVelocity * GameManager.Instance.ObjectsGameSpeed;
 
     public float CurrentVelocity => currentVelocity;
     public Vector3 CurrentMoveDirection => currentMoveDirection;
 
+    protected virtual float Clamp(float clampValue)
+    {
+        return Mathf.Clamp(clampValue, -1, 1);
+    }
+
     public override void OnInitialize()
     {
         gameObject.layer = LayerMask.NameToLayer("MovingObject");
-        moveDirection = new Vector3(Mathf.Clamp01(moveDirection.x), Mathf.Clamp01(moveDirection.y), Mathf.Clamp01(moveDirection.z));
+        moveDirection = new Vector3(Clamp(moveDirection.x), Clamp(moveDirection.y), Clamp(moveDirection.z));
         currentMoveDirection = moveDirection;
         desiredMovePoint = NewDesiredMovePoint();
     }
 
-    private void OnDrawGizmos()
+    protected virtual void OnDrawGizmos()
     {
         if (!debugState) { return; }
 
@@ -82,7 +87,7 @@ public class MovingObject : BaseEntity
         }
     }
 
-    private Vector3 NewDesiredMovePoint()
+    protected virtual Vector3 NewDesiredMovePoint()
     {
         return (moveDistance * currentMoveDirection) + transform.position;
     }
