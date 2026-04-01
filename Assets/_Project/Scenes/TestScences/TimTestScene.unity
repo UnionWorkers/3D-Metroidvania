@@ -7832,29 +7832,9 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: debugState
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: attackInfo.radius
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: attackInfo.maxDistance
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: attackInfo.forwardDistance
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: attackInfo.damageStruct.damageAmount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7250933298476244927, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: debugState
-      value: 0
-      objectReference: {fileID: 0}
+      propertyPath: attackVFX
+      value: 
+      objectReference: {fileID: 2909831293056624456, guid: 39cd04f26b44d0c4895fe714cd66e738, type: 3}
     - target: {fileID: 7754730086136922038, guid: 21344e9368908814a95becf5e617ece5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.62

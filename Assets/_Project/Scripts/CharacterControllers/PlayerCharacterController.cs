@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.VFX;
 
 namespace CustomCharacterController
 {
@@ -154,8 +155,10 @@ namespace CustomCharacterController
         [NonSerialized] public bool PressingJump = false;
         private MoveType moveType = MoveType.Normal;
         private bool canMove = true;
-        public bool CanMove => canMove;
 
+        [SerializeField] private VisualEffect attackVFX;
+
+        public bool CanMove => canMove;
         public MoveType MoveType
         {
             get => moveType;
@@ -207,7 +210,7 @@ namespace CustomCharacterController
                 Gizmos.DrawLine(transform.position, moveDirection);
                 Gizmos.DrawSphere(moveDirection, 0.6f);
 
-                Physics.CapsuleCast(transform.position, transform.position + (transform.forward * attackInfo.ForwardDistance), attackInfo.Radius, transform.forward, 0);
+                Physics.CapsuleCast(transform.position, transform.position + (transform.forward * 0.1f), attackInfo.Radius, transform.forward, attackInfo.ForwardDistance);
             }
         }
 
@@ -599,18 +602,29 @@ namespace CustomCharacterController
         {
 
             // Use the physics debug to see the hole CapsuleCast 
+            VisualEffect visualEffect = null;
+            RaycastHit[] hits = Physics.CapsuleCastAll(transform.position, transform.position + (transform.forward * 0.1f), attackInfo.Radius, transform.forward, attackInfo.ForwardDistance);
 
-            RaycastHit[] hits = Physics.CapsuleCastAll(transform.position, transform.position + (transform.forward * attackInfo.ForwardDistance), attackInfo.Radius, transform.forward, 0);
-
-            foreach (RaycastHit item in hits)
+            foreach (RaycastHit hitInfo in hits)
             {
-                if (item.transform == transform) { continue; }
+                if (hitInfo.transform == transform) { continue; }
+                IHealth health = hitInfo.transform.GetComponent<IHealth>();
 
-                IHealth health = item.transform.GetComponent<IHealth>();
                 if (health != null)
                 {
+                    if (visualEffect == null)
+                    {
+                        Debug.Log(hitInfo.point);
+                        visualEffect = Instantiate(attackVFX, hitInfo.point, Quaternion.identity);
+                        visualEffect.Play();
+                    }
                     health.TakeDamage(attackInfo.DamageStruct.DamageAmount);
                 }
+            }
+
+            if (visualEffect != null)
+            {
+                Destroy(visualEffect.gameObject, 1f);
             }
         }
 
