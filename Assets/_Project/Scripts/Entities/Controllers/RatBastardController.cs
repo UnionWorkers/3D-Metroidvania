@@ -101,7 +101,7 @@ public class RatBastardController : BaseEntity
 
                 if (currentTargetTimerToShoot > targetTimerToShoot)
                 {
-                    targetHealth.TakeDamage(damageStruct.DamageAmount);
+                    targetHealth.TakeDamage(new(damageStruct.DamageAmount, transform));
                     currentTargetTimerToShoot = 0;
                     currentShootTimer = 0;
                     lineRenderer.enabled = false;

@@ -1,9 +1,5 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using Managers;
-using System;
-using Unity.VisualScripting;
+
 public class KnockbackCollider : MonoBehaviour
 {
     public float KnockbackPower;

@@ -45,9 +45,9 @@ public class TurretController : BaseEntity, IHealth
 
     public void Heal(int inHealth) { return; }
 
-    public void TakeDamage(int inDamage)
+    public void TakeDamage(DamageInfo inDamageInfo)
     {
-        healthComponent.CurrentHealth -= inDamage;
+        healthComponent.CurrentHealth -= inDamageInfo.DamageAmount;
         OnHealthChanged?.Invoke(healthComponent.CurrentHealth);
         if (healthComponent.CurrentHealth <= 0)
         {
@@ -130,7 +130,7 @@ public class TurretController : BaseEntity, IHealth
     {
         if (currentShootTimer >= shootTimer)
         {
-            targetHealth.TakeDamage(damageStruct.DamageAmount);
+            targetHealth.TakeDamage(new(damageStruct.DamageAmount, transform));
             currentShootTimer = 0;
         }
         else

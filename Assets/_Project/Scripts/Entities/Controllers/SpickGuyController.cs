@@ -22,15 +22,15 @@ public class SpickGuyController : BaseEntity, IHealth
         if (collision.CompareTag("Player"))
         {
             IHealth playerHealth = collision.GetComponent<IHealth>();
-            playerHealth.TakeDamage(damageStruct.DamageAmount);
+            playerHealth.TakeDamage(new(damageStruct.DamageAmount, transform));
         }
     }
 
     public void Heal(int inHealth) { return; }
 
-    public void TakeDamage(int inDamage)
+    public void TakeDamage(DamageInfo inDamageInfo)
     {
-        healthComponent.CurrentHealth -= inDamage;
+        healthComponent.CurrentHealth -= inDamageInfo.DamageAmount;
         OnHealthChanged?.Invoke(healthComponent.CurrentHealth);
         if (healthComponent.CurrentHealth <= 0)
         {

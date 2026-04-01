@@ -9,7 +9,7 @@ namespace Utils.Checkpoint
         {
             if (collider.CompareTag("Player"))
             {
-                collider.GetComponent<IHealth>().TakeDamage(1);
+                collider.GetComponent<IHealth>().TakeDamage(new(1));
                 GameManager.Instance.RespawnPlayer(RespawnType.CheckpointRespawn);
             }
         }

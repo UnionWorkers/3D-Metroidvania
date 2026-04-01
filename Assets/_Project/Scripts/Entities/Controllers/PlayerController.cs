@@ -53,7 +53,7 @@ namespace Entities.Controller
         // Components and other scripts 
         [SerializeField] private HealthComponent healthComponent;
 
-        private PlayerCharacterController playerCharacterController;
+        [SerializeField] private PlayerCharacterController playerCharacterController;
         private CameraController cameraController;
         private PlayerInventory inventory = new();
         private CheckPoint currentCheckPoint;
@@ -121,9 +121,10 @@ namespace Entities.Controller
             healthComponent.CurrentHealth += inHealth;
             OnHealthChanged(healthComponent.CurrentHealth);
         }
-        public void TakeDamage(int inDamage)
+        public void TakeDamage(DamageInfo inDamageInfo)
         {
-            healthComponent.CurrentHealth -= inDamage;
+            // Add knockback, using DamageInfo HitObject 
+            healthComponent.CurrentHealth -= inDamageInfo.DamageAmount;
             OnHealthChanged(healthComponent.CurrentHealth);
 
             if (healthComponent.CurrentHealth <= 0)

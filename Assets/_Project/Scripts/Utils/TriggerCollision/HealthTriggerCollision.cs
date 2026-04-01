@@ -16,9 +16,9 @@ namespace Utils.Triggers
 
         public void Heal(int inHealth) { return; }
 
-        public void TakeDamage(int inDamage)
+        public void TakeDamage(DamageInfo inDamageInfo)
         {
-            healthComponent.CurrentHealth -= inDamage;
+            healthComponent.CurrentHealth -= inDamageInfo.DamageAmount;
             OnHealthChanged?.Invoke(healthComponent.CurrentHealth);
             if (healthComponent.CurrentHealth <= 0)
             {

@@ -55,6 +55,10 @@ namespace Managers
 
 
         public float ObjectsGameSpeed => objectsGameSpeed;
+        public float MaxObjectsGameSlowDown => maxObjectsGameSlowDown;
+        public float MaxObjectsGameSpeedUp => maxObjectsGameSpeedUp;
+
+
         public PlayerController PlayerController => playerController;
         public PlayerUiHandler PlayerUiHandler
         {
@@ -199,6 +203,10 @@ namespace Managers
             // add and init
             foreach (var baseEntity in allEntities)
             {
+                if(baseEntity == null)
+                {
+                    Debug.Log(baseEntity);
+                }
                 AddEntity(baseEntity);
             }
 

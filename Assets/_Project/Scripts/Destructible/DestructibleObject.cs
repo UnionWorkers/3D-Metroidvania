@@ -16,7 +16,7 @@ public class DestructibleObject : MonoBehaviour, IHealth
     public void Heal(int inHealth) { }
 
     // Takes set amount of damage, irrelevant of inDamage  
-    public void TakeDamage(int inDamage)
+    public void TakeDamage(DamageInfo inDamageInfo)
     {
         healthComponent.CurrentHealth -= 1;
         OnHealthChanged?.Invoke(healthComponent.CurrentHealth);

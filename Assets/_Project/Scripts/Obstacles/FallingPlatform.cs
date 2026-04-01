@@ -1,7 +1,5 @@
 using UnityEngine;
 using Managers;
-using Entities;
-using CustomCharacterController;
 
 public class FallingPlatform : MovingObject
 {
@@ -68,7 +66,7 @@ public class FallingPlatform : MovingObject
                     eulorAngels = new(Clamp(eulorAngels.x), Clamp(eulorAngels.y), Clamp(eulorAngels.z));
                     transform.eulerAngles = eulorAngels;
                     
-                    currentFallCountdown -= Time.fixedDeltaTime;
+                    currentFallCountdown -= Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
                 }
 
                 break;
@@ -89,7 +87,7 @@ public class FallingPlatform : MovingObject
                 }
                 else
                 {
-                    currentResetTimer -= Time.fixedDeltaTime;
+                    currentResetTimer -= Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
                 }
 
                 break;

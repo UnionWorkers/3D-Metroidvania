@@ -618,7 +618,7 @@ namespace CustomCharacterController
                         visualEffect = Instantiate(attackVFX, hitInfo.point, Quaternion.identity);
                         visualEffect.Play();
                     }
-                    health.TakeDamage(attackInfo.DamageStruct.DamageAmount);
+                    health.TakeDamage(new (attackInfo.DamageStruct.DamageAmount, transform));
                 }
             }
 

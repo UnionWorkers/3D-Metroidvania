@@ -91,7 +91,7 @@ public class RatJokeController : MonoBehaviour
                 break;
 
             case JokeStage.Shoot:
-                FindAnyObjectByType<PlayerController>().transform.GetComponent<IHealth>().TakeDamage(999);
+                FindAnyObjectByType<PlayerController>().transform.GetComponent<IHealth>().TakeDamage(new(999));
                 break;
         }
     }
