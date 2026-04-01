@@ -53,6 +53,7 @@ MonoBehaviour:
   interactLayerMask:
     serializedVersion: 2
     m_Bits: 64
+  attackCooldown: 1
   healthComponent:
     maxHealth: 3
 --- !u!114 &6958708317175323635
@@ -67,7 +68,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d64c2a05b0dd95f4fb138e1d41d9700b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterController
-  debugState: 0
+  debugState: 1
+  characterController: {fileID: 2010560559569310025}
   moveStats:
     gravityValue: -9
     gravityMultiplier: 1.1
@@ -83,7 +85,11 @@ MonoBehaviour:
     turnSmoothTime: 0
     airAccelerateLimiter: 0
     airTurnLimiter: 0
-  characterController: {fileID: 2010560559569310025}
+  attackInfo:
+    forwardDistance: 1.5
+    radius: 0.5
+    damageStruct:
+      damageAmount: 1
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 128

@@ -1,5 +1,4 @@
 using System;
-using TreeEditor;
 using UnityEngine;
 
 namespace CustomCharacterController
@@ -72,7 +71,6 @@ namespace CustomCharacterController
         [SerializeField] private float airTurnLimiter;
 
 
-
         public float GravityValue => gravityValue;
         public float GravityMultiplier => gravityMultiplier;
         public float MaxSpeed => maxSpeed;
@@ -104,41 +102,42 @@ namespace CustomCharacterController
         }
     }
 
+    [System.Serializable]
+    public struct AttackInfo
+    {
+        [SerializeField] private float forwardDistance;
+        [SerializeField] private float radius;
+        [SerializeField] private DamageStruct damageStruct;
+
+        public float ForwardDistance => forwardDistance;
+        public float Radius => radius;
+        public DamageStruct DamageStruct => damageStruct;
+    }
+
     [RequireComponent(typeof(CharacterController))]
     public class PlayerCharacterController : MonoBehaviour
     {
         [SerializeField] bool debugState = false;
-
-        [SerializeField] private MoveStats moveStats;
-        private float gravityScale = 1f;
-        [NonSerialized] public bool PressingJump = false;
-        private JumpStage jumpStage = JumpStage.CanJump;
-        public JumpStage JumpStage
-        {
-            get => jumpStage;
-            set
-            {
-                if (jumpStage == value)
-                {
-                    return;
-                }
-
-                jumpStage = value;
-            }
-        }
+        [SerializeField] private CharacterController characterController;
 
         [Space(15)]
-        [SerializeField] private CharacterController characterController;
+        [SerializeField] private MoveStats moveStats;
+        private float gravityScale = 1f;
+        private JumpStage jumpStage = JumpStage.CanJump;
+
+        [Space(15)]
+        [SerializeField] private AttackInfo attackInfo;
 
         // Moving ground variables 
         private MovingGroundInfo movingGroundInfo = new(0, Vector3.zero);
+
+        [Space(15)]
         [SerializeField] private LayerMask groundLayerMask;
 
         // Slope variables 
-        [Space(15)]
-        [Header("Slope Variables")]
         private bool isOnSlope;
         private Vector3 hitNormal;
+        [Header("Slope Variables")]
         [SerializeField] private float slideFriction = 0.3f;
         [SerializeField] private float slidSpeed = 1f;
 
@@ -152,6 +151,7 @@ namespace CustomCharacterController
 
         // Movement type variables 
         [NonSerialized] public MagnetObjectInteractable MagnetObject = null;
+        [NonSerialized] public bool PressingJump = false;
         private MoveType moveType = MoveType.Normal;
         private bool canMove = true;
         public bool CanMove => canMove;
@@ -176,6 +176,21 @@ namespace CustomCharacterController
             }
         }
 
+        public JumpStage JumpStage
+        {
+            get => jumpStage;
+            set
+            {
+                if (jumpStage == value)
+                {
+                    return;
+                }
+
+                jumpStage = value;
+            }
+        }
+
+
         private void OnDrawGizmos()
         {
             if (debugState)
@@ -191,6 +206,8 @@ namespace CustomCharacterController
                 Gizmos.color = new Color(0f, 0.5f, 0f, 1f);
                 Gizmos.DrawLine(transform.position, moveDirection);
                 Gizmos.DrawSphere(moveDirection, 0.6f);
+
+                Physics.CapsuleCast(transform.position, transform.position + (transform.forward * attackInfo.ForwardDistance), attackInfo.Radius, transform.forward, 0);
             }
         }
 
@@ -576,6 +593,25 @@ namespace CustomCharacterController
         private void AirDecelerate()
         {
 
+        }
+
+        public void Attack()
+        {
+
+            // Use the physics debug to see the hole CapsuleCast 
+
+            RaycastHit[] hits = Physics.CapsuleCastAll(transform.position, transform.position + (transform.forward * attackInfo.ForwardDistance), attackInfo.Radius, transform.forward, 0);
+
+            foreach (RaycastHit item in hits)
+            {
+                if (item.transform == transform) { continue; }
+
+                IHealth health = item.transform.GetComponent<IHealth>();
+                if (health != null)
+                {
+                    health.TakeDamage(attackInfo.DamageStruct.DamageAmount);
+                }
+            }
         }
 
 

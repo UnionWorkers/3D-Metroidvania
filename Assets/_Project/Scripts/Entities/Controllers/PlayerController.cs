@@ -4,6 +4,7 @@ using Entities.CameraControl;
 using InputHandler;
 using Interactable;
 using Managers;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Utils.Checkpoint;
@@ -19,6 +20,7 @@ namespace Entities.Controller
         private InputActionHandler<bool> escInput = new();
         private InputActionHandler<bool> jumpInput = new();
         private InputActionHandler<bool> interactInput = new();
+        private InputActionHandler<bool> attackInput = new();
 
         // Input variables
         private bool jumpedQueued = false;
@@ -37,6 +39,11 @@ namespace Entities.Controller
         private const int INTERACTABLES_HIT_MAX_AMOUNT = 10;
         private IInteractable[] interactables = new IInteractable[INTERACTABLES_HIT_MAX_AMOUNT];
         private (IInteractable interactable, int index) closestInteractable = (null, -1);
+
+        // Attack variables 
+        [SerializeField] private float attackCooldown = 1f;
+        private float currentAttackTimer = 0;
+        private bool canAttack = true;
 
         // Health related
         public event Action<int> OnHealthChanged;
@@ -94,8 +101,12 @@ namespace Entities.Controller
             moveInput.GetAction(InputMap, "Move");
             lookInput.GetAction(InputMap, "Look");
 
+            attackInput.GetAction(InputMap, "Attack");
+            attackInput.OnActionPhaseChanged += Attack;
+
 
         }
+
         private void OnDisable()
         {
             escInput.OnDisable();
@@ -158,6 +169,18 @@ namespace Entities.Controller
                     {
                         playerCharacterController.MoveType = MoveType.Normal;
                     }
+                }
+            }
+
+            if (!canAttack)
+            {
+                if (currentAttackTimer < attackCooldown)
+                {
+                    currentAttackTimer += Time.deltaTime;
+                }
+                else
+                {
+                    canAttack = true;
                 }
             }
 
@@ -395,6 +418,21 @@ namespace Entities.Controller
                 case InputActionPhase.Performed:
                     int inputDir = timeManipulateInput.GetReturnValue() < 0 ? -1 : 1;
                     GameManager.Instance.ChangeTimeSpeed(inputDir);
+
+                    break;
+            }
+        }
+
+        private void Attack(InputActionPhase phase)
+        {
+            switch (phase)
+            {
+                case InputActionPhase.Performed:
+                    if (canAttack)
+                    {
+                        playerCharacterController.Attack();
+                        canAttack = false;
+                    }
 
                     break;
             }

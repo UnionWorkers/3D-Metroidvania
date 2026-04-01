@@ -1305,17 +1305,6 @@
                 },
                 {
                     "name": "",
-                    "id": "6fb9b4ad-76ff-498c-b1b0-3e247f730706",
-                    "path": "<Keyboard>/enter",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Attack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "64155ab4-a1a4-48db-ba67-64fcc78c794c",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
