@@ -575,9 +575,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpinningFan
   debugState: 0
-  Rotation: {x: 0, y: 0, z: 35}
+  rotatingUtil:
+    Rotation: {x: 0, y: 0, z: 35}
+    rotationSpeed: 4
   WhenIsPassableGameSpeed: 1
-  Speed: 4
   triggerCollisionMessengers:
   - {fileID: 5617146961393595950}
   - {fileID: 5697249979649691432}

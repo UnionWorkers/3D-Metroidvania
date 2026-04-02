@@ -3,6 +3,7 @@ using Managers;
 using Entities;
 using Utils.Triggers;
 using System.Collections.Generic;
+using Utils.Effect;
 
 
 
@@ -14,9 +15,9 @@ public class SpinningFan : BaseEntity
         SlowedGameSpeed,
     }
 
-    [SerializeField] private Vector3 Rotation;
+    [SerializeField] private RotatingUtil rotatingUtil;
+    
     [SerializeField] private GameSpeedOpen WhenIsPassableGameSpeed = GameSpeedOpen.NormalGameSpeed;
-    public float Speed;
     [SerializeField]
     private List<TriggerCollisionMessenger> triggerCollisionMessengers = new();
     [SerializeField] private GameObject wallBlocker;
@@ -64,7 +65,8 @@ public class SpinningFan : BaseEntity
                 break;
         }
 
-        transform.Rotate(Rotation * Speed * Time.deltaTime * gameSpeed);
+        // add ro
+        rotatingUtil.RotateObject(transform);
     }
 
     private void CheckIfWallCanOpen(float gameSpeedRequired)

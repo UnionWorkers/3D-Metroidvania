@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Entities;
 using Entities.CameraControl;
@@ -33,6 +34,7 @@ namespace Managers
 
         private GameState currentGameState = GameState.Running;
         public GameState CurrentGameState => currentGameState;
+        public Action<GameState> OnGameStateChanged;
 
         private SceneLoader sceneLoader;
         [SerializeField] private PauseMenuUi pauseMenuUi;
@@ -203,7 +205,7 @@ namespace Managers
             // add and init
             foreach (var baseEntity in allEntities)
             {
-                if(baseEntity == null)
+                if (baseEntity == null)
                 {
                     Debug.Log(baseEntity);
                 }
@@ -250,6 +252,8 @@ namespace Managers
 
                     break;
             }
+
+            OnGameStateChanged?.Invoke(currentGameState);
         }
 
         private void ActOnOldEntityState(BaseEntity inEntity)
