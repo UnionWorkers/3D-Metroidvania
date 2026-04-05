@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bad8cd94a2cbf00418e881e7d1ae1375, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FallingPlatform
-  debugState: 1
+  debugState: 0
   moveSpeed: 6
   maxVelocity: 10
   moveDistance: 9

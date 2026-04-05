@@ -18,7 +18,7 @@ namespace Utils.Triggers
             OnTriggerCollision?.Invoke(other, CollisionTriggerType.Enter);
         }
 
-        void OnTriggerExit(Collider other)
+        private void OnTriggerExit(Collider other)
         {
             OnTriggerCollision?.Invoke(other, CollisionTriggerType.Exit);
         }
