@@ -13,17 +13,17 @@ namespace Utils.Triggers
     public class TriggerCollisionMessenger : MonoBehaviour
     {
         public Action<Collider, CollisionTriggerType> OnTriggerCollision;
-        private void OnTriggerEnter(Collider other)
+        protected virtual void OnTriggerEnter(Collider other)
         {
             OnTriggerCollision?.Invoke(other, CollisionTriggerType.Enter);
         }
 
-        private void OnTriggerExit(Collider other)
+        protected virtual void OnTriggerExit(Collider other)
         {
             OnTriggerCollision?.Invoke(other, CollisionTriggerType.Exit);
         }
 
-        private void OnTriggerStay(Collider other)
+        protected virtual void OnTriggerStay(Collider other)
         {
             OnTriggerCollision?.Invoke(other, CollisionTriggerType.Stay);
         }

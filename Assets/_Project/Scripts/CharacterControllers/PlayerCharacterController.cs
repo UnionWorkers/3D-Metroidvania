@@ -540,11 +540,27 @@ namespace CustomCharacterController
             // Check if there is moving ground under the player 
             if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 2f, groundLayerMask))
             {
-                MovingObject movingObject = hit.transform.GetComponent<MovingObject>();
-                if (movingObject != null)
+                switch (LayerMask.LayerToName(hit.transform.gameObject.layer))
                 {
-                    movingGroundInfo = new(movingObject.CurrentVelocity, movingObject.CurrentMoveDirection + new Vector3(0, 0.5f, 0));
+                    case "MovingObject":
+
+                        MovingObject movingObject = hit.transform.GetComponent<MovingObject>();
+                        if (movingObject != null)
+                        {
+                            movingGroundInfo = new(movingObject.CurrentVelocity, movingObject.CurrentMoveDirection + new Vector3(0, 0.5f, 0));
+                        }
+
+                        break;
+                    case "ConveyorBelt":
+
+                        ConveyorBelt conveyorBelt = hit.transform.GetComponent<ConveyorBelt>();
+                        if (conveyorBelt != null)
+                        {
+                            movingGroundInfo = new(conveyorBelt.CurrentVelocity, conveyorBelt.CurrentMoveDirection + new Vector3(0, 0.5f, 0));
+                        }
+                        break;
                 }
+
             }
             else if (movingGroundInfo.MoveVector != Vector3.zero)
             {
@@ -618,7 +634,7 @@ namespace CustomCharacterController
                         visualEffect = Instantiate(attackVFX, hitInfo.point, Quaternion.identity);
                         visualEffect.Play();
                     }
-                    health.TakeDamage(new (attackInfo.DamageStruct.DamageAmount, transform));
+                    health.TakeDamage(new(attackInfo.DamageStruct.DamageAmount, transform));
                 }
             }
 

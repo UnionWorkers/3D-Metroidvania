@@ -33,10 +33,9 @@ namespace Utils.Math
                     break;
 
             }
-            
+
             return vector;
         }
-
     }
 
 }

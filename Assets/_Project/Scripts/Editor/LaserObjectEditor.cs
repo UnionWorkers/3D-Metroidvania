@@ -1,12 +1,12 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(LaserController), true)]
+[CustomEditor(typeof(LaserPoleController), true)]
 public class LaserObjectEditor : Editor
 {
     private void OnSceneGUI()
     {
-        LaserController laserObject = target as LaserController;
+        LaserPoleController laserObject = target as LaserPoleController;
 
         Vector3 startPos = laserObject.StartPoint;
         Vector3 endPos = laserObject.EndPoint;
@@ -24,7 +24,7 @@ public class LaserObjectEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        LaserController laserController = target as LaserController;
+        LaserPoleController laserController = target as LaserPoleController;
 
         EditorGUI.BeginChangeCheck();
         base.OnInspectorGUI();

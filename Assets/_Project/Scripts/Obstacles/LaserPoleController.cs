@@ -1,42 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Entities;
 using Managers;
 using UnityEngine;
 using Utils.Math;
 using Utils.Triggers;
 
-public class LaserController : BaseEntity
+public class LaserPoleController : BaseEntity
 {
-    enum LaserSpawnType
-    {
-        None,
-        Pole,
-        Line,
-    }
-
-    enum LaserMoveType
-    {
-        None,
-        PoleSpin,
-        UpAndDown
-    }
-
     [SerializeField] private bool canAnimate = true;
     [SerializeField] private Transform animationObject;
     [SerializeField] private float rotationSpeed;
     [SerializeField] private float moveSpeed;
     [SerializeField] private Vector3 rotateDirection;
     [Space(15)]
-    [SerializeField] private LaserSpawnType laserSpawnType;
     [SerializeField] private Transform laserHolder;
-    [SerializeField] private Transform laserPrefab;
+    [SerializeField] private GameObject laserPrefab;
     [SerializeField] private int lasersToSpawn;
-    [SerializeField] private Vector3 laserOffset;
-    private List<LaserTrigger> laserTriggers = new();
+    [SerializeField] private Vector3 laserScale;
+    [SerializeField]private List<LaserTrigger> laserTriggers = new();
 
     [Space(15)]
-    [SerializeField] private LaserMoveType laserMoveType;
     [SerializeField] private Vector3 startPoint;
     [SerializeField] private Vector3 endPoint;
 
@@ -104,15 +89,12 @@ public class LaserController : BaseEntity
 
     private void SetLaserSettings()
     {
+        float laserRotation = 360 / laserHolder.childCount;
         for (int i = 0; i < laserHolder.childCount; i++)
         {
-            // set offset 
             Transform child = laserHolder.GetChild(i);
-
-            child.localPosition = laserOffset;
-
-
-            // set point in circle
+            child.localScale = laserScale;
+            child.eulerAngles = new Vector3(0, laserRotation * i, 0);
         }
 
     }
@@ -124,13 +106,15 @@ public class LaserController : BaseEntity
         movePoint = isMovingToEnd ? EndPoint : StartPoint;
         isMovingToEnd = !isMovingToEnd;
 
+        Debug.Log(laserTriggers.Count);
+
         foreach (var trigger in laserTriggers)
         {
-            trigger.OnTriggerCollision += OnLaserTriggers;
+            trigger.OnLaserTriggerCollision += OnLaserTriggers;
         }
     }
 
-    private void OnLaserTriggers(Collider collider, CollisionTriggerType type)
+    private void OnLaserTriggers(Collider collider, CollisionTriggerType type, Transform senderTransform)
     {
         switch (type)
         {
@@ -138,9 +122,9 @@ public class LaserController : BaseEntity
                 if (collider.CompareTag("Player"))
                 {
                     IHealth health = collider.GetComponent<IHealth>();
-                    if(health != null)
+                    if (health != null)
                     {
-                        health.TakeDamage(new(1, transform));
+                        health.TakeDamage(new(1, senderTransform));
                     }
                 }
                 break;
@@ -154,31 +138,21 @@ public class LaserController : BaseEntity
             return;
         }
 
-        switch (laserMoveType)
+        if (remainingDist > 0)
         {
-            case LaserMoveType.PoleSpin:
+            animationObject.position = Vector3.Lerp(currentStartPoint, movePoint, 1 - (remainingDist / dist));
+            remainingDist -= moveSpeed * GameManager.Instance.ObjectsGameSpeed * Time.deltaTime;
+        }
+        else
+        {
+            movePoint = isMovingToEnd ? EndPoint : StartPoint;
+            isMovingToEnd = !isMovingToEnd;
+            currentStartPoint = animationObject.position;
 
-                if (remainingDist > 0)
-                {
-                    animationObject.position = Vector3.Lerp(currentStartPoint, movePoint, 1 - (remainingDist / dist));
-                    remainingDist -= moveSpeed * GameManager.Instance.ObjectsGameSpeed * Time.deltaTime;
-                }
-                else
-                {
-                    movePoint = isMovingToEnd ? EndPoint : StartPoint;
-                    isMovingToEnd = !isMovingToEnd;
-                    currentStartPoint = animationObject.position;
-
-                    dist = Vector3.Distance(currentStartPoint, movePoint);
-                    remainingDist = dist;
-                }
-
-                animationObject.Rotate(rotateDirection * rotationSpeed * Time.deltaTime * GameManager.Instance.ObjectsGameSpeed);
-
-                break;
-            case LaserMoveType.UpAndDown:
-                break;
+            dist = Vector3.Distance(currentStartPoint, movePoint);
+            remainingDist = dist;
         }
 
+        animationObject.Rotate(rotateDirection * rotationSpeed * Time.deltaTime * GameManager.Instance.ObjectsGameSpeed);
     }
 }
