@@ -147,8 +147,7 @@ namespace Entities.Controller
         public override void OnInitialize()
         {
             Cursor.lockState = CursorLockMode.Locked;
-            healthComponent.Initialize();
-            GameManager.Instance.PlayerUiHandler.OnInitialize(this);
+            healthComponent.Initialize();            GameManager.Instance.PlayerUiHandler.OnInitialize(this);
         }
 
         public override void OnBeforeDestroy()
