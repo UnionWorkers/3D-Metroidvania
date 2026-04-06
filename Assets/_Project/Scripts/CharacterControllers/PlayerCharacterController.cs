@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -152,7 +153,9 @@ namespace CustomCharacterController
 
         // Movement type variables 
         [NonSerialized] public MagnetObjectInteractable MagnetObject = null;
+        [NonSerialized] public bool CanGlide = false;
         [NonSerialized] public bool PressingJump = false;
+        [NonSerialized] public bool PressingGlide = false;
         private MoveType moveType = MoveType.Normal;
         private bool canMove = true;
 
@@ -271,25 +274,28 @@ namespace CustomCharacterController
                     CalculateSlopeVector();
                     currentVelocity = 0;
                     hitNormal = Vector3.zero;
+                    CanGlide = false;
                 }
             }
 
             if (characterController.isGrounded && !isOnSlope)
             {
                 WhenPlayerGrounded();
+                CanGlide = false;
             }
             else if (currentCoyoteTime <= moveStats.MaxCoyoteTime)
             {
                 currentCoyoteTime += Time.fixedDeltaTime;
+                CanGlide = true;
             }
             else if (jumpStage != JumpStage.Reset && jumpStage != JumpStage.CanDoubleJump)
             {
                 JumpStage = JumpStage.CanDoubleJump;
+                CanGlide = true;
             }
 
             // Input direction
             Vector3 moveVector = new Vector3(inDirection.x, 0, inDirection.y).normalized;
-
 
             if (moveVector != Vector3.zero)
             {
@@ -644,6 +650,15 @@ namespace CustomCharacterController
             }
         }
 
+        public void CommitDash()
+        {
+            // Add a lot of force on the player in a direction
+        }
+
+        public void CommitGlide()
+        {
+
+        }
 
     }
 

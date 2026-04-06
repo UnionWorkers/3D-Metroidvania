@@ -4,7 +4,6 @@ using Entities.CameraControl;
 using InputHandler;
 using Interactable;
 using Managers;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Utils.Checkpoint;
@@ -21,6 +20,8 @@ namespace Entities.Controller
         private InputActionHandler<bool> jumpInput = new();
         private InputActionHandler<bool> interactInput = new();
         private InputActionHandler<bool> attackInput = new();
+        private InputActionHandler<bool> glideInput = new();
+
 
         // Input variables
         private bool jumpedQueued = false;
@@ -44,6 +45,11 @@ namespace Entities.Controller
         [SerializeField] private float attackCooldown = 1f;
         private float currentAttackTimer = 0;
         private bool canAttack = true;
+
+        // Dash variables
+        [SerializeField] private float dashCooldown = 1f;
+        private float currentDashTimer = 0;
+        private bool canDash = true;
 
         // Health related
         public event Action<int> OnHealthChanged;
@@ -104,6 +110,8 @@ namespace Entities.Controller
             attackInput.GetAction(InputMap, "Attack");
             attackInput.OnActionPhaseChanged += Attack;
 
+            glideInput.GetAction(InputMap, "Dash");
+            glideInput.OnActionPhaseChanged += Dash;
 
         }
 
@@ -182,6 +190,18 @@ namespace Entities.Controller
                 else
                 {
                     canAttack = true;
+                }
+            }
+
+            if (!canDash)
+            {
+                if (currentDashTimer < dashCooldown)
+                {
+                    currentDashTimer += Time.deltaTime;
+                }
+                else
+                {
+                    canDash = true;
                 }
             }
 
@@ -345,7 +365,11 @@ namespace Entities.Controller
                     break;
 
                 case InputActionPhase.Canceled:
-                    playerCharacterController.PressingJump = false;
+                    if (playerCharacterController.PressingJump)
+                    {
+                        playerCharacterController.PressingJump = false;
+                    }
+
                     break;
             }
         }
@@ -438,6 +462,22 @@ namespace Entities.Controller
                     break;
             }
         }
+
+        private void Dash(InputActionPhase phase)
+        {
+            switch (phase)
+            {
+                case InputActionPhase.Performed:
+                    if (canDash)
+                    {
+                        CharacterController.CommitDash();
+                    }
+
+                    break;
+
+            }
+        }
+
 
     }
 
