@@ -106,8 +106,6 @@ public class LaserPoleController : BaseEntity
         movePoint = isMovingToEnd ? EndPoint : StartPoint;
         isMovingToEnd = !isMovingToEnd;
 
-        Debug.Log(laserTriggers.Count);
-
         foreach (var trigger in laserTriggers)
         {
             trigger.OnLaserTriggerCollision += OnLaserTriggers;
