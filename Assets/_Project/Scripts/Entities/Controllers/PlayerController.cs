@@ -14,7 +14,6 @@ namespace Entities.Controller
     {
         // Inputs
         private InputActionHandler<Vector2> moveInput = new();
-        private InputActionHandler<Vector2> lookInput = new();
         private InputActionHandler<float> timeManipulateInput = new();
         private InputActionHandler<bool> escInput = new();
         private InputActionHandler<bool> jumpInput = new();
@@ -105,7 +104,6 @@ namespace Entities.Controller
             timeManipulateInput.OnActionPhaseChanged += TimeManipulate;
 
             moveInput.GetAction(InputMap, "Move");
-            lookInput.GetAction(InputMap, "Look");
 
             attackInput.GetAction(InputMap, "Attack");
             attackInput.OnActionPhaseChanged += Attack;
@@ -121,7 +119,6 @@ namespace Entities.Controller
             interactInput.OnDisable();
             jumpInput.OnDisable();
             moveInput.OnDisable();
-            lookInput.OnDisable();
         }
 
         public void Heal(int inHealth)
@@ -215,15 +212,6 @@ namespace Entities.Controller
                 currentJumpBufferTimer = 0f;
             }
 
-            if (lookInput.GetReturnValue() != Vector2.zero)
-            {
-                cameraRotationDirection = lookInput.GetReturnValue();
-            }
-            else
-            {
-                cameraRotationDirection = Vector2.zero;
-            }
-
             if (moveInput.IsPressed)
             {
                 moveDirection = moveInput.GetReturnValue();
@@ -238,11 +226,6 @@ namespace Entities.Controller
 
         public override void OnFixedUpdate()
         {
-            if (cameraRotationDirection != Vector2.zero)
-            {
-                cameraController.RotateCamera(cameraRotationDirection);
-            }
-
             if (playerCharacterController.CanMove)
             {
                 playerCharacterController.MovePlayer(moveDirection, cameraController.transform);
