@@ -1,5 +1,4 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -26,7 +25,7 @@ namespace CustomCharacterController
     [System.Serializable]
     public struct MoveStats
     {
-        // Gravity values 
+        // Gravity values
         [Header("Gravity values")]
         [SerializeField] private float gravityValue;
         [Range(1f, 10f)]
@@ -82,7 +81,7 @@ namespace CustomCharacterController
         public float DoubleJumpEffect => doubleJumpEffect;
         public float TimeToApex => timeToApex;
         public float VariableJumpGravityIncrease => variableJumpGravityIncrease;
-        // Get a negative value 
+        // Get a negative value
         public float MaxFallSpeed => Mathf.Abs(maxFallSpeed) * -1;
         public float MaxCoyoteTime => maxCoyoteTime;
         public float AirAccelerateLimiter => airAccelerateLimiter;
@@ -130,20 +129,20 @@ namespace CustomCharacterController
         [Space(15)]
         [SerializeField] private AttackInfo attackInfo;
 
-        // Moving ground variables 
+        // Moving ground variables
         private MovingGroundInfo movingGroundInfo = new(0, Vector3.zero);
 
+
+        // Slope variables
         [Space(15)]
         [SerializeField] private LayerMask groundLayerMask;
-
-        // Slope variables 
         private bool isOnSlope;
         private Vector3 hitNormal;
         [Header("Slope Variables")]
         [SerializeField] private float slideFriction = 0.3f;
         [SerializeField] private float slidSpeed = 1f;
 
-        // Movement variables 
+        // Movement variables
         private float targetRotation = 0;
         private float currentVelocity = 0;
         private Vector3 effectMoveTarget;
@@ -151,7 +150,7 @@ namespace CustomCharacterController
         private Vector3 moveTargetPoint;
         private float currentCoyoteTime = 0;
 
-        // Movement type variables 
+        // Movement type variables
         [NonSerialized] public MagnetObjectInteractable MagnetObject = null;
         [NonSerialized] public bool CanGlide = false;
         [NonSerialized] public bool PressingJump = false;
@@ -197,24 +196,53 @@ namespace CustomCharacterController
         }
 
 
+        // Test Variables
+        private float t_targetRotation;
+        private float t_currentVelocity;
+        private Vector3 t_currentMoveDirection;
+        private float t_wantedVelocity;
+        private Vector3 t_wantedMoveDirection;
+        private Vector3 t_finalForce;
+
+
+
         private void OnDrawGizmos()
         {
             if (debugState)
             {
-                Vector3 forceDirection = new Vector3(moveTargetPoint.x + transform.position.x, transform.position.y, moveTargetPoint.z + transform.position.z);
-                Vector3 moveDirection = new Vector3(effectMoveTarget.x + transform.position.x, 0, effectMoveTarget.z + transform.position.z) * moveStats.MaxSpeed;
-                moveDirection.y = transform.position.y;
+                if (moveType == MoveType.Normal)
+                {
 
-                Gizmos.color = new Color(0.5f, 0f, 0f, 1f);
-                Gizmos.DrawSphere(forceDirection, 0.6f);
-                Gizmos.DrawLine(transform.position, forceDirection);
+                    Vector3 forceDirection = new Vector3(moveTargetPoint.x + transform.position.x, transform.position.y, moveTargetPoint.z + transform.position.z);
+                    Vector3 moveDirection = new Vector3(effectMoveTarget.x + transform.position.x, 0, effectMoveTarget.z + transform.position.z) * moveStats.MaxSpeed;
+                    moveDirection.y = transform.position.y;
 
-                Gizmos.color = new Color(0f, 0.5f, 0f, 1f);
-                Gizmos.DrawLine(transform.position, moveDirection);
-                Gizmos.DrawSphere(moveDirection, 0.6f);
+                    Gizmos.color = new Color(0.5f, 0f, 0f, 1f);
+                    Gizmos.DrawSphere(forceDirection, 0.6f);
+                    Gizmos.DrawLine(transform.position, forceDirection);
+
+                    Gizmos.color = new Color(0f, 0.5f, 0f, 1f);
+                    Gizmos.DrawLine(transform.position, moveDirection);
+                    Gizmos.DrawSphere(moveDirection, 0.6f);
+                }
+                else if (moveType == MoveType.TestNormal)
+                {
+                    Vector3 wantedMoveDir = (t_wantedMoveDirection * t_wantedVelocity) + transform.position;
+                    Vector3 moveDirection = (t_currentMoveDirection * t_currentVelocity) + transform.position;
+                    moveDirection.y = transform.position.y;
+
+                    Gizmos.color = new Color(0.5f, 0f, 0f, 1f);
+                    Gizmos.DrawSphere(wantedMoveDir, 0.6f);
+                    Gizmos.DrawLine(transform.position, wantedMoveDir);
+
+                    Gizmos.color = new Color(0f, 0.5f, 0f, 1f);
+                    Gizmos.DrawLine(transform.position, moveDirection);
+                    Gizmos.DrawSphere(moveDirection, 0.6f);
+                }
 
                 Physics.CapsuleCast(transform.position, transform.position + (transform.forward * 0.1f), attackInfo.Radius, transform.forward, attackInfo.ForwardDistance);
             }
+
         }
 
         private void Awake()
@@ -268,7 +296,7 @@ namespace CustomCharacterController
             }
             else
             {
-                // Check for slope 
+                // Check for slope
                 if (hitNormal != Vector3.zero)
                 {
                     CalculateSlopeVector();
@@ -299,7 +327,7 @@ namespace CustomCharacterController
 
             if (moveVector != Vector3.zero)
             {
-                // Face direction of input based on camera forward 
+                // Face direction of input based on camera forward
                 targetRotation = Mathf.Atan2(moveVector.x, moveVector.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
                 transform.rotation = Quaternion.Euler(0f, targetRotation, 0f);
 
@@ -325,109 +353,39 @@ namespace CustomCharacterController
 
             effectMoveTarget = Vector3.zero; // temp
 
-            // is the angel of the ground lower then the slop limit 
+            // is the angel of the ground lower then the slop limit
             isOnSlope = Vector3.Angle(Vector3.up, hitNormal) >= characterController.slopeLimit;
         }
 
         private void TestNormalMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         {
-            if (jumpStage == JumpStage.CommitJump || jumpStage == JumpStage.CommitDoubleJump)
-            {
-                CommitJump();
-            }
+            t_wantedVelocity = 5;
 
-            if (!isOnSlope)
+            if (inDirection != Vector2.zero)
             {
-                // reset hit slope velocity when grounded
-                hitNormal = Vector3.zero;
-                externalVector.x = 0;
-                externalVector.z = 0;
+                t_wantedMoveDirection = Quaternion.Euler(0, Mathf.Atan2(inDirection.x, inDirection.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y, 0) * Vector3.forward;
+                t_wantedMoveDirection = t_wantedMoveDirection.normalized;
             }
             else
             {
-                // Check for slope 
-                if (hitNormal != Vector3.zero)
-                {
-                    CalculateSlopeVector();
-                    currentVelocity = 0;
-                    hitNormal = Vector3.zero;
-                }
+                t_wantedMoveDirection = Vector3.zero;
             }
 
-            if (characterController.isGrounded && !isOnSlope)
+            t_currentMoveDirection = Vector3.Lerp(t_currentMoveDirection, t_wantedMoveDirection, Time.fixedDeltaTime * 2);
+
+            if (t_currentVelocity < t_wantedVelocity && t_wantedMoveDirection != Vector3.zero)
             {
-                WhenPlayerGrounded();
+                t_currentVelocity += Time.fixedDeltaTime * 5;
             }
-            else if (currentCoyoteTime <= moveStats.MaxCoyoteTime)
+            else if (t_wantedMoveDirection == Vector3.zero)
             {
-                currentCoyoteTime += Time.fixedDeltaTime;
-            }
-            else if (jumpStage != JumpStage.Reset && jumpStage != JumpStage.CanDoubleJump)
-            {
-                JumpStage = JumpStage.CanDoubleJump;
+                t_currentVelocity = 0;
             }
 
-            // Input direction
-            Vector3 moveVector = new Vector3(inDirection.x, 0, inDirection.y).normalized;
-
-            // move in the direction of player input
-            if (characterController.isGrounded)
-            {
-
-                if (moveVector != Vector3.zero)
-                {
-                    // Face direction of input based on camera forward 
-                    targetRotation = Mathf.Atan2(moveVector.x, moveVector.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
-                    //transform.rotation = Quaternion.Euler(0f, targetRotation, 0f);
-
-                    Accelerate();
-                }
-                else
-                {
-                    Decelerate();
-                }
-            }
-            else
-            {
-                // air controls
-                if (moveVector != Vector3.zero)
-                {
-                    AirAccelerate();
-                }
-                else
-                {
-                    AirDecelerate();
-                }
-            }
-
-            //  effectMoveTarget = (Quaternion.Euler(0f, targetRotation, 0f) * Vector3.forward).normalized;
-            effectMoveTarget = ((transform.forward * moveVector.z) + (transform.right * moveVector.x)).normalized;
-
-            ApplyGravity();
-
-            if (moveTargetPoint.magnitude < (effectMoveTarget * moveStats.MaxSpeed).magnitude)
-            {
-                moveTargetPoint += effectMoveTarget.normalized * currentVelocity;
-            }
-            else if (effectMoveTarget != Vector3.zero)
-            {
-                moveTargetPoint -= moveTargetPoint.normalized * currentVelocity;
-            }
-
-            // add external vectors
-            Vector3 finalMoveVector = (moveTargetPoint + movingGroundInfo.MoveVector + externalVector) * Time.fixedDeltaTime;
-
-            // test remove later 
-            finalMoveVector.x = 0;
-            finalMoveVector.z = 0;
-
-            characterController.Move(finalMoveVector);
-
-            // effectMoveTarget = Vector3.zero; // temp
-
-            // is the angel of the ground lower then the slop limit 
-            isOnSlope = Vector3.Angle(Vector3.up, hitNormal) >= characterController.slopeLimit;
+            t_finalForce = (t_currentVelocity * t_currentMoveDirection) * Time.fixedDeltaTime;
+            characterController.Move(t_finalForce);
         }
+
 
         private void AttachToRope()
         {
@@ -458,11 +416,11 @@ namespace CustomCharacterController
             // Input direction
             Vector3 moveVector = new Vector3(inDirection.x, 0, inDirection.y).normalized;
 
-            // move in the direction of player input 
+            // move in the direction of player input
             if (moveVector != Vector3.zero)
             {
 
-                // Face direction of input based on camera forward 
+                // Face direction of input based on camera forward
                 // targetRotation = Mathf.Atan2(moveVector.x, moveVector.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
                 // transform.rotation = Quaternion.Euler(0f, targetRotation, 0f);
 
@@ -543,7 +501,7 @@ namespace CustomCharacterController
                 JumpStage = JumpStage.CanJump;
             }
 
-            // Check if there is moving ground under the player 
+            // Check if there is moving ground under the player
             if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 2f, groundLayerMask))
             {
                 switch (LayerMask.LayerToName(hit.transform.gameObject.layer))
@@ -579,7 +537,7 @@ namespace CustomCharacterController
             }
         }
 
-        // when the player is on a slope 
+        // when the player is on a slope
         private void CalculateSlopeVector()
         {
             externalVector.x += (1f - hitNormal.y) * hitNormal.x * (slidSpeed - slideFriction);
@@ -623,7 +581,7 @@ namespace CustomCharacterController
         public void Attack()
         {
 
-            // Use the physics debug to see the hole CapsuleCast 
+            // Use the physics debug to see the hole CapsuleCast
             VisualEffect visualEffect = null;
             RaycastHit[] hits = Physics.CapsuleCastAll(transform.position, transform.position + (transform.forward * 0.1f), attackInfo.Radius, transform.forward, attackInfo.ForwardDistance);
 
