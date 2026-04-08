@@ -196,16 +196,6 @@ namespace CustomCharacterController
         }
 
 
-        // Test Variables
-        private float t_targetRotation;
-        private float t_currentVelocity;
-        private Vector3 t_currentMoveDirection;
-        private float t_wantedVelocity;
-        private Vector3 t_wantedMoveDirection;
-        private Vector3 t_finalForce;
-
-
-
         private void OnDrawGizmos()
         {
             if (debugState)
@@ -229,15 +219,27 @@ namespace CustomCharacterController
                 {
                     Vector3 wantedMoveDir = (t_wantedMoveDirection * t_wantedVelocity) + transform.position;
                     Vector3 moveDirection = (t_currentMoveDirection * t_currentVelocity) + transform.position;
+                    Vector3 externalDir = (t_externalForces) + transform.position;
+                    Vector3 finalDir = (t_finalForce * 2) + transform.position;
+
                     moveDirection.y = transform.position.y;
 
-                    Gizmos.color = new Color(0.5f, 0f, 0f, 1f);
-                    Gizmos.DrawSphere(wantedMoveDir, 0.6f);
+                    Gizmos.color = new Color(0.5f, 0f, 0f, 0.7f);
+                    Gizmos.DrawSphere(wantedMoveDir, 0.4f);
                     Gizmos.DrawLine(transform.position, wantedMoveDir);
 
-                    Gizmos.color = new Color(0f, 0.5f, 0f, 1f);
+                    Gizmos.color = new Color(0f, 0.5f, 0f, 0.7f);
+                    Gizmos.DrawSphere(moveDirection, 0.4f);
                     Gizmos.DrawLine(transform.position, moveDirection);
-                    Gizmos.DrawSphere(moveDirection, 0.6f);
+
+                    Gizmos.color = new Color(0f, 0, 0.5f, 0.7f);
+                    Gizmos.DrawSphere(externalDir, 0.4f);
+                    Gizmos.DrawLine(transform.position, externalDir);
+
+                    Gizmos.color = new Color(0.5f, 0.5f, 0.5f, 1f);
+                    Gizmos.DrawSphere(finalDir, 0.6f);
+                    Gizmos.DrawLine(transform.position, finalDir);
+
                 }
 
                 Physics.CapsuleCast(transform.position, transform.position + (transform.forward * 0.1f), attackInfo.Radius, transform.forward, attackInfo.ForwardDistance);
@@ -357,35 +359,104 @@ namespace CustomCharacterController
             isOnSlope = Vector3.Angle(Vector3.up, hitNormal) >= characterController.slopeLimit;
         }
 
+
+        // Test Variables
+        private float t_targetRotation;
+        private float t_currentVelocity;
+        private Vector3 t_currentMoveDirection;
+        private float t_wantedVelocity;
+        private Vector3 t_wantedMoveDirection;
+        private Vector3 t_externalForces;
+        private Vector3 t_finalForce;
+        [Header("Test Variables")]
+        [SerializeField] private float t_smoothTurnTurning = 2f;
+
         private void TestNormalMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         {
-            t_wantedVelocity = 5;
-
+            // Input handling
             if (inDirection != Vector2.zero)
             {
+                t_wantedVelocity = 5;
                 t_wantedMoveDirection = Quaternion.Euler(0, Mathf.Atan2(inDirection.x, inDirection.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y, 0) * Vector3.forward;
                 t_wantedMoveDirection = t_wantedMoveDirection.normalized;
             }
             else
             {
-                t_wantedMoveDirection = Vector3.zero;
+                t_wantedMoveDirection.x = 0;
+                t_wantedMoveDirection.z = 0;
             }
 
-            t_currentMoveDirection = Vector3.Lerp(t_currentMoveDirection, t_wantedMoveDirection, Time.fixedDeltaTime * 2);
+            // jump
+            if (jumpStage == JumpStage.CommitJump || jumpStage == JumpStage.CommitDoubleJump)
+            {
+                CommitJump();
+            }
+
+            if (!isOnSlope)
+            {
+                // reset hit slope velocity when grounded
+                hitNormal = Vector3.zero;
+                externalVector.x = 0;
+                externalVector.z = 0;
+            }
+            else
+            {
+                // Check for slope
+                if (hitNormal != Vector3.zero)
+                {
+                    CalculateSlopeVector();
+                    currentVelocity = 0;
+                    hitNormal = Vector3.zero;
+                    CanGlide = false;
+                }
+            }
+
+            // When is grounded
+            if (characterController.isGrounded && !isOnSlope)
+            {
+                T_WhenPlayerGrounded();
+                CanGlide = false;
+            }
+            // Coyote
+            else if (currentCoyoteTime <= moveStats.MaxCoyoteTime)
+            {
+                currentCoyoteTime += Time.fixedDeltaTime;
+                CanGlide = true;
+            }
+            // can double jump
+            else if (jumpStage != JumpStage.Reset && jumpStage != JumpStage.CanDoubleJump)
+            {
+                JumpStage = JumpStage.CanDoubleJump;
+                CanGlide = true;
+            }
+
+            T_ApplyGravity();
+
+            t_finalForce = (T_MoveTOWantedPoint() + t_externalForces) * Time.fixedDeltaTime;
+
+            // add Rotation to player
+
+            characterController.Move(t_finalForce);
+
+            // is the angel of the ground lower then the slop limit
+            isOnSlope = Vector3.Angle(Vector3.up, hitNormal) >= characterController.slopeLimit;
+        }
+
+        private Vector3 T_MoveTOWantedPoint()
+        {
+            t_currentMoveDirection = Vector3.Lerp(t_currentMoveDirection, t_wantedMoveDirection, Time.fixedDeltaTime * t_smoothTurnTurning);
 
             if (t_currentVelocity < t_wantedVelocity && t_wantedMoveDirection != Vector3.zero)
             {
                 t_currentVelocity += Time.fixedDeltaTime * 5;
             }
-            else if (t_wantedMoveDirection == Vector3.zero)
+            else if (t_currentVelocity > 0 && t_wantedMoveDirection == Vector3.zero)
             {
-                t_currentVelocity = 0;
+                t_currentVelocity -= Time.fixedDeltaTime * 5;
             }
 
-            t_finalForce = (t_currentVelocity * t_currentMoveDirection) * Time.fixedDeltaTime;
-            characterController.Move(t_finalForce);
+            return t_currentVelocity * t_currentMoveDirection;
         }
-
 
         private void AttachToRope()
         {
@@ -397,7 +468,6 @@ namespace CustomCharacterController
             canMove = true;
             characterController.enabled = true;
         }
-
 
         // Fix so the player moves with the camera forward
         private void RopeMovement(ref Vector2 inDirection, ref Transform cameraTransform)
@@ -475,20 +545,48 @@ namespace CustomCharacterController
 
         public void CommitJump()
         {
-            if (jumpStage == JumpStage.CommitJump || moveType == MoveType.OnRope)
+            switch (moveType)
             {
-                if (moveType != MoveType.Normal)
-                {
-                    MoveType = MoveType.Normal;
-                }
+                case MoveType.Normal:
 
-                externalVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight);
-                JumpStage = JumpStage.CanDoubleJump;
-            }
-            else if (jumpStage == JumpStage.CommitDoubleJump)
-            {
-                externalVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight) * moveStats.DoubleJumpEffect;
-                JumpStage = JumpStage.Reset;
+                    if (jumpStage == JumpStage.CommitJump || moveType == MoveType.OnRope)
+                    {
+                        if (moveType != MoveType.Normal)
+                        {
+                            MoveType = MoveType.Normal;
+                        }
+
+                        externalVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight);
+                        JumpStage = JumpStage.CanDoubleJump;
+                    }
+                    else if (jumpStage == JumpStage.CommitDoubleJump)
+                    {
+                        externalVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight) * moveStats.DoubleJumpEffect;
+                        JumpStage = JumpStage.Reset;
+                    }
+
+                    break;
+
+
+                case MoveType.TestNormal:
+
+                    if (jumpStage == JumpStage.CommitJump || moveType == MoveType.OnRope)
+                    {
+                        if (moveType != MoveType.TestNormal)
+                        {
+                            MoveType = MoveType.TestNormal;
+                        }
+
+                        t_externalForces.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight);
+                        JumpStage = JumpStage.CanDoubleJump;
+                    }
+                    else if (jumpStage == JumpStage.CommitDoubleJump)
+                    {
+                        t_externalForces.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight) * moveStats.DoubleJumpEffect;
+                        JumpStage = JumpStage.Reset;
+                    }
+
+                    break;
             }
         }
 
@@ -577,6 +675,85 @@ namespace CustomCharacterController
         {
 
         }
+
+        private void T_WhenPlayerGrounded()
+        {
+            gravityScale = 1f;
+            currentCoyoteTime = 0;
+            if (t_wantedMoveDirection.y < 0.1f && jumpStage != JumpStage.CommitJump)
+            {
+                JumpStage = JumpStage.CanJump;
+            }
+
+            // Check if there is moving ground under the player
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 2f, groundLayerMask))
+            {
+                switch (LayerMask.LayerToName(hit.transform.gameObject.layer))
+                {
+                    case "MovingObject":
+
+                        MovingObject movingObject = hit.transform.GetComponent<MovingObject>();
+                        if (movingObject != null)
+                        {
+                            movingGroundInfo = new(movingObject.CurrentVelocity, movingObject.CurrentMoveDirection + new Vector3(0, 0.5f, 0));
+                        }
+
+                        break;
+                    case "ConveyorBelt":
+
+                        ConveyorBelt conveyorBelt = hit.transform.GetComponent<ConveyorBelt>();
+                        if (conveyorBelt != null)
+                        {
+                            movingGroundInfo = new(conveyorBelt.CurrentVelocity, conveyorBelt.CurrentMoveDirection + new Vector3(0, 0.5f, 0));
+                        }
+                        break;
+                }
+
+            }
+            else if (movingGroundInfo.MoveVector != Vector3.zero)
+            {
+                movingGroundInfo = new(0, Vector3.zero);
+            }
+
+            if (t_wantedMoveDirection.y < -2f)
+            {
+                t_wantedMoveDirection.y = -2f;
+            }
+        }
+
+        private void T_ApplyGravity()
+        {
+            float downVelocity;
+
+            float newGravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
+            gravityScale = newGravityScale;
+
+            if (!characterController.isGrounded && t_externalForces.y < 0f)
+            {
+                gravityScale = gravityScale * moveStats.GravityMultiplier;
+                downVelocity = moveStats.GravityValue;
+            }
+            else if (!PressingJump && t_externalForces.y > 0.05f && jumpStage == JumpStage.CanDoubleJump)
+            {
+                gravityScale = gravityScale * moveStats.GravityMultiplier * moveStats.VariableJumpGravityIncrease;
+                downVelocity = moveStats.GravityValue;
+            }
+            else
+            {
+                gravityScale = gravityScale * 1;
+                downVelocity = moveStats.GravityValue;
+            }
+
+            if (t_externalForces.y >= moveStats.MaxFallSpeed)
+            {
+                t_externalForces.y += downVelocity * gravityScale * Time.fixedDeltaTime;
+            }
+            else
+            {
+                t_externalForces.y = moveStats.MaxFallSpeed;
+            }
+        }
+
 
         public void Attack()
         {
