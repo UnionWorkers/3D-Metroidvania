@@ -19,6 +19,7 @@ namespace Entities.Controller
         private InputActionHandler<bool> jumpInput = new();
         private InputActionHandler<bool> interactInput = new();
         private InputActionHandler<bool> attackInput = new();
+        private InputActionHandler<bool> dashInput = new();
         private InputActionHandler<bool> glideInput = new();
 
 
@@ -29,7 +30,7 @@ namespace Entities.Controller
         private float currentJumpBufferTimer;
 
 
-        // Input variables 
+        // Input variables
         private Vector2 moveDirection = Vector2.zero;
         private Vector2 cameraRotationDirection = Vector2.zero;
 
@@ -40,7 +41,7 @@ namespace Entities.Controller
         private IInteractable[] interactables = new IInteractable[INTERACTABLES_HIT_MAX_AMOUNT];
         private (IInteractable interactable, int index) closestInteractable = (null, -1);
 
-        // Attack variables 
+        // Attack variables
         [SerializeField] private float attackCooldown = 1f;
         private float currentAttackTimer = 0;
         private bool canAttack = true;
@@ -55,7 +56,7 @@ namespace Entities.Controller
         public event Action OnDeath;
         public int GetHealth => healthComponent.CurrentHealth;
 
-        // Components and other scripts 
+        // Components and other scripts
         [SerializeField] private HealthComponent healthComponent;
 
         [SerializeField] private PlayerCharacterController playerCharacterController;
@@ -108,8 +109,11 @@ namespace Entities.Controller
             attackInput.GetAction(InputMap, "Attack");
             attackInput.OnActionPhaseChanged += Attack;
 
-            glideInput.GetAction(InputMap, "Dash");
-            glideInput.OnActionPhaseChanged += Dash;
+            dashInput.GetAction(InputMap, "Dash");
+            dashInput.OnActionPhaseChanged += Dash;
+
+            glideInput.GetAction(InputMap, "Glide");
+            glideInput.OnActionPhaseChanged += Glide;
 
         }
 
@@ -128,7 +132,7 @@ namespace Entities.Controller
         }
         public void TakeDamage(DamageInfo inDamageInfo)
         {
-            // Add knockback, using DamageInfo HitObject 
+            // Add knockback, using DamageInfo HitObject
             healthComponent.CurrentHealth -= inDamageInfo.DamageAmount;
             OnHealthChanged(healthComponent.CurrentHealth);
 
@@ -152,7 +156,7 @@ namespace Entities.Controller
         public override void OnInitialize()
         {
             Cursor.lockState = CursorLockMode.Locked;
-            healthComponent.Initialize();            GameManager.Instance.PlayerUiHandler.OnInitialize(this);
+            healthComponent.Initialize(); GameManager.Instance.PlayerUiHandler.OnInitialize(this);
         }
 
         public override void OnBeforeDestroy()
@@ -237,7 +241,7 @@ namespace Entities.Controller
             RaycastHit[] newInteractablesHit = new RaycastHit[INTERACTABLES_HIT_MAX_AMOUNT];
             int ObjectHit = Physics.SphereCastNonAlloc(transform.position, interactRadius, transform.forward, newInteractablesHit, default, interactLayerMask);
 
-            // May need to check if interactables is maxed out  
+            // May need to check if interactables is maxed out
             for (int i = 0; i < interactables.Length; i++)
             {
                 bool isInCollider = false;
@@ -260,7 +264,7 @@ namespace Entities.Controller
                         continue;
                     }
 
-                    // contains  
+                    // contains
                     if (newInteractable.interactable == oldInteractable || newInteractable.interactable == interactables[j])
                     {
                         isInCollider = true;
@@ -460,7 +464,24 @@ namespace Entities.Controller
             }
         }
 
+        private void Glide(InputActionPhase phase)
+        {
+            switch (phase)
+            {
+                case InputActionPhase.Performed:
+                    if (canDash)
+                    {
+                        if (playerCharacterController.CanGlide)
+                        {
+                            playerCharacterController.LockGlide = !playerCharacterController.LockGlide;
+                        }
+                    }
 
+
+                    break;
+
+            }
+        }
     }
 
 }
