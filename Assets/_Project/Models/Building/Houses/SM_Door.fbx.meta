@@ -3,7 +3,12 @@ guid: dd0e2581f70d06241b988a24d9206062
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Clutter_base
+    second: {fileID: 2100000, guid: 2a07bec5baa125b4cbf628cc99e00561, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
