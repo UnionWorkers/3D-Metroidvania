@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.VFX;
 
 namespace CustomCharacterController
@@ -72,6 +73,13 @@ namespace CustomCharacterController
         [SerializeField] private float airTurnLimiter;
 
 
+        [Space(15)]
+        [Header("Glide values")]
+        [Range(0.001f, 1f)]
+        [SerializeField] private float glideGravityLimiter;
+        [SerializeField] private float glideMaxFallSpeed;
+
+
         public float GravityValue => gravityValue;
         public float GravityMultiplier => gravityMultiplier;
         public float MaxSpeed => maxSpeed;
@@ -87,6 +95,9 @@ namespace CustomCharacterController
         public float AirAccelerateLimiter => airAccelerateLimiter;
         public float AirTurnLimiter => airTurnLimiter;
         public float TurnSmoothTime => turnSmoothTime;
+
+        public float GlideGravityLimiter => glideGravityLimiter;
+        public float GlideMaxFallSpeed => Mathf.Abs(glideMaxFallSpeed) * -1;
     }
 
     public struct MovingGroundInfo
@@ -154,7 +165,8 @@ namespace CustomCharacterController
         [NonSerialized] public MagnetObjectInteractable MagnetObject = null;
         [NonSerialized] public bool CanGlide = false;
         [NonSerialized] public bool PressingJump = false;
-        [NonSerialized] public bool PressingGlide = false;
+        [NonSerialized] public bool LockGlide = false;
+        public bool isGround => characterController.isGrounded;
         private MoveType moveType = MoveType.Normal;
         private bool canMove = true;
 
@@ -242,7 +254,7 @@ namespace CustomCharacterController
 
                 }
 
-                Physics.CapsuleCast(transform.position, transform.position + (transform.forward * 0.1f), attackInfo.Radius, transform.forward, attackInfo.ForwardDistance);
+                //Physics.CapsuleCast(transform.position, transform.position + (transform.forward * 0.1f), attackInfo.Radius, transform.forward, attackInfo.ForwardDistance);
             }
 
         }
@@ -258,6 +270,8 @@ namespace CustomCharacterController
                     Debug.LogError("There is no character controller on Player");
                 }
             }
+
+            characterController.stepOffset = 0;
         }
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
@@ -364,19 +378,20 @@ namespace CustomCharacterController
         private float t_targetRotation;
         private float t_currentVelocity;
         private Vector3 t_currentMoveDirection;
-        private float t_wantedVelocity;
+        private float t_wantedVelocity = 10;
         private Vector3 t_wantedMoveDirection;
         private Vector3 t_externalForces;
+        private Vector3 t_slopeForce;
         private Vector3 t_finalForce;
         [Header("Test Variables")]
         [SerializeField] private float t_smoothTurnTurning = 2f;
+        [SerializeField] private float t_stepOffset = 0.5f;
 
         private void TestNormalMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         {
             // Input handling
             if (inDirection != Vector2.zero)
             {
-                t_wantedVelocity = 5;
                 t_wantedMoveDirection = Quaternion.Euler(0, Mathf.Atan2(inDirection.x, inDirection.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y, 0) * Vector3.forward;
                 t_wantedMoveDirection = t_wantedMoveDirection.normalized;
             }
@@ -396,8 +411,7 @@ namespace CustomCharacterController
             {
                 // reset hit slope velocity when grounded
                 hitNormal = Vector3.zero;
-                externalVector.x = 0;
-                externalVector.z = 0;
+                t_slopeForce = Vector3.zero;
             }
             else
             {
@@ -405,9 +419,9 @@ namespace CustomCharacterController
                 if (hitNormal != Vector3.zero)
                 {
                     CalculateSlopeVector();
-                    currentVelocity = 0;
                     hitNormal = Vector3.zero;
                     CanGlide = false;
+                    LockGlide = false;
                 }
             }
 
@@ -416,6 +430,7 @@ namespace CustomCharacterController
             {
                 T_WhenPlayerGrounded();
                 CanGlide = false;
+                LockGlide = false;
             }
             // Coyote
             else if (currentCoyoteTime <= moveStats.MaxCoyoteTime)
@@ -434,12 +449,74 @@ namespace CustomCharacterController
 
             t_finalForce = (T_MoveTOWantedPoint() + t_externalForces) * Time.fixedDeltaTime;
 
+            // step up check when moving 
+            bool canStepUp = false;
+            if (characterController.isGrounded && inDirection != Vector2.zero)
+            {
+                canStepUp = T_CanStepUp();
+            }
+
+            // add slope force
+            if (!canStepUp && isOnSlope)
+            {
+                t_finalForce += t_slopeForce * Time.fixedDeltaTime;
+            }
+
             // add Rotation to player
 
             characterController.Move(t_finalForce);
 
             // is the angel of the ground lower then the slop limit
             isOnSlope = Vector3.Angle(Vector3.up, hitNormal) >= characterController.slopeLimit;
+        }
+
+        private bool T_CanStepUp()
+        {
+            Vector3 normalizedMoveDirXZ = new Vector3(t_finalForce.x, 0f, t_finalForce.z).normalized;
+            float distance = characterController.radius + characterController.skinWidth;
+
+            Vector3 bottom = transform.position - new Vector3(0f, characterController.height / 2f - characterController.center.y, 0f);
+            Vector3 stepOffsetLimit = new(bottom.x, bottom.y + t_stepOffset, bottom.z);
+            //Raycast at player's ground level in direction of movement
+            bool hitWithBottomRaycast = Physics.Raycast(bottom, normalizedMoveDirXZ, out RaycastHit hitBottom, distance);
+
+            //Raycast at player's ground level + StepOffset in direction of movement
+            bool hitWithTopRaycast = Physics.Raycast(stepOffsetLimit, normalizedMoveDirXZ, out RaycastHit hitTop, distance);
+
+            if (hitWithBottomRaycast && hitWithTopRaycast)
+            {
+                // Cant step up on object
+                return false;
+            }
+            else if (hitWithBottomRaycast && !hitWithTopRaycast)
+            {
+                // Step up on object 
+                Vector3 rayStartPoint = hitBottom.point + (normalizedMoveDirXZ * 0.2f);
+                rayStartPoint.y = stepOffsetLimit.y * 2f;
+                bool hitOnTopOfObject = Physics.Raycast(rayStartPoint, Vector3.down, out RaycastHit objectTopHit, (rayStartPoint - hitBottom.point).magnitude);
+
+                if (hitOnTopOfObject && objectTopHit.transform == hitBottom.transform)
+                {
+                    float angel = Vector3.Angle(Vector3.up, objectTopHit.normal);
+                    if (angel <= 0)
+                    {
+                        rayStartPoint = objectTopHit.point;
+                        rayStartPoint.y += characterController.height;
+
+                        characterController.enabled = false;
+                        transform.position = rayStartPoint;
+                        characterController.enabled = true;
+                        return true;
+                    }
+
+                }
+                return false;
+            }
+            else
+            {
+                // no object to step to
+                return false;
+            }
         }
 
         private Vector3 T_MoveTOWantedPoint()
@@ -638,8 +715,22 @@ namespace CustomCharacterController
         // when the player is on a slope
         private void CalculateSlopeVector()
         {
-            externalVector.x += (1f - hitNormal.y) * hitNormal.x * (slidSpeed - slideFriction);
-            externalVector.z += (1f - hitNormal.y) * hitNormal.z * (slidSpeed - slideFriction);
+            switch (moveType)
+            {
+                case MoveType.Normal:
+
+                    externalVector.x += (1f - hitNormal.y) * hitNormal.x * (slidSpeed - slideFriction);
+                    externalVector.z += (1f - hitNormal.y) * hitNormal.z * (slidSpeed - slideFriction);
+
+                    break;
+
+                case MoveType.TestNormal:
+
+                    t_slopeForce.x += (1f - hitNormal.y) * hitNormal.x * (slidSpeed - slideFriction);
+                    t_slopeForce.z += (1f - hitNormal.y) * hitNormal.z * (slidSpeed - slideFriction);
+
+                    break;
+            }
         }
 
         private void Accelerate()
@@ -730,8 +821,16 @@ namespace CustomCharacterController
 
             if (!characterController.isGrounded && t_externalForces.y < 0f)
             {
-                gravityScale = gravityScale * moveStats.GravityMultiplier;
-                downVelocity = moveStats.GravityValue;
+                if (LockGlide && CanGlide)
+                {
+                    gravityScale = (gravityScale * moveStats.GravityMultiplier) * moveStats.GlideGravityLimiter;
+                    downVelocity = moveStats.GravityValue;
+                }
+                else
+                {
+                    gravityScale = gravityScale * moveStats.GravityMultiplier;
+                    downVelocity = moveStats.GravityValue;
+                }
             }
             else if (!PressingJump && t_externalForces.y > 0.05f && jumpStage == JumpStage.CanDoubleJump)
             {
@@ -744,14 +843,29 @@ namespace CustomCharacterController
                 downVelocity = moveStats.GravityValue;
             }
 
-            if (t_externalForces.y >= moveStats.MaxFallSpeed)
+            if (LockGlide)
             {
-                t_externalForces.y += downVelocity * gravityScale * Time.fixedDeltaTime;
+                if (t_externalForces.y >= moveStats.GlideMaxFallSpeed)
+                {
+                    t_externalForces.y += downVelocity * gravityScale * Time.fixedDeltaTime;
+                }
+                else
+                {
+                    t_externalForces.y = moveStats.GlideMaxFallSpeed;
+                }
             }
             else
             {
-                t_externalForces.y = moveStats.MaxFallSpeed;
+                if (t_externalForces.y >= moveStats.MaxFallSpeed)
+                {
+                    t_externalForces.y += downVelocity * gravityScale * Time.fixedDeltaTime;
+                }
+                else
+                {
+                    t_externalForces.y = moveStats.MaxFallSpeed;
+                }
             }
+
         }
 
 
@@ -771,7 +885,6 @@ namespace CustomCharacterController
                 {
                     if (visualEffect == null)
                     {
-                        Debug.Log(hitInfo.point);
                         visualEffect = Instantiate(attackVFX, hitInfo.point, Quaternion.identity);
                         visualEffect.Play();
                     }
@@ -787,14 +900,8 @@ namespace CustomCharacterController
 
         public void CommitDash()
         {
-            // Add a lot of force on the player in a direction
-        }
-
-        public void CommitGlide()
-        {
 
         }
-
     }
 
 }
