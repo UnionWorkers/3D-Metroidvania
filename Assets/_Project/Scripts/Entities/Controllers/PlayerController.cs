@@ -193,7 +193,7 @@ namespace Entities.Controller
                 }
             }
 
-            if (!canDash)
+            if (CharacterController.CurrentDahsStage == DahsStage.Reset)
             {
                 if (currentDashTimer < dashCooldown)
                 {
@@ -201,7 +201,7 @@ namespace Entities.Controller
                 }
                 else
                 {
-                    canDash = true;
+                    CharacterController.CurrentDahsStage = DahsStage.CanDash;
                 }
             }
 
@@ -454,9 +454,9 @@ namespace Entities.Controller
             switch (phase)
             {
                 case InputActionPhase.Performed:
-                    if (canDash)
+                    if (CharacterController.CurrentDahsStage == DahsStage.CanDash)
                     {
-                        CharacterController.CommitDash();
+                        CharacterController.CurrentDahsStage = DahsStage.CommitDash;
                     }
 
                     break;
@@ -469,14 +469,11 @@ namespace Entities.Controller
             switch (phase)
             {
                 case InputActionPhase.Performed:
-                    if (canDash)
-                    {
-                        if (playerCharacterController.CanGlide)
-                        {
-                            playerCharacterController.LockGlide = !playerCharacterController.LockGlide;
-                        }
-                    }
 
+                    if (playerCharacterController.CanGlide)
+                    {
+                        playerCharacterController.LockGlide = !playerCharacterController.LockGlide;
+                    }
 
                     break;
 
