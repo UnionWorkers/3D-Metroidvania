@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.VFX;
 
 namespace CustomCharacterController
@@ -18,6 +17,14 @@ namespace CustomCharacterController
         CommitJump,
         CanDoubleJump,
         CommitDoubleJump,
+        Reset
+    }
+
+    public enum DahsStage : byte
+    {
+        CanDash,
+        CommitDash,
+        IsDashing,
         Reset
     }
 
@@ -171,6 +178,8 @@ namespace CustomCharacterController
         private bool canMove = true;
 
         [SerializeField] private VisualEffect attackVFX;
+        [NonSerialized] public DahsStage CurrentDahsStage;
+
 
         public bool CanMove => canMove;
         public MoveType MoveType
@@ -447,7 +456,7 @@ namespace CustomCharacterController
 
             T_ApplyGravity();
 
-            t_finalForce = (T_MoveTOWantedPoint() + t_externalForces) * Time.fixedDeltaTime;
+            t_finalForce = (T_MoveToWantedPoint() + t_externalForces) * Time.fixedDeltaTime;
 
             // step up check when moving 
             bool canStepUp = false;
@@ -463,6 +472,11 @@ namespace CustomCharacterController
             }
 
             // add Rotation to player
+
+            if (CurrentDahsStage == DahsStage.CommitDash)
+            {
+                CommitDash();
+            }
 
             characterController.Move(t_finalForce);
 
@@ -519,7 +533,7 @@ namespace CustomCharacterController
             }
         }
 
-        private Vector3 T_MoveTOWantedPoint()
+        private Vector3 T_MoveToWantedPoint()
         {
             t_currentMoveDirection = Vector3.Lerp(t_currentMoveDirection, t_wantedMoveDirection, Time.fixedDeltaTime * t_smoothTurnTurning);
 
@@ -898,9 +912,35 @@ namespace CustomCharacterController
             }
         }
 
+        private float dashMaxTimer = 1f;
+        private float currentDashTimer = 0f;
+
         public void CommitDash()
         {
+            if (CurrentDahsStage == DahsStage.CommitDash)
+            {
 
+                if (t_wantedMoveDirection == Vector3.zero)
+                {
+                    CurrentDahsStage = DahsStage.CanDash;
+                    return;
+                }
+
+                CurrentDahsStage = DahsStage.IsDashing;
+
+            }
+            
+            if (CurrentDahsStage == DahsStage.IsDashing)
+            {
+                if(currentDashTimer >= dashMaxTimer)
+                {
+                    currentDashTimer = 0;
+                    CurrentDahsStage = DahsStage.Reset;
+                }
+                
+                t_finalForce.y = 0;
+                
+            }
         }
     }
 
