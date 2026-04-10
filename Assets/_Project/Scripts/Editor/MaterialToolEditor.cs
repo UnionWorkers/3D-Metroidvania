@@ -105,6 +105,23 @@ public class MaterialToolEditor : EditorWindow
 
                         MaterialData newData = new(propertyName, propertyType);
 
+                        // get default values
+                        switch (propertyType)
+                        {
+                            case ShaderPropertyType.Color:
+                                newData.Color = currentShader.GetPropertyDefaultVectorValue(i);
+                                break;
+                            case ShaderPropertyType.Float:
+                                newData.Float = currentShader.GetPropertyDefaultFloatValue(i);
+                                break;
+                            case ShaderPropertyType.Int:
+                                newData.Int = currentShader.GetPropertyDefaultIntValue(i);
+                                break;
+                            case ShaderPropertyType.Vector:
+                                newData.Vector = currentShader.GetPropertyDefaultVectorValue(i);
+                                break;
+                        }
+
                         switch (propertyType)
                         {
                             case ShaderPropertyType.Color:
@@ -140,23 +157,6 @@ public class MaterialToolEditor : EditorWindow
                         ShaderPropertyType propertyType = currentShader.GetPropertyType(i);
 
                         MaterialData newData = materialData[i];
-
-                        // get default values
-                        switch (propertyType)
-                        {
-                            case ShaderPropertyType.Color:
-                                newData.Color = currentShader.GetPropertyDefaultVectorValue(i);
-                                break;
-                            case ShaderPropertyType.Float:
-                                newData.Float = currentShader.GetPropertyDefaultFloatValue(i);
-                                break;
-                            case ShaderPropertyType.Int:
-                                newData.Int = currentShader.GetPropertyDefaultIntValue(i);
-                                break;
-                            case ShaderPropertyType.Vector:
-                                newData.Vector = currentShader.GetPropertyDefaultVectorValue(i);
-                                break;
-                        }
 
                         // make values editable in view
                         switch (propertyType)
