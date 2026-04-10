@@ -8,7 +8,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Roof9
-    second: {fileID: 2100000, guid: 2f6ff3172eea2604dbf44d6f6df6df80, type: 2}
+    second: {fileID: 2100000, guid: 31a76e919a01a004182154c187430334, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -162,9 +162,17 @@ PrefabInstance:
       value: House_1_Pink
       objectReference: {fileID: 0}
     - target: {fileID: 6785025210686216679, guid: 0d02bdcade8511445b76b9fc12a2bda0, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6785025210686216679, guid: 0d02bdcade8511445b76b9fc12a2bda0, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 3d0a2b08042998c4bbaeee81cbd4913b, type: 2}
+      objectReference: {fileID: 2100000, guid: 372c277a22930e44186f49a602af05c1, type: 2}
+    - target: {fileID: 6785025210686216679, guid: 0d02bdcade8511445b76b9fc12a2bda0, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 37b9d11ea1942e949aa8fe3050d24d45, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -196,9 +204,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 37b9d11ea1942e949aa8fe3050d24d45, type: 2}
     - target: {fileID: 3074493245278466457, guid: f2746e3281176aa44a17ce32ac27cdc8, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3074493245278466457, guid: f2746e3281176aa44a17ce32ac27cdc8, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 1a2058f8a5f5e934fb4eb47df3fdd9c8, type: 2}
+      objectReference: {fileID: 2100000, guid: 8941ad587647f534298258cc02026680, type: 2}
+    - target: {fileID: 3074493245278466457, guid: f2746e3281176aa44a17ce32ac27cdc8, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 37b9d11ea1942e949aa8fe3050d24d45, type: 2}
     - target: {fileID: 6087910248591853774, guid: f2746e3281176aa44a17ce32ac27cdc8, type: 3}
       propertyPath: m_Name
       value: House_4_Pink
@@ -261,6 +277,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 6393824275088148076}
     m_Modifications:
+    - target: {fileID: 3869796427817170324, guid: e9b7780100fc36e4d9470438e643e9c4, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3869796427817170324, guid: e9b7780100fc36e4d9470438e643e9c4, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 37b9d11ea1942e949aa8fe3050d24d45, type: 2}
     - target: {fileID: 4255125409084425265, guid: e9b7780100fc36e4d9470438e643e9c4, type: 3}
       propertyPath: m_Name
       value: House_2_Pink
