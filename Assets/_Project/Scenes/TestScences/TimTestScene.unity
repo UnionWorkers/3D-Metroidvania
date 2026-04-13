@@ -34042,6 +34042,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7269730715019658263, guid: 57fcebedca2821245b3c16bb038e9e34, type: 3}
+      propertyPath: debugStats.isActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7269730715019658263, guid: 57fcebedca2821245b3c16bb038e9e34, type: 3}
+      propertyPath: debugStats.timeScale
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -34340,16 +34348,40 @@ PrefabInstance:
       value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
+      propertyPath: rotationSmoothStep
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
+      propertyPath: dashLayerMask.m_Bits
+      value: 449
+      objectReference: {fileID: 0}
+    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
       propertyPath: groundLayerMask.m_Bits
       value: 384
+      objectReference: {fileID: 0}
+    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
+      propertyPath: moveStats.airTurnLimiter
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
       propertyPath: moveStats.glideMaxFallSpeed
       value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
+      propertyPath: moveStats.smoothTurningForce
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
       propertyPath: moveStats.glideGravityLimiter
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
+      propertyPath: moveStats.airAccelerateLimiter
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
+      propertyPath: moveStats.airMaxAccelerateLimiter
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7250933298476244927, guid: 21344e9368908814a95becf5e617ece5, type: 3}
       propertyPath: debugState

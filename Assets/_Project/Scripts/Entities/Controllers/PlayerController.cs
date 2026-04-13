@@ -49,7 +49,6 @@ namespace Entities.Controller
         // Dash variables
         [SerializeField] private float dashCooldown = 1f;
         private float currentDashTimer = 0;
-        private bool canDash = true;
 
         // Health related
         public event Action<int> OnHealthChanged;
@@ -193,7 +192,7 @@ namespace Entities.Controller
                 }
             }
 
-            if (CharacterController.CurrentDahsStage == DahsStage.Reset)
+            if (CharacterController.CurrentDashStage == DashStage.Reset)
             {
                 if (currentDashTimer < dashCooldown)
                 {
@@ -201,7 +200,7 @@ namespace Entities.Controller
                 }
                 else
                 {
-                    CharacterController.CurrentDahsStage = DahsStage.CanDash;
+                    CharacterController.CurrentDashStage = DashStage.CanDash;
                 }
             }
 
@@ -454,9 +453,9 @@ namespace Entities.Controller
             switch (phase)
             {
                 case InputActionPhase.Performed:
-                    if (CharacterController.CurrentDahsStage == DahsStage.CanDash)
+                    if (CharacterController.CurrentDashStage == DashStage.CanDash)
                     {
-                        CharacterController.CurrentDahsStage = DahsStage.CommitDash;
+                        CharacterController.CurrentDashStage = DashStage.CommitDash;
                     }
 
                     break;
