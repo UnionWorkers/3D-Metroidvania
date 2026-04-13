@@ -32497,17 +32497,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7754730086136922038, guid: 21344e9368908814a95becf5e617ece5, type: 3}
   m_PrefabInstance: {fileID: 2910205642453809858}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1486309401 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-  m_PrefabInstance: {fileID: 2910205642453809858}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d64c2a05b0dd95f4fb138e1d41d9700b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CharacterController
 --- !u!1 &1491186890
 GameObject:
   m_ObjectHideFlags: 0
@@ -34315,82 +34304,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2010560559569310025, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: m_Height
-      value: 1.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 2010560559569310025, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: m_Center.y
-      value: -0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2010560559569310025, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: m_SkinWidth
-      value: 0.05
-      objectReference: {fileID: 0}
-    - target: {fileID: 2010560559569310025, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: m_StepOffset
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2010560559569310025, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: m_MinMoveDistance
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: attackVFX
-      value: 
-      objectReference: {fileID: 2909831293056624456, guid: 39cd04f26b44d0c4895fe714cd66e738, type: 3}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: debugState
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: t_stepOffset
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: rotationSmoothStep
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: dashLayerMask.m_Bits
-      value: 449
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: groundLayerMask.m_Bits
-      value: 384
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: moveStats.airTurnLimiter
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: moveStats.glideMaxFallSpeed
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: moveStats.smoothTurningForce
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: moveStats.glideGravityLimiter
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: moveStats.airAccelerateLimiter
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: moveStats.airMaxAccelerateLimiter
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7250933298476244927, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: debugState
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7250933298476244927, guid: 21344e9368908814a95becf5e617ece5, type: 3}
-      propertyPath: playerCharacterController
-      value: 
-      objectReference: {fileID: 1486309401}
     - target: {fileID: 7754730086136922038, guid: 21344e9368908814a95becf5e617ece5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.36

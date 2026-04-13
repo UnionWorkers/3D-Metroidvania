@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e2a893042319ad4493b6c7d25652d50, type: 3}
+  m_Name: PlayerMovementPreset
+  m_EditorClassIdentifier: Assembly-CSharp::SOPlayerMoveData
+  moveStats:
+    gravityValue: -9
+    gravityMultiplier: 1.1
+    variableJumpGravityIncrease: 2
+    maxFallSpeed: 45
+    jumpHeight: 8
+    doubleJumpEffect: 0.75
+    timeToApex: 1.3
+    maxCoyoteTime: 0.15
+    maxSpeed: 20
+    smoothTurningForce: 2
+    accelerationTime: 0.3
+    decelerationTime: 0.3
+    stepupOffset: 0.5
+    rotationSmoothStep: 0.2
+    airAccelerateLimiter: 0.7
+    airMaxAccelerateLimiter: 1
+    airTurnLimiter: 0.7
+    slideFriction: 0.3
+    slidSpeed: 1
+    glideGravityLimiter: 0.2
+    glideMaxFallSpeed: 30
+    dashMaxTimer: 0.3
+    dashDistance: 10
+    dashLayerMask:
+      serializedVersion: 2
+      m_Bits: 449

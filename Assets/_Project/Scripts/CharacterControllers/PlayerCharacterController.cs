@@ -70,6 +70,12 @@ namespace CustomCharacterController
         [Range(0.01f, 0.99f)]
         [SerializeField] private float decelerationTime;
 
+        [Header("Height off object that can be stepped up on")]
+        [SerializeField] private float stepupOffset;
+
+        [Header("How fast the character rotates")]
+        [SerializeField] private float rotationSmoothStep;
+
         // Air control values
         [Space(15)]
         [Header("Air control values")]
@@ -81,6 +87,11 @@ namespace CustomCharacterController
         [Range(0.01f, 2f)]
         [SerializeField] private float airTurnLimiter;
 
+        [Space(15)]
+        [Header("Slope values")]
+        [SerializeField] private float slideFriction;
+        [SerializeField] private float slidSpeed;
+
 
         [Space(15)]
         [Header("Glide values")]
@@ -88,6 +99,11 @@ namespace CustomCharacterController
         [SerializeField] private float glideGravityLimiter;
         [SerializeField] private float glideMaxFallSpeed;
 
+        [Space(15)]
+        [Header("Dash values")]
+        [SerializeField] private float dashMaxTimer;
+        [SerializeField] private float dashDistance;
+        [SerializeField] private LayerMask dashLayerMask;
 
         public float GravityValue => gravityValue;
         public float GravityMultiplier => gravityMultiplier;
@@ -98,6 +114,9 @@ namespace CustomCharacterController
         public float AccelerationTime => accelerationTime;
         public float DecelerationTime => decelerationTime;
         public float SmoothTurningForce => smoothTurningForce;
+        public float StepupOffset => stepupOffset;
+        public float RotationSmoothStep => rotationSmoothStep;
+
 
         public float JumpHeight => jumpHeight;
         public float DoubleJumpEffect => doubleJumpEffect;
@@ -108,8 +127,18 @@ namespace CustomCharacterController
         public float AirMaxAccelerateLimiter => airMaxAccelerateLimiter;
         public float AirTurnLimiter => airTurnLimiter;
 
+        public float SlideFriction => slideFriction;
+        public float SlidSpeed => slidSpeed;
+
+
         public float GlideGravityLimiter => glideGravityLimiter;
         public float GlideMaxFallSpeed => Mathf.Abs(glideMaxFallSpeed) * -1;
+
+        public float DashMaxTimer => dashMaxTimer;
+        public float DashDistance => dashDistance;
+        public LayerMask DashLayerMask => dashLayerMask;
+        
+
     }
 
     public struct MovingGroundInfo
@@ -147,37 +176,22 @@ namespace CustomCharacterController
         #region SerializedField
 
         [Space(15)]
+        [SerializeField] private bool usePreset = false;
+        [SerializeField] private SOPlayerMoveData movePreset;
         [SerializeField] private MoveStats moveStats;
+        
 
         [Space(15)]
         [SerializeField] private AttackInfo attackInfo;
 
         [Space(15)]
-        [Header("Movement")]
-        [SerializeField] private float stepupOffset = 0.5f;
-
-        [Header("How fast the character rotates")]
-        [SerializeField] private float rotationSmoothStep = 2f;
-
-        [Space(15)]
         [Header("Moving Ground")]
         [SerializeField] private LayerMask movingGroundLayerMask;
-
-        [Space(15)]
-        [Header("Slope")]
-        [SerializeField] private float slideFriction = 0.3f;
-        [SerializeField] private float slidSpeed = 1f;
 
         // Attack
         [Space(15)]
         [Header("Attack")]
         [SerializeField] private VisualEffect attackVFX;
-
-        [Space(15)]
-        [Header("Dash")]
-        [SerializeField] private float dashMaxTimer = 0.3f;
-        [SerializeField] private float dashDistance = 10f;
-        [SerializeField] private LayerMask dashLayerMask;
 
         #endregion
 
@@ -229,6 +243,16 @@ namespace CustomCharacterController
 
         public bool CanMove => canMove;
         public bool isGround => characterController.isGrounded;
+        public MoveStats MoveStats
+        {
+            get => moveStats; 
+            set => moveStats = value;
+        }
+        public SOPlayerMoveData MovePreset
+        {
+            get => movePreset;
+            set => movePreset = value;
+        }
         public MoveType MoveType
         {
             get => moveType;
@@ -262,6 +286,7 @@ namespace CustomCharacterController
                 jumpStage = value;
             }
         }
+
 
         #endregion
 
@@ -316,6 +341,12 @@ namespace CustomCharacterController
 
             // turn off CharacterController, using own implementation
             characterController.stepOffset = 0;
+            
+            if(usePreset && movePreset)
+            {
+                moveStats = movePreset.MoveStats;
+            }
+        
         }
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
@@ -546,7 +577,7 @@ namespace CustomCharacterController
             {
                 currentMoveDirection = Vector3.Lerp(currentMoveDirection, wantedMoveDirection, Time.fixedDeltaTime * moveStats.SmoothTurningForce);
 
-                currentRotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, wantedRotation, ref rotationVelocity, rotationSmoothStep);
+                currentRotation = Mathf.SmoothDampAngle(transform.eulerAngles.y, wantedRotation, ref rotationVelocity, moveStats.RotationSmoothStep);
                 transform.rotation = Quaternion.Euler(0, currentRotation, 0);
 
                 if (wantedMoveDirection != Vector3.zero)
@@ -614,7 +645,7 @@ namespace CustomCharacterController
             float distance = characterController.radius + characterController.skinWidth;
 
             Vector3 bottom = transform.position - new Vector3(0f, characterController.height / 2f - characterController.center.y, 0f);
-            Vector3 stepOffsetLimit = new(bottom.x, bottom.y + stepupOffset, bottom.z);
+            Vector3 stepOffsetLimit = new(bottom.x, bottom.y + moveStats.StepupOffset, bottom.z);
             //Raycast at player's ground level in direction of movement
             bool hitWithBottomRaycast = Physics.Raycast(bottom, normalizedMoveDirXZ, out RaycastHit hitBottom, distance);
 
@@ -660,8 +691,8 @@ namespace CustomCharacterController
         // when the player is on a slope
         private void CalculateSlopeVector()
         {
-            slopeForce.x += (1f - groundHitNormal.y) * groundHitNormal.x * (slidSpeed - slideFriction);
-            slopeForce.z += (1f - groundHitNormal.y) * groundHitNormal.z * (slidSpeed - slideFriction);
+            slopeForce.x += (1f - groundHitNormal.y) * groundHitNormal.x * (moveStats.SlidSpeed - moveStats.SlideFriction);
+            slopeForce.z += (1f - groundHitNormal.y) * groundHitNormal.z * (moveStats.SlidSpeed - moveStats.SlideFriction);
         }
 
         public void CommitJump()
@@ -710,7 +741,7 @@ namespace CustomCharacterController
 
             if (CurrentDashStage == DashStage.IsDashing)
             {
-                if (currentDashTimer >= dashMaxTimer)
+                if (currentDashTimer >= moveStats.DashMaxTimer)
                 {
                     CurrentDashStage = DashStage.CancelDash;
                     currentDashTimer = 0;
@@ -728,13 +759,13 @@ namespace CustomCharacterController
                     bottom.y -= height;
                     top.y += height;
 
-                    if (Physics.CapsuleCast(bottom, top, characterController.radius, dashDirection, 0.7f, dashLayerMask))
+                    if (Physics.CapsuleCast(bottom, top, characterController.radius, dashDirection, 0.7f, moveStats.DashLayerMask))
                     {
                         CurrentDashStage = DashStage.CancelDash;
                         return;
                     }
 
-                    finalForce = ((dashDistance / dashMaxTimer) * dashDirection) * Time.fixedDeltaTime;
+                    finalForce = ((moveStats.DashDistance / moveStats.DashMaxTimer) * dashDirection) * Time.fixedDeltaTime;
                     currentDashTimer += Time.fixedDeltaTime;
                 }
             }
