@@ -46,16 +46,28 @@ PrefabInstance:
       value: House_4_Orange
       objectReference: {fileID: 0}
     - target: {fileID: 6298366362126036510, guid: 8256739946a98fd4a8b41782bc23c84f, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 6298366362126036510, guid: 8256739946a98fd4a8b41782bc23c84f, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 6298366362126036510, guid: 8256739946a98fd4a8b41782bc23c84f, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 6298366362126036510, guid: 8256739946a98fd4a8b41782bc23c84f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.6648684
+      value: -3.18
       objectReference: {fileID: 0}
     - target: {fileID: 6298366362126036510, guid: 8256739946a98fd4a8b41782bc23c84f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.5099998
+      value: 3.79
       objectReference: {fileID: 0}
     - target: {fileID: 6298366362126036510, guid: 8256739946a98fd4a8b41782bc23c84f, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.82502174
+      value: -0.29
       objectReference: {fileID: 0}
     - target: {fileID: 6298366362126036510, guid: 8256739946a98fd4a8b41782bc23c84f, type: 3}
       propertyPath: m_LocalRotation.w
@@ -84,6 +96,10 @@ PrefabInstance:
     - target: {fileID: 6298366362126036510, guid: 8256739946a98fd4a8b41782bc23c84f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6298366362126036510, guid: 8256739946a98fd4a8b41782bc23c84f, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

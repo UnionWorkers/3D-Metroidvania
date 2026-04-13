@@ -82,9 +82,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: 9e29b1fd08b680b479d4635cca46f56c, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 9e29b1fd08b680b479d4635cca46f56c, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 8b4cf93105d9bbb4ab10bdefeefcf545, type: 2}
+      objectReference: {fileID: 2100000, guid: 9897977d796345c4c80fe3b993babbf3, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 9e29b1fd08b680b479d4635cca46f56c, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 37b9d11ea1942e949aa8fe3050d24d45, type: 2}
     - target: {fileID: 919132149155446097, guid: 9e29b1fd08b680b479d4635cca46f56c, type: 3}
       propertyPath: m_Name
       value: SM_Housewalls_a_01
@@ -178,9 +186,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: 9441fe4c1b7270046bafa5ba39d17e58, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 9441fe4c1b7270046bafa5ba39d17e58, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 57c9271b83d81bc48924dc87de9694e1, type: 2}
+      objectReference: {fileID: 2100000, guid: 93247223144e8024c9a06e885c0cb2c9, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 9441fe4c1b7270046bafa5ba39d17e58, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 37b9d11ea1942e949aa8fe3050d24d45, type: 2}
     - target: {fileID: 919132149155446097, guid: 9441fe4c1b7270046bafa5ba39d17e58, type: 3}
       propertyPath: m_Name
       value: SM_Roof_a_01

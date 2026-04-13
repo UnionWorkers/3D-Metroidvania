@@ -81,6 +81,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: e9903ed47277ae64d841fe13cf74c667, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: e9903ed47277ae64d841fe13cf74c667, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 37b9d11ea1942e949aa8fe3050d24d45, type: 2}
     - target: {fileID: 919132149155446097, guid: e9903ed47277ae64d841fe13cf74c667, type: 3}
       propertyPath: m_Name
       value: SM_Roof_b_01
@@ -174,9 +182,17 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: 844dea7e947dd564a8dc5f5a877c6b22, type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: 844dea7e947dd564a8dc5f5a877c6b22, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: d69aa66b40809fd40b5e7db5a1ca7067, type: 2}
+      objectReference: {fileID: 2100000, guid: cbee173cc9bec8a4a82b8c801364a53e, type: 2}
+    - target: {fileID: -7511558181221131132, guid: 844dea7e947dd564a8dc5f5a877c6b22, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 37b9d11ea1942e949aa8fe3050d24d45, type: 2}
     - target: {fileID: 919132149155446097, guid: 844dea7e947dd564a8dc5f5a877c6b22, type: 3}
       propertyPath: m_Name
       value: SM_Housewalls_b_01
