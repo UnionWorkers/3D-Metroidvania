@@ -1,6 +1,5 @@
 using System.IO;
 using CustomCharacterController;
-using Packages.Rider.Editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,7 +8,7 @@ public class PlayerControllerDataSaverEditor : Editor
 {
 
     private string path = "Assets/_Project/Scripts/CharacterControllers/PlayerMovePresets/";
-    private string name = "PlayerMovementPreset";
+    private string defaultName = "PlayerMovementPreset";
     public override void OnInspectorGUI()
     {
         PlayerCharacterController playerCharacterController = target as PlayerCharacterController;
@@ -30,7 +29,7 @@ public class PlayerControllerDataSaverEditor : Editor
 
                 if (newAsset != null)
                 {
-                    string assetPath = path + name + ".asset";
+                    string assetPath = path + defaultName + ".asset";
                     assetPath = AssetDatabase.GenerateUniqueAssetPath(assetPath);
 
                     AssetDatabase.CreateAsset(newAsset, assetPath);
