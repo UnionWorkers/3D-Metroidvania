@@ -1900,6 +1900,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7488289908170400063, guid: f3e2abbd40e31024494e1596f39b6e7f, type: 3}
   m_PrefabInstance: {fileID: 3791686968406276799}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &479670059 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4131695475561856845, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
+  m_PrefabInstance: {fileID: 9057836806348335209}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineInputAxisController
 --- !u!1 &486694397
 GameObject:
   m_ObjectHideFlags: 0
@@ -34308,6 +34319,10 @@ PrefabInstance:
       propertyPath: usePreset
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
+      propertyPath: movingGroundLayerMask.m_Bits
+      value: 384
+      objectReference: {fileID: 0}
     - target: {fileID: 7754730086136922038, guid: 21344e9368908814a95becf5e617ece5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.36
@@ -35614,14 +35629,34 @@ PrefabInstance:
       propertyPath: TrackerSettings.PositionDamping.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 4131695475561856845, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4131695475561856845, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[0].Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4131695475561856845, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
+      propertyPath: m_ControllerManager.Controllers.Array.data[1].Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5815858513654576122, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
       propertyPath: targetTransform
       value: 
       objectReference: {fileID: 1486309399}
+    - target: {fileID: 5815858513654576122, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
+      propertyPath: cinemachineInput
+      value: 
+      objectReference: {fileID: 479670059}
     - target: {fileID: 8088311219138252517, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
       propertyPath: Target.TrackingTarget
       value: 
       objectReference: {fileID: 1486309399}
+    - target: {fileID: 9174757596471001241, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

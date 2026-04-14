@@ -137,7 +137,7 @@ namespace CustomCharacterController
         public float DashMaxTimer => dashMaxTimer;
         public float DashDistance => dashDistance;
         public LayerMask DashLayerMask => dashLayerMask;
-        
+
 
     }
 
@@ -179,7 +179,7 @@ namespace CustomCharacterController
         [SerializeField] private bool usePreset = false;
         [SerializeField] private SOPlayerMoveData movePreset;
         [SerializeField] private MoveStats moveStats;
-        
+
 
         [Space(15)]
         [SerializeField] private AttackInfo attackInfo;
@@ -229,7 +229,11 @@ namespace CustomCharacterController
         // Dash
         private float currentDashTimer = 0f;
         private Vector3 dashDirection = Vector3.zero;
+        private float dahsRotationDirection = 0;
 
+
+        private Vector3 t_lastPos;
+        private Transform T_Ground;
         #endregion
 
 
@@ -245,7 +249,7 @@ namespace CustomCharacterController
         public bool isGround => characterController.isGrounded;
         public MoveStats MoveStats
         {
-            get => moveStats; 
+            get => moveStats;
             set => moveStats = value;
         }
         public SOPlayerMoveData MovePreset
@@ -341,12 +345,12 @@ namespace CustomCharacterController
 
             // turn off CharacterController, using own implementation
             characterController.stepOffset = 0;
-            
-            if(usePreset && movePreset)
+
+            if (usePreset && movePreset)
             {
                 moveStats = movePreset.MoveStats;
             }
-        
+
         }
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
@@ -424,6 +428,8 @@ namespace CustomCharacterController
             // Coyote
             else if (currentCoyoteTime <= moveStats.MaxCoyoteTime)
             {
+                movingGroundInfo = new(0, Vector3.zero);
+                T_Ground = null;
                 currentCoyoteTime += Time.fixedDeltaTime;
                 CanGlide = true;
             }
@@ -439,7 +445,16 @@ namespace CustomCharacterController
 
             // Apply forces
 
-            finalForce = (MoveToWantedPoint() + externalForces) * Time.fixedDeltaTime;
+
+            finalForce = (MoveToWantedPoint() + externalForces + movingGroundInfo.MoveVector) * Time.fixedDeltaTime;
+
+
+            if (movingGroundInfo.MoveVector.y > 0 && T_Ground != null)
+            {
+                Vector3 platformDelta = T_Ground.position - t_lastPos;
+                characterController.Move(platformDelta * 1.1f);
+                t_lastPos = T_Ground.position;
+            }
 
             // Stepup check when moving 
             bool canStepUp = false;
@@ -543,7 +558,13 @@ namespace CustomCharacterController
                         if (movingObject != null)
                         {
                             // add offset up so it docent giddier as much  
-                            movingGroundInfo = new(movingObject.CurrentVelocity, movingObject.CurrentMoveDirection + new Vector3(0, 0.5f, 0));
+                            movingGroundInfo = new(movingObject.CurrentVelocity, movingObject.CurrentMoveDirection);
+                            if (T_Ground != hit.transform)
+                            {
+                                T_Ground = hit.transform;
+                                t_lastPos = T_Ground.position;
+                            }
+                            //lastPos = hit.transform.position;
                         }
 
                         break;
@@ -553,20 +574,20 @@ namespace CustomCharacterController
                         if (conveyorBelt != null)
                         {
                             // add offset up so it docent giddier as much  
-                            movingGroundInfo = new(conveyorBelt.CurrentVelocity, conveyorBelt.CurrentMoveDirection + new Vector3(0, 0.5f, 0));
+                            movingGroundInfo = new(conveyorBelt.CurrentVelocity, conveyorBelt.CurrentMoveDirection);
                         }
                         break;
                 }
-
             }
             else if (movingGroundInfo.MoveVector != Vector3.zero)
             {
                 movingGroundInfo = new(0, Vector3.zero);
+                T_Ground = null;
             }
 
-            if (wantedMoveDirection.y < -2f)
+            if (externalForces.y < -2f)
             {
-                wantedMoveDirection.y = -2f;
+                externalForces.y = -2f;
             }
         }
 
@@ -720,8 +741,6 @@ namespace CustomCharacterController
                     break;
             }
         }
-
-        private float dahsRotationDirection = 0;
 
         public void CommitDash()
         {
