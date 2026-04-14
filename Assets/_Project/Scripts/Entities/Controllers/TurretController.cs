@@ -57,7 +57,7 @@ public class TurretController : BaseEntity, IHealth
         }
     }
 
-    public override void OnUpdate()
+    public override void OnFixedUpdate()
     {
         if (playerTransform != null)
         {
@@ -67,7 +67,7 @@ public class TurretController : BaseEntity, IHealth
         else if (lastPlayerLocation != Vector3.zero && currentTimerToLoseTarget <= maxTimerToLoseTarget)
         {
             TargetRotate(lastPlayerLocation);
-            currentTimerToLoseTarget += Time.deltaTime;
+            currentTimerToLoseTarget += Time.fixedDeltaTime;
         }
         else if (poleTransform != null)
         {
@@ -122,7 +122,7 @@ public class TurretController : BaseEntity, IHealth
     private void RotateTurret()
     {
 
-        currentRotation += (rotationSpeed * GameManager.Instance.ObjectsGameSpeed) * rotationDirection * Time.deltaTime;
+        currentRotation += (rotationSpeed * GameManager.Instance.ObjectsGameSpeed) * rotationDirection * Time.fixedDeltaTime;
         poleTransform.rotation = Quaternion.Euler(0, currentRotation, 0);
     }
 
@@ -135,7 +135,7 @@ public class TurretController : BaseEntity, IHealth
         }
         else
         {
-            currentShootTimer += Time.deltaTime * GameManager.Instance.ObjectsGameSpeed;
+            currentShootTimer += Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
         }
     }
 

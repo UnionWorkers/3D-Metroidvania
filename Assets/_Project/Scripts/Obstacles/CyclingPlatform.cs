@@ -20,14 +20,14 @@ public class CyclingPlatform : BaseEntity
         rotateDirection = Utils.Math.MyMath.ClampVector(rotateDirection, Utils.Math.MyMath.ClampMode.ZeroToOne);
     }
 
-    public override void OnUpdate()
+    public override void OnFixedUpdate()
     {
         if (currentStartTimer <= 0f)
         {
             if (currentToFinishTimer >= 0f)
             {
-                rotationObject.Rotate(rotateDirection * (rotateAmount / timeFromStartToFinished * Time.deltaTime * GameManager.Instance.ObjectsGameSpeed));
-                currentToFinishTimer -= Time.deltaTime * GameManager.Instance.ObjectsGameSpeed;
+                rotationObject.Rotate(rotateDirection * (rotateAmount / timeFromStartToFinished * Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed));
+                currentToFinishTimer -= Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
             }
             else
             {
@@ -37,7 +37,7 @@ public class CyclingPlatform : BaseEntity
         }
         else
         {
-            currentStartTimer -= Time.deltaTime * GameManager.Instance.ObjectsGameSpeed;
+            currentStartTimer -= Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
         }
     }
 

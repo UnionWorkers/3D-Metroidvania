@@ -20,14 +20,14 @@ public class ConveyorBelt : BaseEntity
         currentVectorOffset = conveyorBeltMesh.material.GetVector("_Offset");
     }
 
-    public override void OnUpdate()
+    public override void OnFixedUpdate()
     {
         if (previousGameSpeed != GameManager.Instance.ObjectsGameSpeed)
         {
             previousGameSpeed = GameManager.Instance.ObjectsGameSpeed;
         }
 
-        currentVectorOffset += new Vector2(0, 1) * (CurrentVelocity * visualSpeedOffset * Time.deltaTime);
+        currentVectorOffset += new Vector2(0, 1) * (CurrentVelocity * visualSpeedOffset * Time.fixedDeltaTime);
         conveyorBeltMesh.material.SetVector("_Offset", currentVectorOffset);
     }
 }

@@ -28,11 +28,11 @@ namespace Utils.Effect
             }
         }
 
-        void Update()
+        private void FixedUpdate()
         {
-            rotatingUtil.RotateObject(transform);
+            rotatingUtil.RotateObject(transform, Time.fixedDeltaTime);
         }
 
-    }
+}
 
 }

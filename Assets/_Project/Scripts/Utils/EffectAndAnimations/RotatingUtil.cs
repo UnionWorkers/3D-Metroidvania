@@ -9,9 +9,9 @@ namespace Utils.Effect
         [SerializeField] private Vector3 Rotation;
         [SerializeField] private float rotationSpeed = 1f;
 
-        public virtual void RotateObject(Transform objectToRotate)
+        public virtual void RotateObject(Transform objectToRotate, float deltaTime)
         {
-            objectToRotate.Rotate(Rotation * rotationSpeed * Time.deltaTime * GameManager.Instance.ObjectsGameSpeed);
+            objectToRotate.Rotate(Rotation * rotationSpeed * deltaTime * GameManager.Instance.ObjectsGameSpeed);
         }
     }
 

@@ -51,7 +51,7 @@ public class SpinningFan : BaseEntity
         }
     }
 
-    public override void OnUpdate()
+    public override void OnFixedUpdate()
     {
         gameSpeed = GameManager.Instance.ObjectsGameSpeed;
 
@@ -66,7 +66,7 @@ public class SpinningFan : BaseEntity
         }
 
         // add ro
-        rotatingUtil.RotateObject(transform);
+        rotatingUtil.RotateObject(transform, Time.fixedDeltaTime);
     }
 
     private void CheckIfWallCanOpen(float gameSpeedRequired)
