@@ -73,8 +73,6 @@ public class SpinningFan : BaseEntity
     {
         if (gameSpeed <= gameSpeedRequired && wallIsBlocking)
         {
-
-            Debug.Log(wallBlocker);
             wallBlocker.SetActive(false);
             wallIsBlocking = false;
         }
