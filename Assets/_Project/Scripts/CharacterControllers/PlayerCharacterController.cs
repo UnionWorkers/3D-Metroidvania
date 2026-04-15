@@ -357,6 +357,16 @@ namespace CustomCharacterController
         {
             // for slope detection 
             groundHitNormal = hit.normal;
+
+            // make the character fall 
+            if (transform.position.y - hit.transform.position.y < 0)
+            {
+                if (externalForces.y > 0)
+                {
+                    externalForces.y = 0;
+                }
+            }
+
         }
 
         public void MovePlayer(Vector2 inDirection, Transform cameraTransform)
@@ -434,7 +444,7 @@ namespace CustomCharacterController
                 CanGlide = true;
             }
             // can double jump
-            else if (jumpStage != JumpStage.Reset && jumpStage != JumpStage.CanDoubleJump)
+            else if (jumpStage != JumpStage.Reset && jumpStage != JumpStage.CanDoubleJump && CurrentDashStage != DashStage.IsDashing)
             {
                 JumpStage = JumpStage.CanDoubleJump;
                 CanGlide = true;
@@ -482,8 +492,7 @@ namespace CustomCharacterController
         {
             float downVelocity;
 
-            float newGravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
-            gravityScale = newGravityScale;
+            gravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
 
             // gravity when Y is negative, character falling 
             if (!characterController.isGrounded && externalForces.y < 0f)
@@ -509,7 +518,6 @@ namespace CustomCharacterController
             // gravity when Y is positive, character going up 
             else
             {
-                gravityScale = gravityScale * 1;
                 downVelocity = moveStats.GravityValue;
             }
 
@@ -724,18 +732,39 @@ namespace CustomCharacterController
 
                     if (jumpStage == JumpStage.CommitJump || moveType == MoveType.OnRope)
                     {
-                        if (moveType != MoveType.TestNormal)
+                        if (moveType != MoveType.Normal)
                         {
-                            MoveType = MoveType.TestNormal;
+                            MoveType = MoveType.Normal;
                         }
 
+                        LockGlide = false;
+                        gravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
+
                         externalForces.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight);
+
+                        if (CurrentDashStage == DashStage.IsDashing)
+                        {
+                            CurrentDashStage = DashStage.CancelDash;
+                        }
+
                         JumpStage = JumpStage.CanDoubleJump;
                     }
                     else if (jumpStage == JumpStage.CommitDoubleJump)
                     {
+
+                        LockGlide = false;
+                        gravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
+
+                        transform.rotation = Quaternion.Euler(0, wantedRotation, 0);
+                        currentMoveDirection = wantedMoveDirection;
+
                         externalForces.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight) * moveStats.DoubleJumpEffect;
                         JumpStage = JumpStage.Reset;
+
+                        if (CurrentDashStage == DashStage.IsDashing)
+                        {
+                            CurrentDashStage = DashStage.CancelDash;
+                        }
                     }
 
                     break;

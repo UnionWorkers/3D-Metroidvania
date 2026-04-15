@@ -189,6 +189,7 @@ namespace Entities.Controller
                 else
                 {
                     canAttack = true;
+                    currentAttackTimer = 0;
                 }
             }
 
@@ -201,6 +202,7 @@ namespace Entities.Controller
                 else
                 {
                     CharacterController.CurrentDashStage = DashStage.CanDash;
+                    currentDashTimer = 0;
                 }
             }
 
