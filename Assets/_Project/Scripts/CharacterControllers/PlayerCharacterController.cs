@@ -244,6 +244,7 @@ namespace CustomCharacterController
         [NonSerialized] public bool LockGlide = false;
         [NonSerialized] public bool PressingJump = false;
         [NonSerialized] public DashStage CurrentDashStage;
+        public PlayerAnimationController AnimationController = new();
 
         public bool CanMove => canMove;
         public bool isGround => characterController.isGrounded;
@@ -343,6 +344,16 @@ namespace CustomCharacterController
                 }
             }
 
+            if (AnimationController.CharacterAnimator == null)
+            {
+                AnimationController.CharacterAnimator = GetComponentInChildren<Animator>();
+
+                if (AnimationController.CharacterAnimator == null)
+                {
+                    Debug.LogError("There is no Animator on Player");
+                }
+            }
+
             // turn off CharacterController, using own implementation
             characterController.stepOffset = 0;
 
@@ -438,6 +449,8 @@ namespace CustomCharacterController
             // Coyote
             else if (currentCoyoteTime <= moveStats.MaxCoyoteTime)
             {
+                AnimationController.AnimationState = AnimationState.InAir;
+
                 movingGroundInfo = new(0, Vector3.zero);
                 T_Ground = null;
                 currentCoyoteTime += Time.fixedDeltaTime;
@@ -446,6 +459,7 @@ namespace CustomCharacterController
             // can double jump
             else if (jumpStage != JumpStage.Reset && jumpStage != JumpStage.CanDoubleJump && CurrentDashStage != DashStage.IsDashing)
             {
+                AnimationController.AnimationState = AnimationState.InAir;
                 JumpStage = JumpStage.CanDoubleJump;
                 CanGlide = true;
             }
@@ -550,6 +564,9 @@ namespace CustomCharacterController
         {
             gravityScale = 1f;
             currentCoyoteTime = 0;
+
+            AnimationController.AnimationState = AnimationState.Grounded;
+
             if (wantedMoveDirection.y < 0.1f && jumpStage != JumpStage.CommitJump)
             {
                 JumpStage = JumpStage.CanJump;
@@ -661,8 +678,8 @@ namespace CustomCharacterController
                 }
             }
 
-            // transform.LookAt(wantedMoveDirection + transform.position);
-            // transform.Rotate(new Vector3(0, Mathf.Atan2(currentMoveDirection.x, currentMoveDirection.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y,0));
+            AnimationController.SetRunAnimation(currentVelocity);
+
 
             return currentVelocity * currentMoveDirection;
         }
@@ -726,49 +743,48 @@ namespace CustomCharacterController
 
         public void CommitJump()
         {
-            switch (moveType)
+            if (jumpStage == JumpStage.CommitJump || moveType == MoveType.OnRope)
             {
-                case MoveType.Normal:
+                if (moveType != MoveType.Normal)
+                {
+                    MoveType = MoveType.Normal;
+                }
 
-                    if (jumpStage == JumpStage.CommitJump || moveType == MoveType.OnRope)
-                    {
-                        if (moveType != MoveType.Normal)
-                        {
-                            MoveType = MoveType.Normal;
-                        }
+                LockGlide = false;
+                gravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
 
-                        LockGlide = false;
-                        gravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
+                externalForces.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight);
 
-                        externalForces.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight);
+                if (CurrentDashStage == DashStage.IsDashing)
+                {
+                    CurrentDashStage = DashStage.CancelDash;
+                }
 
-                        if (CurrentDashStage == DashStage.IsDashing)
-                        {
-                            CurrentDashStage = DashStage.CancelDash;
-                        }
+                AnimationController.TriggerJumpAnimation();
 
-                        JumpStage = JumpStage.CanDoubleJump;
-                    }
-                    else if (jumpStage == JumpStage.CommitDoubleJump)
-                    {
-
-                        LockGlide = false;
-                        gravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
-
-                        transform.rotation = Quaternion.Euler(0, wantedRotation, 0);
-                        currentMoveDirection = wantedMoveDirection;
-
-                        externalForces.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight) * moveStats.DoubleJumpEffect;
-                        JumpStage = JumpStage.Reset;
-
-                        if (CurrentDashStage == DashStage.IsDashing)
-                        {
-                            CurrentDashStage = DashStage.CancelDash;
-                        }
-                    }
-
-                    break;
+                JumpStage = JumpStage.CanDoubleJump;
             }
+            else if (jumpStage == JumpStage.CommitDoubleJump)
+            {
+
+                LockGlide = false;
+                gravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
+
+                transform.rotation = Quaternion.Euler(0, wantedRotation, 0);
+                currentMoveDirection = wantedMoveDirection;
+
+                externalForces.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight) * moveStats.DoubleJumpEffect;
+                JumpStage = JumpStage.Reset;
+
+                if (CurrentDashStage == DashStage.IsDashing)
+                {
+                    CurrentDashStage = DashStage.CancelDash;
+                }
+
+                AnimationController.TriggerJumpAnimation();
+
+            }
+
         }
 
         public void CommitDash()
@@ -848,6 +864,8 @@ namespace CustomCharacterController
                     health.TakeDamage(new(attackInfo.DamageStruct.DamageAmount, transform));
                 }
             }
+
+            AnimationController.TriggerAttackAnimation();
 
             if (visualEffect != null)
             {

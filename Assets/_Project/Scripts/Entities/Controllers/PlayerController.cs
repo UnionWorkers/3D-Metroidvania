@@ -73,7 +73,6 @@ namespace Entities.Controller
             set { currentCheckPoint = value; Debug.Log(currentCheckPoint); }
         }
 
-
         private void Awake()
         {
             if (playerCharacterController == null)
@@ -138,7 +137,10 @@ namespace Entities.Controller
             if (healthComponent.CurrentHealth <= 0)
             {
                 OnDeath?.Invoke();
+                return;
             }
+
+            playerCharacterController.AnimationController.TriggerHitAnimation();
         }
 
         public void SetCameraController(CameraController inCameraController)
