@@ -1,18 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Unity.Collections;
+
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
-    public Sound[] musicSounds, sfxSounds; 
+
+    [SerializeField] private SoundsPresetSO musicPreset, sfxPreset;
+    [SerializeField] private bool playPreset = false;
+    public Sound[] musicSounds, sfxSounds;
     public AudioSource musicSource, sfxSource;
 
     private void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
@@ -30,14 +33,23 @@ public class AudioManager : MonoBehaviour
 
     public void PlayMusic(string name)
     {
-        Sound s = Array.Find(musicSounds, x => x.name == name);
+        Sound s = null;
+     
+        if (playPreset)
+        {
+            s = musicPreset.GetSoundByName(name);
+        }
+        else
+        {
+            s = Array.Find(musicSounds, x => x.name == name);
+        }
 
-        if (s != null)
+        if (s == null)
         {
             Debug.Log("Sound Not Found");
         }
 
-        else 
+        else
         {
             musicSource.clip = s.clip;
             musicSource.Play();
@@ -46,9 +58,17 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySFX(string name)
     {
-        Sound s = Array.Find(sfxSounds, x => x.name == name);
+        Sound s = null;
+        if (playPreset)
+        {
+            s = sfxPreset.GetSoundByName(name);
+        }
+        else
+        {
+            s = Array.Find(sfxSounds, x => x.name == name);
+        }
 
-        if (s != null)
+        if (s == null)
         {
             Debug.Log("Sound Not Found");
         }

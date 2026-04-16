@@ -53,8 +53,11 @@ Material:
     m_Floats:
     - _Amp: 0
     - _Boolean: 0
+    - _IsActive: 0
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _Speed: 20
+    - _Strength: 0.05
     - _ste: 0.06
     - _test: 20
     m_Colors:
