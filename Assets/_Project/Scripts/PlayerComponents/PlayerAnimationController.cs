@@ -33,8 +33,6 @@ public class PlayerAnimationController
                     canRun = false;
                     break;
                 case AnimationState.InAir:
-                    CharacterAnimator.SetBool("InAir", false);
-
                     break;
 
             }
@@ -46,11 +44,16 @@ public class PlayerAnimationController
                     canRun = true;
                     break;
                 case AnimationState.InAir:
-                    CharacterAnimator.SetBool("InAir", true);
                     break;
             }
             animationState = value;
         }
+    }
+
+    public void IsFalling(float fallSpeed)
+    {
+        AnimationState = AnimationState.InAir;
+        CharacterAnimator.SetFloat("FallSpeed", fallSpeed);
     }
 
     public void SetRunAnimation(float velocity)

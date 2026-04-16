@@ -449,8 +449,6 @@ namespace CustomCharacterController
             // Coyote
             else if (currentCoyoteTime <= moveStats.MaxCoyoteTime)
             {
-                AnimationController.AnimationState = AnimationState.InAir;
-
                 movingGroundInfo = new(0, Vector3.zero);
                 T_Ground = null;
                 currentCoyoteTime += Time.fixedDeltaTime;
@@ -459,7 +457,6 @@ namespace CustomCharacterController
             // can double jump
             else if (jumpStage != JumpStage.Reset && jumpStage != JumpStage.CanDoubleJump && CurrentDashStage != DashStage.IsDashing)
             {
-                AnimationController.AnimationState = AnimationState.InAir;
                 JumpStage = JumpStage.CanDoubleJump;
                 CanGlide = true;
             }
@@ -494,6 +491,16 @@ namespace CustomCharacterController
             }
 
             CommitDash();
+
+            if (finalForce.y < 0 && !characterController.isGrounded)
+            {
+                AnimationController.IsFalling(finalForce.y);
+                Debug.Log(finalForce.y);
+            }
+            else
+            {
+                AnimationController.IsFalling(1);
+            }
 
 
             characterController.Move(finalForce);
