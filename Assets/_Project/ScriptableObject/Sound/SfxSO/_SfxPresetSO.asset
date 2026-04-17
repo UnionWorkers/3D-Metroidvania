@@ -12,4 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0898aef84dd0716468055b31ccde7653, type: 3}
   m_Name: _SfxPresetSO
   m_EditorClassIdentifier: Assembly-CSharp::SoundsPresetSO
-  SoundPresets: []
+  SoundPresets:
+  - {fileID: 11400000, guid: 311edfbde84620b46833e7c8f6f351a8, type: 2}
+  - {fileID: 11400000, guid: 95c18ccf600e26a4d88559bce922899f, type: 2}
+  - {fileID: 11400000, guid: b68aaf772f281fb489f360287613ab4f, type: 2}
+  - {fileID: 11400000, guid: 2f971828087721148a66d4d960b0eb39, type: 2}
+  - {fileID: 11400000, guid: 570f3ea421c8a8a4394f206f5e763ead, type: 2}
+  - {fileID: 11400000, guid: af40248723252cb49980719d481ba594, type: 2}
+  - {fileID: 11400000, guid: 1f38641fa20aa134f97806ce4a58d963, type: 2}
+  - {fileID: 11400000, guid: 57b0baff6a0cca14da45e4a2e20181e4, type: 2}
+  - {fileID: 11400000, guid: 029f34a67f33e8741a3fd74ed117eb34, type: 2}
+  - {fileID: 11400000, guid: f89d7068d102a194ebe03192175265a1, type: 2}
+  - {fileID: 11400000, guid: 1f3babdfd53eb034f957c9bc6269814a, type: 2}
+  - {fileID: 11400000, guid: 7785911c410765c47adcac9e7ab2b4ea, type: 2}
+  - {fileID: 11400000, guid: cb63ad90c7889fb4493f87b0b6a9d200, type: 2}
+  - {fileID: 11400000, guid: 35fbd2e3e5a78f44ea15f88b6f0d16c7, type: 2}
+  - {fileID: 11400000, guid: 0767e0ad68038ee418e4101883fe5720, type: 2}
+  - {fileID: 11400000, guid: 9623b4ae3ed3445489e29847c766f4b5, type: 2}
+  - {fileID: 11400000, guid: 1a550b28669e63544b0f5b9199afc4fe, type: 2}
+  - {fileID: 11400000, guid: 01d001acd67da3444a123241fa156541, type: 2}
+  - {fileID: 11400000, guid: 63157983cbbf52644a388e62288cfb0f, type: 2}
+  - {fileID: 11400000, guid: ba0334a0cf6102441857904c3ee7ea8c, type: 2}

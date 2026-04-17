@@ -495,9 +495,8 @@ namespace CustomCharacterController
             if (finalForce.y < 0 && !characterController.isGrounded)
             {
                 AnimationController.IsFalling(finalForce.y);
-                Debug.Log(finalForce.y);
             }
-            else
+            else 
             {
                 AnimationController.IsFalling(1);
             }
@@ -685,7 +684,7 @@ namespace CustomCharacterController
                 }
             }
 
-            AnimationController.SetRunAnimation(currentVelocity);
+            AnimationController.SetRunAnimation(currentVelocity, this);
 
 
             return currentVelocity * currentMoveDirection;
@@ -767,7 +766,7 @@ namespace CustomCharacterController
                     CurrentDashStage = DashStage.CancelDash;
                 }
 
-                AnimationController.TriggerJumpAnimation();
+                AnimationController.TriggerJumpAnimation(true);
 
                 JumpStage = JumpStage.CanDoubleJump;
             }
@@ -788,8 +787,7 @@ namespace CustomCharacterController
                     CurrentDashStage = DashStage.CancelDash;
                 }
 
-                AnimationController.TriggerJumpAnimation();
-
+                AnimationController.TriggerJumpAnimation(false);
             }
 
         }

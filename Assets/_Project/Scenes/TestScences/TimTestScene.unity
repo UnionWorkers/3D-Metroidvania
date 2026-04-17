@@ -33680,7 +33680,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
   musicPreset: {fileID: 11400000, guid: 34c4fb47cb63ea640a73b789ecd13aeb, type: 2}
   sfxPreset: {fileID: 11400000, guid: 973a7707c88c7d248b8a4a81ab631cad, type: 2}
-  playPreset: 0
+  playPreset: 1
   musicSounds: []
   sfxSounds: []
   musicSource: {fileID: 1353977117}
@@ -34998,6 +34998,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6958708317175323635, guid: 21344e9368908814a95becf5e617ece5, type: 3}
+      propertyPath: AnimationController.walkCooldown
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7754730086136922038, guid: 21344e9368908814a95becf5e617ece5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.36

@@ -8,6 +8,10 @@ public class SoundsPresetSO : ScriptableObject
 
     public Sound GetSoundByName(string name)
     {
-        return Array.Find(SoundPresets, sound => sound.name == name).SoundPreset;
+        if(SoundPresets.Length > 0)
+        {
+            return Array.Find(SoundPresets, sound => sound.name == name || sound.name.ToLower() == name.ToLower()).SoundPreset;
+        }
+        return null;
     }
 }

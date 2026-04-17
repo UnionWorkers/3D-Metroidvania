@@ -1,12 +1,9 @@
 using UnityEngine;
 using System;
-using Unity.Collections;
-
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
-
 
     [SerializeField] private SoundsPresetSO musicPreset, sfxPreset;
     [SerializeField] private bool playPreset = false;
