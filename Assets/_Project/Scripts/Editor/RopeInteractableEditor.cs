@@ -2,12 +2,12 @@ using UnityEditor;
 using UnityEngine;
 
 
-[CustomEditor(typeof(MagnetObjectInteractable), true)]
-public class MagnetObjectEditor : Editor
+[CustomEditor(typeof(RopeInteractable), true)]
+public class RopeInteractableEditor : Editor
 {
     private void OnSceneGUI()
     {
-        MagnetObjectInteractable magnetObject = target as MagnetObjectInteractable;
+        RopeInteractable magnetObject = target as RopeInteractable;
 
         Vector3 startPos = magnetObject.StartPoint;
         Vector3 endPos = magnetObject.EndPoint;

@@ -113,9 +113,9 @@ public class FallingPlatform : MovingObject
 
         float dist = Vector3.Distance(transform.position, desiredMovePoint);
 
+
         if (dist > 0.15f)
         {
-            Debug.Log(transform.position);
             transform.position += currentVelocity * Time.fixedDeltaTime * currentMoveDirection;
             return false;
         }

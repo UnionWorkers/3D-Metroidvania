@@ -2,7 +2,7 @@ using UnityEngine;
 using Entities.Controller;
 using Interactable;
 
-public class MagnetObjectInteractable : BaseInteractable
+public class RopeInteractable : BaseInteractable
 {
     [SerializeField] LineRenderer lineRenderer = null;
     [SerializeField] Transform startObject = null;
@@ -75,7 +75,7 @@ public class MagnetObjectInteractable : BaseInteractable
     {
         itemState = ItemState.BeingUsed;
 
-        inPlayerController.CharacterController.MagnetObject = this;
+        inPlayerController.CharacterController.RopeObject = this;
         inPlayerController.SwitchMoveType(CustomCharacterController.MoveType.OnRope);
     }
 

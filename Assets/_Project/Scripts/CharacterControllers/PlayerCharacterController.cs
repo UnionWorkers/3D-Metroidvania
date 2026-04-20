@@ -8,6 +8,8 @@ namespace CustomCharacterController
     {
         Normal,
         OnRope,
+        OnStandingPoint,
+        OnClimbable,
         TestNormal
     }
 
@@ -199,7 +201,7 @@ namespace CustomCharacterController
 
         // Movement
         private bool canMove = true;
-        private MoveType moveType = MoveType.Normal;
+        private MoveType currentMoveType = MoveType.Normal;
         private float currentVelocity;
         private Vector3 currentMoveDirection;
         private Vector3 wantedMoveDirection;
@@ -239,7 +241,9 @@ namespace CustomCharacterController
 
         #region Public
 
-        [NonSerialized] public MagnetObjectInteractable MagnetObject = null;
+        [NonSerialized] public RopeInteractable RopeObject = null;
+        [NonSerialized] public ClimbableInteractable ClimbableObject = null;
+        [NonSerialized] public StandingPointInteractable StandingPointObject = null;
         [NonSerialized] public bool CanGlide = false;
         [NonSerialized] public bool LockGlide = false;
         [NonSerialized] public bool PressingJump = false;
@@ -260,21 +264,46 @@ namespace CustomCharacterController
         }
         public MoveType MoveType
         {
-            get => moveType;
+            get => currentMoveType;
             set
             {
+                if (value == currentMoveType) { return; }
+
+                // Cleaning current MoveType 
+                switch (currentMoveType)
+                {
+                    case MoveType.Normal:
+                        canMove = false;
+                        break;
+                    case MoveType.OnRope:
+                        RopeObject = null;
+                        break;
+                    case MoveType.OnStandingPoint:
+                        StandingPointObject = null;
+                        break;
+                    case MoveType.OnClimbable:
+                        ClimbableObject = null;
+                        break;
+                }
+
+                // Initialize next MoveType 
                 switch (value)
                 {
                     case MoveType.Normal:
                         canMove = true;
-                        MagnetObject = null;
                         break;
                     case MoveType.OnRope:
                         AttachToRope();
                         break;
+                    case MoveType.OnStandingPoint:
+                        AttachStandingPoint();
+                        break;
+                    case MoveType.OnClimbable:
+                        AttachClimbable();
+                        break;
                 }
 
-                moveType = value;
+                currentMoveType = value;
             }
         }
 
@@ -300,7 +329,7 @@ namespace CustomCharacterController
         {
             if (debugState)
             {
-                if (moveType == MoveType.Normal)
+                if (currentMoveType == MoveType.Normal)
                 {
                     Vector3 wantedMoveDir = (wantedMoveDirection * moveStats.MaxSpeed) + transform.position;
                     Vector3 moveDirection = (currentMoveDirection * currentVelocity) + transform.position;
@@ -382,14 +411,22 @@ namespace CustomCharacterController
 
         public void MovePlayer(Vector2 inDirection, Transform cameraTransform)
         {
-            switch (moveType)
+            switch (currentMoveType)
             {
                 case MoveType.Normal:
                     NormalMovement(ref inDirection, ref cameraTransform);
                     break;
                 case MoveType.OnRope:
                     // Fix 💀
-                    //RopeMovement(ref inDirection, ref cameraTransform);
+                    RopeMovement(ref inDirection, ref cameraTransform);
+                    break;
+
+                case MoveType.OnStandingPoint:
+                    StandingPointMovement(ref inDirection, ref cameraTransform);
+                    break;
+
+                case MoveType.OnClimbable:
+                    ClimbingMovement(ref inDirection, ref cameraTransform);
                     break;
 
                 case MoveType.TestNormal:
@@ -496,7 +533,7 @@ namespace CustomCharacterController
             {
                 AnimationController.IsFalling(finalForce.y);
             }
-            else 
+            else
             {
                 AnimationController.IsFalling(1);
             }
@@ -749,9 +786,9 @@ namespace CustomCharacterController
 
         public void CommitJump()
         {
-            if (jumpStage == JumpStage.CommitJump || moveType == MoveType.OnRope)
+            if (jumpStage == JumpStage.CommitJump || currentMoveType == MoveType.OnRope)
             {
-                if (moveType != MoveType.Normal)
+                if (currentMoveType != MoveType.Normal)
                 {
                     MoveType = MoveType.Normal;
                 }
@@ -881,13 +918,57 @@ namespace CustomCharacterController
         private void AttachToRope()
         {
             canMove = false;
-            characterController.enabled = false; // fixed so the player gets set in the right position;
+            characterController.enabled = false;
 
-            transform.position = MagnetObject.GetClosestPointOnSegment(transform.position);
+            transform.position = RopeObject.GetClosestPointOnSegment(transform.position);
 
             canMove = true;
             characterController.enabled = true;
         }
+
+        private void RopeMovement(ref Vector2 inDirection, ref Transform cameraTransform)
+        {
+
+        }
+
+        private void AttachStandingPoint()
+        {
+            canMove = false;
+            characterController.enabled = false;
+
+            transform.position = StandingPointObject.SetPlayerAtStandingPoint(characterController.height / 2f - characterController.center.y);
+
+            canMove = true;
+            characterController.enabled = true;
+        }
+
+        private void StandingPointMovement(ref Vector2 inDirection, ref Transform cameraTransform)
+        {
+            if (inDirection != Vector2.zero)
+            {
+                MoveType = MoveType.Normal;
+            }
+        }
+
+        private void AttachClimbable()
+        {
+            canMove = false;
+            characterController.enabled = false;
+
+            transform.position = ClimbableObject.GetClosestPointOnSegment(transform.position);
+
+            canMove = true;
+            characterController.enabled = true;
+        }
+
+        private void ClimbingMovement(ref Vector2 inDirection, ref Transform cameraTransform)
+        {
+            if (inDirection != Vector2.zero)
+            {
+                MoveType = MoveType.Normal;
+            }
+        }
+
 
         // Fix so the player moves with the camera forward
         // private void RopeMovement(ref Vector2 inDirection, ref Transform cameraTransform)
