@@ -32797,7 +32797,7 @@ GameObject:
   - component: {fileID: 1428706762}
   - component: {fileID: 1428706761}
   - component: {fileID: 1428706760}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: ClimbingObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32816,8 +32816,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8627f358e72b1429014fffea24d341, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClimbableInteractable
-  startPoint: {x: 0, y: 0, z: 0}
-  endPoint: {x: 0, y: 0, z: 0}
+  startPoint: {x: 0, y: 2.9699988, z: 0}
+  endPoint: {x: 0, y: -2.933187, z: 0}
 --- !u!136 &1428706761
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -32906,13 +32906,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1428706759}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.23361501, y: 0, z: 0, w: 0.9723292}
   m_LocalPosition: {x: -31.03, y: 3.19, z: -24.22}
   m_LocalScale: {x: 0.3, y: 3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 27.02, y: 0, z: 0}
 --- !u!1 &1429994513
 GameObject:
   m_ObjectHideFlags: 0
