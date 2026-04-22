@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 283267613681591437}
   - component: {fileID: 6509180968404938845}
   - component: {fileID: 4968348780877427629}
+  - component: {fileID: 8809761037839410400}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -70,6 +71,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: cf4305ee00225fc439324877907061d8, type: 2}
+  - {fileID: 2100000, guid: 72ef844b0c2335e449a463d7dae18332, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4917,6 +4919,18 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
+--- !u!114 &8809761037839410400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6845054593856808077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 229aac846e2ca9547a00d683479b989e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactable.BaseInteractable
 --- !u!1 &8873774612438209971
 GameObject:
   m_ObjectHideFlags: 0
@@ -4926,7 +4940,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3446055488875051007}
-  - component: {fileID: 2978089644991259586}
   m_Layer: 0
   m_Name: AbilityPickup
   m_TagString: Untagged
@@ -4950,15 +4963,3 @@ Transform:
   - {fileID: 2896046193166564966}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2978089644991259586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8873774612438209971}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 229aac846e2ca9547a00d683479b989e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Interactable.BaseInteractable
