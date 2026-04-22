@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 4754053971505770211}
   - component: {fileID: 7264206302954388504}
   - component: {fileID: 4059097301283443734}
+  - component: {fileID: 1458102877833178104}
   m_Layer: 0
   m_Name: e
   m_TagString: Untagged
@@ -102,6 +103,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 1a35abbf9494a5a488c8d86132d81546, type: 2}
+  - {fileID: 2100000, guid: 72ef844b0c2335e449a463d7dae18332, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4949,3 +4951,15 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
+--- !u!114 &1458102877833178104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6671511914877854581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 229aac846e2ca9547a00d683479b989e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Interactable.BaseInteractable
