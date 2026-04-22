@@ -51,8 +51,24 @@ public class ClimbableInteractable : BaseInteractable
         inPlayerController.CharacterController.ClimbableObject = this;
         inPlayerController.SwitchMoveType(CustomCharacterController.MoveType.OnClimbable);
     }
+
     public Vector3 GetClosestPointOnSegment(Vector3 inPos)
     {
-        return inPos;
+        Vector3 pointToPos = inPos - EndPoint;
+        Vector3 endToEnd = StartPoint - EndPoint;
+
+        // is nearest end point 
+        float dotProduct = Vector3.Dot(pointToPos, endToEnd);
+        if (dotProduct <= 0f) { return EndPoint; }
+
+        pointToPos = inPos - StartPoint;
+        endToEnd = EndPoint - StartPoint;
+
+        // is nearest start point 
+        dotProduct = Vector3.Dot(pointToPos, endToEnd);
+        if (dotProduct <= 0f) { return StartPoint; }
+
+        // point in segment
+        return StartPoint + endToEnd.normalized * (dotProduct / endToEnd.magnitude);
     }
 }

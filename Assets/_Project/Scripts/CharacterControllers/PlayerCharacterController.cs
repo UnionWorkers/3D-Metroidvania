@@ -1,4 +1,5 @@
 using System;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -30,7 +31,6 @@ namespace CustomCharacterController
         CancelDash,
         Reset
     }
-
 
 
     [System.Serializable]
@@ -169,13 +169,25 @@ namespace CustomCharacterController
         public DamageStruct DamageStruct => damageStruct;
     }
 
+    [System.Serializable]
+    public struct ClimbingInfo
+    {
+        [SerializeField] private float climbSpeed;
+        [SerializeField] private float climbAccelerationTime;
+        [SerializeField] private float climbAroundSpeed;
+
+        public float ClimbSpeed => climbSpeed;
+        public float ClimbAccelerationTime => climbAccelerationTime;
+        public float ClimbAroundSpeed => climbAroundSpeed;
+    }
+
     [RequireComponent(typeof(CharacterController))]
     public class PlayerCharacterController : MonoBehaviour
     {
-        [SerializeField] bool debugState = false;
-        [SerializeField] private CharacterController characterController;
 
         #region SerializedField
+        [SerializeField] bool debugState = false;
+        [SerializeField] private CharacterController characterController;
 
         [Space(15)]
         [SerializeField] private bool usePreset = false;
@@ -194,6 +206,11 @@ namespace CustomCharacterController
         [Space(15)]
         [Header("Attack")]
         [SerializeField] private VisualEffect attackVFX;
+
+        // Climb
+        [Space(15)]
+        [Header("Climb")]
+        [SerializeField] private ClimbingInfo climbingInfo;
 
         #endregion
 
@@ -238,7 +255,6 @@ namespace CustomCharacterController
         private Transform T_Ground;
         #endregion
 
-
         #region Public
 
         [NonSerialized] public RopeInteractable RopeObject = null;
@@ -248,10 +264,14 @@ namespace CustomCharacterController
         [NonSerialized] public bool LockGlide = false;
         [NonSerialized] public bool PressingJump = false;
         [NonSerialized] public DashStage CurrentDashStage;
+        [Space(15)]
         public PlayerAnimationController AnimationController = new();
 
         public bool CanMove => canMove;
-        public bool isGround => characterController.isGrounded;
+        public bool IsGround => characterController.isGrounded;
+        public float BottomPos => characterController.height * 0.5f - characterController.center.y;
+        public float MiddlePos => characterController.height * 0.5f;
+
         public MoveStats MoveStats
         {
             get => moveStats;
@@ -285,6 +305,14 @@ namespace CustomCharacterController
                         ClimbableObject = null;
                         break;
                 }
+
+                finalForce = Vector3.zero;
+                currentVelocity = 0;
+                currentMoveDirection = Vector3.zero;
+                wantedMoveDirection = Vector3.zero;
+                externalForces = Vector3.zero;
+                slopeForce = Vector3.zero;
+                finalForce = Vector3.zero;
 
                 // Initialize next MoveType 
                 switch (value)
@@ -353,6 +381,20 @@ namespace CustomCharacterController
                     Gizmos.color = new Color(0.5f, 0.5f, 0.5f, 1f);
                     Gizmos.DrawSphere(finalDir, 0.6f);
                     Gizmos.DrawLine(transform.position, finalDir);
+                }
+                else if (currentMoveType == MoveType.OnClimbable)
+                {
+                    float startCheck = Mathf.Abs(transform.position.y - ClimbableObject.StartPoint.y);
+                    float endCheck = Mathf.Abs(transform.position.y - ClimbableObject.EndPoint.y);
+
+                    Vector3 player = transform.position;
+                    player.y -= MiddlePos;
+
+                    Gizmos.color = new Color(0f, 0, 0.5f, 1f);
+                    Gizmos.DrawSphere(player, 0.2f);
+
+                    Gizmos.color = new Color(0f, 0.5f, 0f, 1f);
+                    Gizmos.DrawSphere(transform.position, 0.2f);
                 }
 
                 //Physics.CapsuleCast(transform.position, transform.position + (transform.forward * 0.1f), attackInfo.Radius, transform.forward, attackInfo.ForwardDistance);
@@ -438,6 +480,11 @@ namespace CustomCharacterController
 
         private void NormalMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         {
+            if (!canMove)
+            {
+                return;
+            }
+
             // Input handling
             if (inDirection != Vector2.zero)
             {
@@ -502,8 +549,6 @@ namespace CustomCharacterController
             ApplyGravity();
 
             // Apply forces
-
-
             finalForce = (MoveToWantedPoint() + externalForces + movingGroundInfo.MoveVector) * Time.fixedDeltaTime;
 
 
@@ -733,7 +778,7 @@ namespace CustomCharacterController
             Vector3 normalizedMoveDirXZ = new Vector3(finalForce.x, 0f, finalForce.z).normalized;
             float distance = characterController.radius + characterController.skinWidth;
 
-            Vector3 bottom = transform.position - new Vector3(0f, characterController.height / 2f - characterController.center.y, 0f);
+            Vector3 bottom = transform.position - new Vector3(0f, BottomPos, 0f);
             Vector3 stepOffsetLimit = new(bottom.x, bottom.y + moveStats.StepupOffset, bottom.z);
             //Raycast at player's ground level in direction of movement
             bool hitWithBottomRaycast = Physics.Raycast(bottom, normalizedMoveDirXZ, out RaycastHit hitBottom, distance);
@@ -861,7 +906,7 @@ namespace CustomCharacterController
                     Vector3 bottom = transform.position;
                     Vector3 top = transform.position;
                     // Limit the height of the capsule for better detection 
-                    float height = (characterController.height / 2f - characterController.center.y) * 0.4f;
+                    float height = BottomPos * 0.4f;
                     bottom.y -= height;
                     top.y += height;
 
@@ -928,7 +973,15 @@ namespace CustomCharacterController
 
         private void RopeMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         {
+            if (!canMove)
+            {
+                return;
+            }
 
+            if (inDirection != Vector2.zero)
+            {
+                MoveType = MoveType.Normal;
+            }
         }
 
         private void AttachStandingPoint()
@@ -936,7 +989,7 @@ namespace CustomCharacterController
             canMove = false;
             characterController.enabled = false;
 
-            transform.position = StandingPointObject.SetPlayerAtStandingPoint(characterController.height / 2f - characterController.center.y);
+            transform.position = StandingPointObject.SetPlayerAtStandingPoint(BottomPos);
 
             canMove = true;
             characterController.enabled = true;
@@ -944,6 +997,11 @@ namespace CustomCharacterController
 
         private void StandingPointMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         {
+            if (!canMove)
+            {
+                return;
+            }
+
             if (inDirection != Vector2.zero)
             {
                 MoveType = MoveType.Normal;
@@ -955,7 +1013,7 @@ namespace CustomCharacterController
             canMove = false;
             characterController.enabled = false;
 
-            transform.position = ClimbableObject.GetClosestPointOnSegment(transform.position);
+            transform.position = ClimbableObject.GetClosestPointOnSegment(transform.position) + new Vector3(characterController.radius, 0, characterController.radius);
 
             canMove = true;
             characterController.enabled = true;
@@ -963,14 +1021,122 @@ namespace CustomCharacterController
 
         private void ClimbingMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         {
-            if (inDirection != Vector2.zero)
+            if (!canMove)
+            {
+                return;
+            }
+            else if (ClimbableObject == null)
             {
                 MoveType = MoveType.Normal;
+                return;
             }
+            else if (JumpStage == JumpStage.CommitJump)
+            {
+                CommitJump();
+                MoveType = MoveType.Normal;
+                return;
+            }
+
+            if (JumpStage != JumpStage.CanJump && JumpStage != JumpStage.CommitJump)
+            {
+                JumpStage = JumpStage.CanJump;
+            }
+
+            if (inDirection != Vector2.zero)
+            {
+                currentMoveDirection.y = inDirection.y;
+                currentMoveDirection.z = inDirection.x;
+            }
+            else
+            {
+                currentMoveDirection = Vector3.zero;
+            }
+
+            if (currentMoveDirection != Vector3.zero)
+            {
+                if (currentVelocity < climbingInfo.ClimbSpeed)
+                {
+                    currentVelocity += climbingInfo.ClimbSpeed * (Time.fixedDeltaTime / climbingInfo.ClimbAccelerationTime);
+                }
+                else
+                {
+                    currentVelocity = climbingInfo.ClimbSpeed;
+                }
+            }
+            else
+            {
+                if (currentVelocity > 0)
+                {
+                    currentVelocity -= climbingInfo.ClimbSpeed * (Time.fixedDeltaTime / climbingInfo.ClimbAccelerationTime);
+                }
+                else
+                {
+                    currentVelocity = 0;
+                }
+            }
+
+
+            if (currentMoveDirection.z != 0)
+            {
+                characterController.enabled = false;
+
+                Vector3 pivot = ClimbableObject.GetClosestPointOnSegment(transform.position);
+                transform.position = Quaternion.Euler(0, climbingInfo.ClimbAroundSpeed * (currentMoveDirection.z * -1), 0) * (transform.position - pivot) + pivot;
+                currentMoveDirection.z = 0;
+
+                transform.LookAt(pivot);
+
+                characterController.enabled = true;
+            }
+
+            finalForce = (currentMoveDirection * currentVelocity) * Time.fixedDeltaTime;
+
+            float startCheck = Mathf.Abs(ClimbableObject.StartPoint.y - transform.position.y);
+            float endCheck = Mathf.Abs(ClimbableObject.EndPoint.y - transform.position.y);
+
+            if (startCheck < 0.5)
+            {
+                Vector3 pso = Vector3.Normalize(ClimbableObject.StartPoint - transform.position);
+                float dot = Vector3.Dot(transform.TransformDirection(Vector3.up), pso);
+                if (dot > 0)
+                {
+                    if (finalForce.y > 0)
+                    {
+                        finalForce.y = 0;
+                    }
+                }
+                else
+                {
+                    if (finalForce.y < 0)
+                    {
+                        finalForce.y = 0;
+                    }
+                }
+            }
+            else if (endCheck < 0.5)
+            {
+                Vector3 pso = Vector3.Normalize(ClimbableObject.EndPoint - transform.position);
+                float dot = Vector3.Dot(transform.TransformDirection(transform.up), pso);
+                if (dot > 0)
+                {
+                    if (finalForce.y > 0)
+                    {
+                        finalForce.y = 0;
+                    }
+                }
+                else
+                {
+                    if (finalForce.y < 0)
+                    {
+                        finalForce.y = 0;
+                    }
+                }
+            }
+
+            characterController.Move(finalForce);
         }
 
 
-        // Fix so the player moves with the camera forward
         // private void RopeMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         // {
         //     if (MagnetObject == null)
