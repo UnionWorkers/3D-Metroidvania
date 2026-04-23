@@ -1,5 +1,4 @@
 using System;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -381,20 +380,6 @@ namespace CustomCharacterController
                     Gizmos.color = new Color(0.5f, 0.5f, 0.5f, 1f);
                     Gizmos.DrawSphere(finalDir, 0.6f);
                     Gizmos.DrawLine(transform.position, finalDir);
-                }
-                else if (currentMoveType == MoveType.OnClimbable)
-                {
-                    float startCheck = Mathf.Abs(transform.position.y - ClimbableObject.StartPoint.y);
-                    float endCheck = Mathf.Abs(transform.position.y - ClimbableObject.EndPoint.y);
-
-                    Vector3 player = transform.position;
-                    player.y -= MiddlePos;
-
-                    Gizmos.color = new Color(0f, 0, 0.5f, 1f);
-                    Gizmos.DrawSphere(player, 0.2f);
-
-                    Gizmos.color = new Color(0f, 0.5f, 0f, 1f);
-                    Gizmos.DrawSphere(transform.position, 0.2f);
                 }
 
                 //Physics.CapsuleCast(transform.position, transform.position + (transform.forward * 0.1f), attackInfo.Radius, transform.forward, attackInfo.ForwardDistance);
@@ -977,11 +962,166 @@ namespace CustomCharacterController
             {
                 return;
             }
+            else if (RopeObject == null)
+            {
+                MoveType = MoveType.Normal;
+                return;
+            }
+            else if (JumpStage == JumpStage.CommitJump)
+            {
+                CommitJump();
+                MoveType = MoveType.Normal;
+                return;
+            }
+
+            if (JumpStage != JumpStage.CanJump && JumpStage != JumpStage.CommitJump)
+            {
+                JumpStage = JumpStage.CanJump;
+            }
 
             if (inDirection != Vector2.zero)
             {
-                MoveType = MoveType.Normal;
+                // wantedRotation = Mathf.Atan2(inDirection.x, inDirection.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
+                // wantedMoveDirection = Quaternion.Euler(0, wantedRotation, 0) * Vector3.forward;
+                // wantedMoveDirection = wantedMoveDirection.normalized;
+
+                float dotProduct = Vector3.Dot(cameraTransform.forward, RopeObject.MoveForward);
+                if (dotProduct > 0)
+                {
+                    wantedMoveDirection = RopeObject.MoveForward * inDirection.y;
+                }
+                else
+                {
+                    wantedMoveDirection = -RopeObject.MoveForward * inDirection.y;
+                }
             }
+            else
+            {
+                wantedMoveDirection = Vector3.zero;
+                currentMoveDirection = Vector3.zero;
+            }
+
+            float ropeDist = RopeObject.RopeDistance;
+            float startToPlayer = RopeObject.DistanceFromStartToPoint(new Vector3(transform.position.x, RopeObject.StartPoint.y, transform.position.z));
+            float lerpAlfa = startToPlayer / ropeDist;
+
+            if (lerpAlfa <= 0.05)
+            {
+                Vector3 pointToPos = RopeObject.StartPoint - transform.position;
+                float dotProduct = Vector3.Dot(transform.position.normalized, pointToPos.normalized);
+                
+                Debug.Log(dotProduct);
+
+                if (dotProduct > 0)
+                {
+                    if (wantedMoveDirection == RopeObject.MoveForward)
+                    {
+                        wantedMoveDirection = Vector3.zero;
+                        currentMoveDirection = Vector3.zero;
+                    }
+                }
+                else
+                {
+                    if (wantedMoveDirection == -RopeObject.MoveForward)
+                    {
+                        wantedMoveDirection = Vector3.zero;
+                        currentMoveDirection = Vector3.zero;
+                    }
+                }
+            }
+            else if (lerpAlfa >= 0.95)
+            {
+                Vector3 pointToPos = RopeObject.EndPoint - transform.position;
+                float dotProduct = Vector3.Dot(transform.position.normalized, pointToPos.normalized);
+                
+                Debug.Log(dotProduct);
+
+                if (dotProduct > 0)
+                {
+                    if (wantedMoveDirection == RopeObject.MoveForward)
+                    {
+                        Debug.Log("F");
+                        wantedMoveDirection = Vector3.zero;
+                        currentMoveDirection = Vector3.zero;
+                    }
+                }
+                else
+                {
+                    if (wantedMoveDirection == -RopeObject.MoveForward)
+                    {
+                        Debug.Log("B");
+                        wantedMoveDirection = Vector3.zero;
+                        currentMoveDirection = Vector3.zero;
+                    }
+                }
+            }
+
+
+            // float startCheck = MathF.Abs((RopeObject.StartPoint - transform.position).magnitude);
+            // float endCheck = MathF.Abs((RopeObject.EndPoint - transform.position).magnitude);
+
+            // Debug.Log("Start: " + startCheck);
+            // Debug.Log("End: " + endCheck);
+
+
+            // // Limiting so the player cant go over or under the climbing object 
+            // if (startCheck < 1)
+            // {
+            //     Vector3 otherPos = Vector3.Normalize(RopeObject.StartPoint - transform.position);
+            //     float dotProduct = Vector3.Dot(transform.TransformDirection(transform.forward), otherPos);
+            //     if (dotProduct > 0)
+            //     {
+            //         if (wantedMoveDirection.x > 0)
+            //         {
+            //             wantedMoveDirection.x = 0;
+            //             currentMoveDirection.x = 0;
+            //         }
+            //     }
+            //     else
+            //     {
+            //         if (wantedMoveDirection.x < 0)
+            //         {
+            //             wantedMoveDirection.x = 0;
+            //             currentMoveDirection.x = 0;
+            //         }
+            //     }
+            // }
+            // else if (endCheck < 1)
+            // {
+            //     Vector3 otherPos = Vector3.Normalize(RopeObject.EndPoint - transform.position);
+            //     float dotProduct = Vector3.Dot(transform.TransformDirection(transform.forward), otherPos);
+            //     if (dotProduct > 0)
+            //     {
+            //         if (wantedMoveDirection.x > 0)
+            //         {
+            //             wantedMoveDirection.x = 0;
+            //             currentMoveDirection.x = 0;
+            //         }
+            //     }
+            //     else
+            //     {
+            //         if (wantedMoveDirection.x < 0)
+            //         {
+            //             wantedMoveDirection.x = 0;
+            //             currentMoveDirection.x = 0;
+            //         }
+            //     }
+            // }
+
+            if (wantedMoveDirection == -RopeObject.MoveForward)
+            {
+                transform.forward = -RopeObject.MoveForward;
+            }
+            else if (wantedMoveDirection == RopeObject.MoveForward)
+            {
+                transform.forward = RopeObject.MoveForward;
+            }
+
+            finalForce = MoveToWantedPoint() * Time.fixedDeltaTime;
+
+
+            characterController.Move(finalForce);
+
         }
 
         private void AttachStandingPoint()
@@ -1001,10 +1141,16 @@ namespace CustomCharacterController
             {
                 return;
             }
-
-            if (inDirection != Vector2.zero)
+            else if (StandingPointObject == null)
             {
                 MoveType = MoveType.Normal;
+                return;
+            }
+            else if (JumpStage == JumpStage.CommitJump)
+            {
+                CommitJump();
+                MoveType = MoveType.Normal;
+                return;
             }
         }
 
@@ -1013,7 +1159,9 @@ namespace CustomCharacterController
             canMove = false;
             characterController.enabled = false;
 
-            transform.position = ClimbableObject.GetClosestPointOnSegment(transform.position) + new Vector3(characterController.radius, 0, characterController.radius);
+            Vector3 point = ClimbableObject.GetClosestPointOnSegment(transform.position);
+            transform.position = point + new Vector3(characterController.radius, 0, characterController.radius);
+            transform.LookAt(point);
 
             canMove = true;
             characterController.enabled = true;
@@ -1075,7 +1223,7 @@ namespace CustomCharacterController
                 }
             }
 
-
+            // Moving left and right 
             if (currentMoveDirection.z != 0)
             {
                 characterController.enabled = false;
@@ -1094,11 +1242,12 @@ namespace CustomCharacterController
             float startCheck = Mathf.Abs(ClimbableObject.StartPoint.y - transform.position.y);
             float endCheck = Mathf.Abs(ClimbableObject.EndPoint.y - transform.position.y);
 
+            // Limiting so the player cant go over or under the climbing object 
             if (startCheck < 0.5)
             {
-                Vector3 pso = Vector3.Normalize(ClimbableObject.StartPoint - transform.position);
-                float dot = Vector3.Dot(transform.TransformDirection(Vector3.up), pso);
-                if (dot > 0)
+                Vector3 otherPos = Vector3.Normalize(ClimbableObject.StartPoint - transform.position);
+                float dotProduct = Vector3.Dot(transform.TransformDirection(Vector3.up), otherPos);
+                if (dotProduct > 0)
                 {
                     if (finalForce.y > 0)
                     {
@@ -1115,9 +1264,9 @@ namespace CustomCharacterController
             }
             else if (endCheck < 0.5)
             {
-                Vector3 pso = Vector3.Normalize(ClimbableObject.EndPoint - transform.position);
-                float dot = Vector3.Dot(transform.TransformDirection(transform.up), pso);
-                if (dot > 0)
+                Vector3 otherPos = Vector3.Normalize(ClimbableObject.EndPoint - transform.position);
+                float dotProduct = Vector3.Dot(transform.TransformDirection(Vector3.up), otherPos);
+                if (dotProduct > 0)
                 {
                     if (finalForce.y > 0)
                     {

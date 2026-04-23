@@ -10,9 +10,10 @@ public class RopeInteractable : BaseInteractable
 
     [SerializeField] private Vector3 startPoint;
     [SerializeField] private Vector3 endPoint;
-
+    
     public Vector3 MoveForward => (endPoint - startPoint).normalized;
-
+    public float RopeDistance => Vector3.Distance(StartPoint,EndPoint);
+    public float DistanceFromStartToPoint(Vector3 point) => Vector3.Distance(StartPoint, point);
 
     public Vector3 StartPoint
     {
