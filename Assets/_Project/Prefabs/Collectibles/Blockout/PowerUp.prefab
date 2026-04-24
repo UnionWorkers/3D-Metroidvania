@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3957520501116658455}
   - component: {fileID: 5404450316488362871}
   - component: {fileID: 8305642623917394900}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,6 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: b9eb5d43b8f8554469aeaac014659ad5, type: 2}
-  - {fileID: 2100000, guid: 72ef844b0c2335e449a463d7dae18332, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4931,6 +4930,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 229aac846e2ca9547a00d683479b989e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable.BaseInteractable
+  interactableVFX: {fileID: 0}
+  interactVFX: {fileID: 0}
 --- !u!1 &6775769398999410657
 GameObject:
   m_ObjectHideFlags: 0
