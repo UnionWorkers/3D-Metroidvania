@@ -132,6 +132,11 @@ public class TurretController : BaseEntity, IHealth
         {
             targetHealth.TakeDamage(new(damageStruct.DamageAmount, transform));
             currentShootTimer = 0;
+            if (targetHealth.GetHealth <= 0)
+            {
+                targetHealth = null;
+                playerTransform = null;
+            }
         }
         else
         {
@@ -148,15 +153,23 @@ public class TurretController : BaseEntity, IHealth
                 {
                     playerTransform = collider.transform;
                     targetHealth = collider.GetComponent<IHealth>();
+                    if (targetHealth.GetHealth <= 0)
+                    {
+                        targetHealth = null;
+                        playerTransform = null;
+                    }
                 }
                 break;
             case CollisionTriggerType.Exit:
                 if (collider.CompareTag("Player"))
                 {
-                    lastPlayerLocation = playerTransform.position;
-                    currentTimerToLoseTarget = 0;
-                    canReset = true;
-                    playerTransform = null;
+                    if (playerTransform != null)
+                    {
+                        lastPlayerLocation = playerTransform.position;
+                        currentTimerToLoseTarget = 0;
+                        canReset = true;
+                        playerTransform = null;
+                    }
                 }
                 break;
         }

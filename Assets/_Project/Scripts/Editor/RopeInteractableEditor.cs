@@ -15,7 +15,6 @@ public class RopeInteractableEditor : Editor
 
         EditorGUI.BeginChangeCheck();
 
-
         Vector3 newStartPos = Handles.PositionHandle(startPos, Quaternion.identity);
         Vector3 newEndPos = Handles.PositionHandle(endPos, Quaternion.identity);
 
@@ -24,6 +23,8 @@ public class RopeInteractableEditor : Editor
             Undo.RecordObject(target, "Changed Rope Values");
             magnetObject.StartPoint = newStartPos;
             magnetObject.EndPoint = newEndPos;
+    
+            magnetObject.Validate();
         }
 
         Handles.color = new Color(0.0f, 0.1f, 1.0f);
@@ -34,7 +35,6 @@ public class RopeInteractableEditor : Editor
         Handles.color = new Color(0.3f, 1.0f, 0.3f);
         Handles.DrawLine(startPos, endPos, 5.0f);
 
-        magnetObject.Validate();
     }
 
 

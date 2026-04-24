@@ -15,6 +15,10 @@ public class AudioManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            if (transform.parent != null)
+            {
+                transform.SetParent(null, true);
+            }
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -31,7 +35,7 @@ public class AudioManager : MonoBehaviour
     public void PlayMusic(string name)
     {
         Sound s = null;
-     
+
         if (playPreset)
         {
             s = musicPreset.GetSoundByName(name);

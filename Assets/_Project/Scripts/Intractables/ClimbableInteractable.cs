@@ -18,10 +18,9 @@ public class ClimbableInteractable : BaseInteractable
         set => endPoint = value - transform.position;
     }
 
-    private void OnValidate()
+    public void Validate()
     {
-
-
+        
     }
 
     public override void Highlight()

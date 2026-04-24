@@ -10,7 +10,17 @@ public class StandingPointInteractableEditor : Editor
 
         Vector3 StandingPoint = magnetObject.StandingPoint;
 
-        magnetObject.StandingPoint = Handles.PositionHandle(StandingPoint, Quaternion.identity);
+        EditorGUI.BeginChangeCheck();
+
+        Vector3 newStandingPoint = Handles.PositionHandle(StandingPoint, Quaternion.identity);
+
+        if (EditorGUI.EndChangeCheck())
+        {
+            Undo.RecordObject(target, "Changed StandingPoint Values");
+            magnetObject.StandingPoint = newStandingPoint;
+    
+            magnetObject.Validate();
+        }
 
         StandingPoint += magnetObject.OffsetPlayer;
 
@@ -20,7 +30,6 @@ public class StandingPointInteractableEditor : Editor
         Handles.color = new Color(0.0f, 0.1f, 1.0f);
         Handles.Label(StandingPoint + (Vector3.up * 0.3f), $"Player Point");
 
-        // magnetObject.Validate();
 
     }
 }

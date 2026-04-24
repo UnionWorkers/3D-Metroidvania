@@ -105,6 +105,13 @@ public class RatBastardController : BaseEntity
                     currentTargetTimerToShoot = 0;
                     currentShootTimer = 0;
                     lineRenderer.enabled = false;
+
+                    if (targetHealth.GetHealth <= 0)
+                    {
+                        targetHealth = null;
+                        playerTransform = null;
+                    }
+
                 }
                 else
                 {
@@ -144,6 +151,12 @@ public class RatBastardController : BaseEntity
                 {
                     playerTransform = collider.transform;
                     targetHealth = collider.GetComponent<IHealth>();
+
+                    if (targetHealth.GetHealth <= 0)
+                    {
+                        targetHealth = null;
+                        playerTransform = null;
+                    }
                 }
                 break;
             case CollisionTriggerType.Exit:

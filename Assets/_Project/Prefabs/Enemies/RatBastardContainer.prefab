@@ -176,7 +176,7 @@ MonoBehaviour:
   shootCooldownTimer: 2
   targetTimerToShoot: 1
   lineRenderer: {fileID: 6768910572554891545}
-  ratHole: {fileID: 0}
+  ratHole: {fileID: 2008571438452689534}
 --- !u!1 &2937445381401752188
 GameObject:
   m_ObjectHideFlags: 0

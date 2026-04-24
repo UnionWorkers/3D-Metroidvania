@@ -126,16 +126,20 @@ namespace Entities.Controller
         public void Heal(int inHealth)
         {
             healthComponent.CurrentHealth += inHealth;
-            OnHealthChanged(healthComponent.CurrentHealth);
+            OnHealthChanged?.Invoke(healthComponent.CurrentHealth);
         }
         public void TakeDamage(DamageInfo inDamageInfo)
         {
             // Add knockback, using DamageInfo HitObject
             healthComponent.CurrentHealth -= inDamageInfo.DamageAmount;
-            OnHealthChanged(healthComponent.CurrentHealth);
+            OnHealthChanged?.Invoke(healthComponent.CurrentHealth);
+            Debug.Log(healthComponent.CurrentHealth);
 
             if (healthComponent.CurrentHealth <= 0)
             {
+                playerCharacterController.CharacterController.enabled = false;
+                transform.position = new Vector3(0,0,0);
+                playerCharacterController.CharacterController.enabled = true;
                 OnDeath?.Invoke();
                 return;
             }

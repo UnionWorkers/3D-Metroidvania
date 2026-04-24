@@ -23,6 +23,10 @@ public class SpickGuyController : BaseEntity, IHealth
         if (collision.CompareTag("Player"))
         {
             IHealth playerHealth = collision.GetComponent<IHealth>();
+            if (playerHealth.GetHealth <= 0)
+            {
+                return;
+            }
             playerHealth.TakeDamage(new(damageStruct.DamageAmount, transform));
         }
     }

@@ -11,13 +11,23 @@ public class ClimbableInteractableEditor : Editor
         Vector3 startPos = magnetObject.StartPoint;
         Vector3 endPoint = magnetObject.EndPoint;
 
-        magnetObject.StartPoint = Handles.PositionHandle(startPos, magnetObject.transform.rotation);
-        magnetObject.EndPoint = Handles.PositionHandle(endPoint, magnetObject.transform.rotation);
+        EditorGUI.BeginChangeCheck();
+
+        Vector3 newStartPos = Handles.PositionHandle(startPos, magnetObject.transform.rotation);
+        Vector3 newEndPos = Handles.PositionHandle(endPoint, magnetObject.transform.rotation);
+
+        if (EditorGUI.EndChangeCheck())
+        {
+            Undo.RecordObject(target, "Changed Climb Values");
+            magnetObject.StartPoint = newStartPos;
+            magnetObject.EndPoint = newEndPos;
+
+            magnetObject.Validate();
+        }
 
         Handles.color = new Color(0.0f, 0.1f, 1.0f);
         Handles.Label(startPos + (Vector3.up * 0.3f), $"Start Point");
         Handles.SphereHandleCap(0, startPos, Quaternion.identity, 0.2f, EventType.Repaint);
-
 
         Handles.color = new Color(0.0f, 1.0f, 0.0f);
         Handles.Label(endPoint + (Vector3.up * 0.3f), $"End Point");
@@ -25,6 +35,8 @@ public class ClimbableInteractableEditor : Editor
 
         Handles.color = new Color(0.3f, 1.0f, 0.3f);
         Handles.DrawLine(startPos, endPoint, 5.0f);
+
+
 
     }
 }

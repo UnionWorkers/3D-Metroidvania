@@ -271,6 +271,7 @@ namespace CustomCharacterController
         public float BottomValue => characterController.height * 0.5f - characterController.center.y;
         public float MiddleValue => characterController.height * 0.5f;
         public float HeightValue => characterController.height;
+        public CharacterController CharacterController => characterController;
 
         public MoveStats MoveStats
         {

@@ -22,6 +22,11 @@ public class StandingPointInteractable : BaseInteractable
         set => offsetPlayer = value;
     }
 
+    public void Validate()
+    {
+        // VFX move thing  
+    }
+
     protected override void InteractableAction(PlayerController inPlayerController)
     {
         itemState = ItemState.BeingUsed;
