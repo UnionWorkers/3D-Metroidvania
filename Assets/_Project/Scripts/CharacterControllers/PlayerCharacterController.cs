@@ -981,10 +981,6 @@ namespace CustomCharacterController
 
             if (inDirection != Vector2.zero)
             {
-                // wantedRotation = Mathf.Atan2(inDirection.x, inDirection.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
-                // wantedMoveDirection = Quaternion.Euler(0, wantedRotation, 0) * Vector3.forward;
-                // wantedMoveDirection = wantedMoveDirection.normalized;
-
                 float dotProduct = Vector3.Dot(cameraTransform.forward, RopeObject.MoveForward);
                 if (dotProduct > 0)
                 {
@@ -1005,22 +1001,22 @@ namespace CustomCharacterController
             float startToPlayer = RopeObject.DistanceFromStartToPoint(new Vector3(transform.position.x, RopeObject.StartPoint.y, transform.position.z));
             float lerpAlfa = startToPlayer / ropeDist;
 
+            if (wantedMoveDirection == -RopeObject.MoveForward)
+            {
+                transform.forward = -RopeObject.MoveForward;
+            }
+            else if (wantedMoveDirection == RopeObject.MoveForward)
+            {
+                transform.forward = RopeObject.MoveForward;
+            }
+
             if (lerpAlfa <= 0.05)
             {
-                Vector3 pointToPos = RopeObject.StartPoint - transform.position;
-                float dotProduct = Vector3.Dot(transform.position.normalized, pointToPos.normalized);
-                
+                float dotProduct = Vector3.Dot(transform.forward, RopeObject.MoveForward);
+
                 Debug.Log(dotProduct);
 
-                if (dotProduct > 0)
-                {
-                    if (wantedMoveDirection == RopeObject.MoveForward)
-                    {
-                        wantedMoveDirection = Vector3.zero;
-                        currentMoveDirection = Vector3.zero;
-                    }
-                }
-                else
+                if (dotProduct < 0)
                 {
                     if (wantedMoveDirection == -RopeObject.MoveForward)
                     {
@@ -1031,91 +1027,20 @@ namespace CustomCharacterController
             }
             else if (lerpAlfa >= 0.95)
             {
-                Vector3 pointToPos = RopeObject.EndPoint - transform.position;
-                float dotProduct = Vector3.Dot(transform.position.normalized, pointToPos.normalized);
-                
+                float dotProduct = Vector3.Dot(transform.forward, RopeObject.MoveForward);
+
                 Debug.Log(dotProduct);
 
                 if (dotProduct > 0)
                 {
                     if (wantedMoveDirection == RopeObject.MoveForward)
                     {
-                        Debug.Log("F");
-                        wantedMoveDirection = Vector3.zero;
-                        currentMoveDirection = Vector3.zero;
-                    }
-                }
-                else
-                {
-                    if (wantedMoveDirection == -RopeObject.MoveForward)
-                    {
-                        Debug.Log("B");
                         wantedMoveDirection = Vector3.zero;
                         currentMoveDirection = Vector3.zero;
                     }
                 }
             }
 
-
-            // float startCheck = MathF.Abs((RopeObject.StartPoint - transform.position).magnitude);
-            // float endCheck = MathF.Abs((RopeObject.EndPoint - transform.position).magnitude);
-
-            // Debug.Log("Start: " + startCheck);
-            // Debug.Log("End: " + endCheck);
-
-
-            // // Limiting so the player cant go over or under the climbing object 
-            // if (startCheck < 1)
-            // {
-            //     Vector3 otherPos = Vector3.Normalize(RopeObject.StartPoint - transform.position);
-            //     float dotProduct = Vector3.Dot(transform.TransformDirection(transform.forward), otherPos);
-            //     if (dotProduct > 0)
-            //     {
-            //         if (wantedMoveDirection.x > 0)
-            //         {
-            //             wantedMoveDirection.x = 0;
-            //             currentMoveDirection.x = 0;
-            //         }
-            //     }
-            //     else
-            //     {
-            //         if (wantedMoveDirection.x < 0)
-            //         {
-            //             wantedMoveDirection.x = 0;
-            //             currentMoveDirection.x = 0;
-            //         }
-            //     }
-            // }
-            // else if (endCheck < 1)
-            // {
-            //     Vector3 otherPos = Vector3.Normalize(RopeObject.EndPoint - transform.position);
-            //     float dotProduct = Vector3.Dot(transform.TransformDirection(transform.forward), otherPos);
-            //     if (dotProduct > 0)
-            //     {
-            //         if (wantedMoveDirection.x > 0)
-            //         {
-            //             wantedMoveDirection.x = 0;
-            //             currentMoveDirection.x = 0;
-            //         }
-            //     }
-            //     else
-            //     {
-            //         if (wantedMoveDirection.x < 0)
-            //         {
-            //             wantedMoveDirection.x = 0;
-            //             currentMoveDirection.x = 0;
-            //         }
-            //     }
-            // }
-
-            if (wantedMoveDirection == -RopeObject.MoveForward)
-            {
-                transform.forward = -RopeObject.MoveForward;
-            }
-            else if (wantedMoveDirection == RopeObject.MoveForward)
-            {
-                transform.forward = RopeObject.MoveForward;
-            }
 
             finalForce = MoveToWantedPoint() * Time.fixedDeltaTime;
 
