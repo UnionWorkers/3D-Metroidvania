@@ -25,29 +25,22 @@ public class RopeInteractable : BaseInteractable
         set => endPoint = value - transform.position;
     }
 
-    private void OnValidate()
-    {
-        Validate();
-    }
-
     public void Validate()
     {
+
         if (startObject == null || endObject == null)
         {
             startObject = transform.GetChild(0).transform;
             endObject = transform.GetChild(1).transform;
         }
 
-
-        Vector3 objectPos = transform.position;
-
         if (startObject == null || endObject == null)
         {
             return;
         }
 
-        startObject.position = startPoint + objectPos;
-        endObject.position = endPoint + objectPos;
+        startObject.position = StartPoint;
+        endObject.position = EndPoint;
     }
 
     protected override void InteractableAction(PlayerController inPlayerController)

@@ -140,7 +140,7 @@ namespace Entities.Controller
                 return;
             }
 
-            playerCharacterController.AnimationController.TriggerHitAnimation();
+            playerCharacterController.EffectsController.TriggerHitAnimation();
         }
 
         public void SetCameraController(CameraController inCameraController)
@@ -157,7 +157,8 @@ namespace Entities.Controller
         public override void OnInitialize()
         {
             Cursor.lockState = CursorLockMode.Locked;
-            healthComponent.Initialize(); GameManager.Instance.PlayerUiHandler.OnInitialize(this);
+            healthComponent.Initialize(); 
+            GameManager.Instance.InitPlayerUi(this);
         }
 
         public override void OnBeforeDestroy()

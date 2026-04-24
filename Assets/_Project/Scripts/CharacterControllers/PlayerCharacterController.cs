@@ -264,12 +264,13 @@ namespace CustomCharacterController
         [NonSerialized] public bool PressingJump = false;
         [NonSerialized] public DashStage CurrentDashStage;
         [Space(15)]
-        public PlayerAnimationController AnimationController = new();
+        public PlayerEffectsController EffectsController = new();
 
         public bool CanMove => canMove;
         public bool IsGround => characterController.isGrounded;
-        public float BottomPos => characterController.height * 0.5f - characterController.center.y;
-        public float MiddlePos => characterController.height * 0.5f;
+        public float BottomValue => characterController.height * 0.5f - characterController.center.y;
+        public float MiddleValue => characterController.height * 0.5f;
+        public float HeightValue => characterController.height;
 
         public MoveStats MoveStats
         {
@@ -400,11 +401,11 @@ namespace CustomCharacterController
                 }
             }
 
-            if (AnimationController.CharacterAnimator == null)
+            if (EffectsController.CharacterAnimator == null)
             {
-                AnimationController.CharacterAnimator = GetComponentInChildren<Animator>();
+                EffectsController.CharacterAnimator = GetComponentInChildren<Animator>();
 
-                if (AnimationController.CharacterAnimator == null)
+                if (EffectsController.CharacterAnimator == null)
                 {
                     Debug.LogError("There is no Animator on Player");
                 }
@@ -561,11 +562,11 @@ namespace CustomCharacterController
 
             if (finalForce.y < 0 && !characterController.isGrounded)
             {
-                AnimationController.IsFalling(finalForce.y);
+                EffectsController.IsFalling(finalForce.y);
             }
             else
             {
-                AnimationController.IsFalling(1);
+                EffectsController.IsFalling(1);
             }
 
 
@@ -638,7 +639,7 @@ namespace CustomCharacterController
             gravityScale = 1f;
             currentCoyoteTime = 0;
 
-            AnimationController.AnimationState = AnimationState.Grounded;
+            EffectsController.AnimationState = AnimationState.Grounded;
 
             if (wantedMoveDirection.y < 0.1f && jumpStage != JumpStage.CommitJump)
             {
@@ -751,7 +752,7 @@ namespace CustomCharacterController
                 }
             }
 
-            AnimationController.SetRunAnimation(currentVelocity, this);
+            EffectsController.SetRunAnimation(currentVelocity, this);
 
 
             return currentVelocity * currentMoveDirection;
@@ -763,7 +764,7 @@ namespace CustomCharacterController
             Vector3 normalizedMoveDirXZ = new Vector3(finalForce.x, 0f, finalForce.z).normalized;
             float distance = characterController.radius + characterController.skinWidth;
 
-            Vector3 bottom = transform.position - new Vector3(0f, BottomPos, 0f);
+            Vector3 bottom = transform.position - new Vector3(0f, BottomValue, 0f);
             Vector3 stepOffsetLimit = new(bottom.x, bottom.y + moveStats.StepupOffset, bottom.z);
             //Raycast at player's ground level in direction of movement
             bool hitWithBottomRaycast = Physics.Raycast(bottom, normalizedMoveDirXZ, out RaycastHit hitBottom, distance);
@@ -833,7 +834,7 @@ namespace CustomCharacterController
                     CurrentDashStage = DashStage.CancelDash;
                 }
 
-                AnimationController.TriggerJumpAnimation(true);
+                EffectsController.TriggerJumpAnimation(true);
 
                 JumpStage = JumpStage.CanDoubleJump;
             }
@@ -854,7 +855,7 @@ namespace CustomCharacterController
                     CurrentDashStage = DashStage.CancelDash;
                 }
 
-                AnimationController.TriggerJumpAnimation(false);
+                EffectsController.TriggerJumpAnimation(false);
             }
 
         }
@@ -891,7 +892,7 @@ namespace CustomCharacterController
                     Vector3 bottom = transform.position;
                     Vector3 top = transform.position;
                     // Limit the height of the capsule for better detection 
-                    float height = BottomPos * 0.4f;
+                    float height = BottomValue * 0.4f;
                     bottom.y -= height;
                     top.y += height;
 
@@ -937,7 +938,7 @@ namespace CustomCharacterController
                 }
             }
 
-            AnimationController.TriggerAttackAnimation();
+            EffectsController.TriggerAttackAnimation();
 
             if (visualEffect != null)
             {
@@ -1050,7 +1051,7 @@ namespace CustomCharacterController
             canMove = false;
             characterController.enabled = false;
 
-            transform.position = StandingPointObject.SetPlayerAtStandingPoint(BottomPos);
+            transform.position = StandingPointObject.SetPlayerAtStandingPoint(BottomValue);
 
             canMove = true;
             characterController.enabled = true;

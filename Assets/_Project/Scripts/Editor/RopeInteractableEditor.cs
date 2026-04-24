@@ -1,4 +1,5 @@
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 
@@ -12,9 +13,18 @@ public class RopeInteractableEditor : Editor
         Vector3 startPos = magnetObject.StartPoint;
         Vector3 endPos = magnetObject.EndPoint;
 
+        EditorGUI.BeginChangeCheck();
 
-        magnetObject.StartPoint = Handles.PositionHandle(startPos, Quaternion.identity);
-        magnetObject.EndPoint = Handles.PositionHandle(endPos, Quaternion.identity);
+
+        Vector3 newStartPos = Handles.PositionHandle(startPos, Quaternion.identity);
+        Vector3 newEndPos = Handles.PositionHandle(endPos, Quaternion.identity);
+
+        if (EditorGUI.EndChangeCheck())
+        {
+            Undo.RecordObject(target, "Changed Rope Values");
+            magnetObject.StartPoint = newStartPos;
+            magnetObject.EndPoint = newEndPos;
+        }
 
         Handles.color = new Color(0.0f, 0.1f, 1.0f);
 
@@ -25,7 +35,6 @@ public class RopeInteractableEditor : Editor
         Handles.DrawLine(startPos, endPos, 5.0f);
 
         magnetObject.Validate();
-
     }
 
 

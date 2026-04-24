@@ -11,7 +11,7 @@ public enum AnimationState : byte
 }
 
 [System.Serializable]
-public class PlayerAnimationController
+public class PlayerEffectsController
 {
     private AnimationState animationState;
     private bool canRun = true;
@@ -21,7 +21,7 @@ public class PlayerAnimationController
     private bool isWalkCooldownActive = false;
 
     [NonSerialized] public Animator CharacterAnimator;
-    public PlayerAnimationController(Animator inCharacterAnimator = null)
+    public PlayerEffectsController(Animator inCharacterAnimator = null)
     {
         CharacterAnimator = inCharacterAnimator;
     }
@@ -48,7 +48,7 @@ public class PlayerAnimationController
             switch (value)
             {
                 case AnimationState.Grounded:
-                    AudioManager.Instance.PlaySFX("Land " + Random.Range(1, 3));
+                    PlayerSFX("Land " + Random.Range(1, 3));
                     canRun = true;
                     break;
                 case AnimationState.InAir:
@@ -56,6 +56,28 @@ public class PlayerAnimationController
             }
             animationState = value;
         }
+    }
+
+    public void PlayerSFX(string audioName)
+    {
+        if (AudioManager.Instance == null)
+        {
+            Debug.LogError("AudioManager is not available cant play audio");
+            return;
+        }
+        
+        AudioManager.Instance.PlaySFX(audioName);
+    }
+
+    public void PlayerMusic(string audioName)
+    {
+        if (AudioManager.Instance == null)
+        {
+            Debug.LogError("AudioManager is not available cant play audio");
+            return;
+        }
+
+        AudioManager.Instance.PlayMusic(audioName);
     }
 
     public void IsFalling(float fallSpeed)
@@ -76,7 +98,7 @@ public class PlayerAnimationController
 
         if (velocity > 0.5 && !isWalkCooldownActive)
         {
-            AudioManager.Instance.PlaySFX("Run " + Random.Range(1, 5));
+            PlayerSFX("Run " + Random.Range(1, 5));
             inMonoBehaviour.StartCoroutine(WalkCooldown());
         }
     }
@@ -101,26 +123,26 @@ public class PlayerAnimationController
 
         if (isNormalJump)
         {
-            AudioManager.Instance.PlaySFX("Jump " + Random.Range(1, 5));
+            PlayerSFX("Jump " + Random.Range(1, 5));
 
         }
         else
         {
-            AudioManager.Instance.PlaySFX("DoubleJump " + Random.Range(1, 3));
+            PlayerSFX("DoubleJump " + Random.Range(1, 3));
         }
     }
 
     public void TriggerAttackAnimation()
     {
         CharacterAnimator.SetTrigger("Attack");
-        AudioManager.Instance.PlaySFX("Attack " + Random.Range(1, 3));
+        PlayerSFX("Attack " + Random.Range(1, 3));
     }
 
 
     public void TriggerHitAnimation()
     {
         CharacterAnimator.SetTrigger("Hit");
-        AudioManager.Instance.PlaySFX("TakeDamage " + Random.Range(1, 3));
+        PlayerSFX("TakeDamage " + Random.Range(1, 3));
     }
 
 

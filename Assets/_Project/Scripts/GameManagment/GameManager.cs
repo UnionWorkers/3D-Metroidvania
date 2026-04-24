@@ -73,6 +73,16 @@ namespace Managers
                 return playerUiHandler;
             }
         }
+        public void InitPlayerUi(PlayerController inPlayerController)
+        {
+            if (PlayerUiHandler == null)
+            {
+                Debug.LogError($"PlayerUiHandler is null can run initialize");
+                return;
+            }
+            PlayerUiHandler.OnInitialize(inPlayerController);
+        }
+
 
 
         public void ChangeScene(ref SceneData sceneData)
