@@ -2115,6 +2115,10 @@ PrefabInstance:
       propertyPath: startPoint.z
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 7029375079722437387, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
+      propertyPath: interactableVFX
+      value: 
+      objectReference: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
     - target: {fileID: 7383472185030181339, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
       propertyPath: m_LocalPosition.x
       value: -10
@@ -2123,7 +2127,8 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -3.5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3227380360781775093, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -2763,6 +2768,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ac655c332df6547a493ad34bd88354, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KeyInteractable
+  interactableVFX: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+  interactVFX: {fileID: 0}
   keySO: {fileID: 11400000, guid: 073d5e00f011d3d4da3c4f7160952feb, type: 2}
 --- !u!65 &623895274
 BoxCollider:
@@ -3702,6 +3709,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 229aac846e2ca9547a00d683479b989e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable.BaseInteractable
+  interactableVFX: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+  interactVFX: {fileID: 0}
 --- !u!65 &722199397
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5047,6 +5056,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4407906aa10543c4e82dd289dabf32f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StandingPointInteractable
+  interactableVFX: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+  interactVFX: {fileID: 0}
   standingPoint: {x: 0, y: 1.6239539, z: 0}
   offsetPlayer: {x: 0, y: 0, z: 0}
 --- !u!4 &1104806974
@@ -32774,6 +32785,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9547e5e93e55a54195d9472c19d3275, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DoorInteractable
+  interactableVFX: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+  interactVFX: {fileID: 0}
   doorState: 2
   doorAction: 1
   keySO: {fileID: 11400000, guid: 073d5e00f011d3d4da3c4f7160952feb, type: 2}
@@ -32937,6 +32950,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c8627f358e72b1429014fffea24d341, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClimbableInteractable
+  interactableVFX: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+  interactVFX: {fileID: 0}
   startPoint: {x: 0, y: 2.5, z: 0}
   endPoint: {x: 0, y: -3.5, z: 0}
 --- !u!136 &1428706761
@@ -33380,6 +33395,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 229aac846e2ca9547a00d683479b989e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable.BaseInteractable
+  interactableVFX: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+  interactVFX: {fileID: 0}
 --- !u!65 &1502364577
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -34768,11 +34785,16 @@ PrefabInstance:
       propertyPath: startPoint.x
       value: -20
       objectReference: {fileID: 0}
+    - target: {fileID: 7029375079722437387, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
+      propertyPath: interactableVFX
+      value: 
+      objectReference: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
     - target: {fileID: 7383472185030181339, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
       propertyPath: m_LocalPosition.x
       value: -5
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3227380360781775093, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -35104,6 +35126,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: KeyInteracteble
       objectReference: {fileID: 0}
+    - target: {fileID: 8585172986851752001, guid: dfff8bc340d75a64cb3900163fc7277a, type: 3}
+      propertyPath: interactableVFX
+      value: 
+      objectReference: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -35509,6 +35535,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8545655964709647074, guid: ff8ab493a21731c45bf6d47a99882d54, type: 3}
+      propertyPath: interactableVFX
+      value: 
+      objectReference: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -36494,21 +36524,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3227380360781775093, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
-      propertyPath: m_Positions.Array.data[0].x
-      value: -27.17
-      objectReference: {fileID: 0}
-    - target: {fileID: 3227380360781775093, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
-      propertyPath: m_Positions.Array.data[0].z
-      value: 0.00999999
-      objectReference: {fileID: 0}
-    - target: {fileID: 3227380360781775093, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
-      propertyPath: m_Positions.Array.data[1].x
-      value: -42.17005
-      objectReference: {fileID: 0}
-    - target: {fileID: 3227380360781775093, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
-      propertyPath: m_Positions.Array.data[1].z
-      value: 0.00999999
+    - target: {fileID: 4663029683977848700, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -5
       objectReference: {fileID: 0}
     - target: {fileID: 5376604931134092723, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
       propertyPath: m_Name
@@ -36516,7 +36534,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6595398409257716272, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -22.17
+      value: -24.28
       objectReference: {fileID: 0}
     - target: {fileID: 6595398409257716272, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
       propertyPath: m_LocalPosition.y
@@ -36524,7 +36542,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6595398409257716272, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.99
+      value: -7.16
       objectReference: {fileID: 0}
     - target: {fileID: 6595398409257716272, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -36556,7 +36574,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7383472185030181339, guid: b7a75e7d3ca90c0469470197fbb8487c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -20.000063
+      value: -20.000074
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -36635,6 +36653,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 90
       objectReference: {fileID: 0}
+    - target: {fileID: 7585546127746805518, guid: 8d5c8d0f5fe735e419d02a96dd403d22, type: 3}
+      propertyPath: interactableVFX
+      value: 
+      objectReference: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

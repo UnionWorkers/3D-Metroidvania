@@ -4,15 +4,14 @@ using Interactable;
 
 public class RopeInteractable : BaseInteractable
 {
-    [SerializeField] LineRenderer lineRenderer = null;
     [SerializeField] Transform startObject = null;
     [SerializeField] Transform endObject = null;
 
     [SerializeField] private Vector3 startPoint;
     [SerializeField] private Vector3 endPoint;
-    
+
     public Vector3 MoveForward => (endPoint - startPoint).normalized;
-    public float RopeDistance => Vector3.Distance(StartPoint,EndPoint);
+    public float RopeDistance => Vector3.Distance(StartPoint, EndPoint);
     public float DistanceFromStartToPoint(Vector3 point) => Vector3.Distance(StartPoint, point);
 
     public Vector3 StartPoint
@@ -33,43 +32,22 @@ public class RopeInteractable : BaseInteractable
 
     public void Validate()
     {
-        if (startObject == null || endObject == null || lineRenderer == null)
+        if (startObject == null || endObject == null)
         {
             startObject = transform.GetChild(0).transform;
             endObject = transform.GetChild(1).transform;
-            lineRenderer = GetComponent<LineRenderer>();
         }
+
 
         Vector3 objectPos = transform.position;
 
+        if (startObject == null || endObject == null)
+        {
+            return;
+        }
+
         startObject.position = startPoint + objectPos;
         endObject.position = endPoint + objectPos;
-
-        lineRenderer.positionCount = 2;
-
-        lineRenderer.SetPosition(0, startPoint + objectPos);
-        lineRenderer.SetPosition(1, endPoint + objectPos);
-    }
-
-    protected override void Start()
-    {
-        defaultColor = transform.GetChild(0).GetComponent<MeshRenderer>().material.GetColor("_BaseColor");
-    }
-
-    public override void Highlight()
-    {
-        transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.blue);
-        transform.GetChild(1).GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.blue);
-
-        itemState = ItemState.Highlighted;
-    }
-
-    public override void DeHighlight()
-    {
-        transform.GetChild(0).GetComponent<MeshRenderer>().material.SetColor("_BaseColor", defaultColor);
-        transform.GetChild(1).GetComponent<MeshRenderer>().material.SetColor("_BaseColor", defaultColor);
-
-        itemState = ItemState.None;
     }
 
     protected override void InteractableAction(PlayerController inPlayerController)

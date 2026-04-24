@@ -22,25 +22,6 @@ public class StandingPointInteractable : BaseInteractable
         set => offsetPlayer = value;
     }
 
-    protected override void Start()
-    {
-        defaultColor = GetComponentInChildren<MeshRenderer>().material.GetColor("_BaseColor");
-    }
-
-    public override void Highlight()
-    {
-        GetComponentInChildren<MeshRenderer>().material.SetColor("_BaseColor", Color.blue);
-
-        itemState = ItemState.Highlighted;
-    }
-
-    public override void DeHighlight()
-    {
-        GetComponentInChildren<MeshRenderer>().material.SetColor("_BaseColor", defaultColor);
-
-        itemState = ItemState.None;
-    }
-
     protected override void InteractableAction(PlayerController inPlayerController)
     {
         itemState = ItemState.BeingUsed;

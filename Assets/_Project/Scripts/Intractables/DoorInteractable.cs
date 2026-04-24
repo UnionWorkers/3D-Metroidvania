@@ -25,6 +25,16 @@ public class DoorInteractable : BaseInteractable
     [SerializeField] private KeySO keySO;
     private Key key => keySO.Key;
 
+    public override void Highlight()
+    {
+        base.Highlight();
+    }
+
+    public override void DeHighlight()
+    {
+        base.DeHighlight();
+    }
+
     protected override void InteractableAction(PlayerController inPlayerController)
     {
         if (doorState == DoorState.Locked && !inPlayerController.Inventory.HasKey(key))

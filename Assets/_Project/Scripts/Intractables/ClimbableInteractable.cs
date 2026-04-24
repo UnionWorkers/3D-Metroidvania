@@ -24,24 +24,14 @@ public class ClimbableInteractable : BaseInteractable
 
     }
 
-    protected override void Start()
-    {
-        defaultColor = GetComponentInChildren<MeshRenderer>().material.GetColor("_BaseColor");
-    }
-
-
     public override void Highlight()
     {
-        GetComponentInChildren<MeshRenderer>().material.SetColor("_BaseColor", Color.blue);
-
-        itemState = ItemState.Highlighted;
+        base.Highlight();
     }
 
     public override void DeHighlight()
     {
-        GetComponentInChildren<MeshRenderer>().material.SetColor("_BaseColor", defaultColor);
-
-        itemState = ItemState.None;
+        base.DeHighlight();
     }
 
     protected override void InteractableAction(PlayerController inPlayerController)

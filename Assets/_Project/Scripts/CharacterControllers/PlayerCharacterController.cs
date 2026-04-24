@@ -1014,8 +1014,6 @@ namespace CustomCharacterController
             {
                 float dotProduct = Vector3.Dot(transform.forward, RopeObject.MoveForward);
 
-                Debug.Log(dotProduct);
-
                 if (dotProduct < 0)
                 {
                     if (wantedMoveDirection == -RopeObject.MoveForward)
@@ -1028,8 +1026,6 @@ namespace CustomCharacterController
             else if (lerpAlfa >= 0.95)
             {
                 float dotProduct = Vector3.Dot(transform.forward, RopeObject.MoveForward);
-
-                Debug.Log(dotProduct);
 
                 if (dotProduct > 0)
                 {

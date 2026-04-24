@@ -1,6 +1,7 @@
 using System;
 using Entities.Controller;
 using UnityEngine;
+using UnityEngine.VFX;
 
 namespace Interactable
 {
@@ -8,31 +9,41 @@ namespace Interactable
     {
 
         public event Action OnActionCompleted;
-
         public Transform GetTransform => transform;
-        protected ItemState itemState = ItemState.None; 
+        protected ItemState itemState = ItemState.None;
+        protected ParticleSystem activeVFX;
+        [SerializeField] protected ParticleSystem interactableVFX;
+        [SerializeField] protected ParticleSystem interactVFX;
+
+
         public ItemState MyItemState
         {
             get => itemState;
             set => itemState = value;
         }
 
-        protected Color defaultColor;
-
         protected virtual void Start()
         {
-            defaultColor = GetComponent<MeshRenderer>().material.GetColor("_BaseColor");
+            // add Resources.Load for VFX 
         }
 
         public virtual void Highlight()
         {
-            GetComponent<MeshRenderer>().material.SetColor("_BaseColor", Color.blue);
+            if (interactableVFX != null && activeVFX == null)
+            {
+                activeVFX = Instantiate(interactableVFX, transform.position, Quaternion.identity);
+                activeVFX.Play();
+            }
             itemState = ItemState.Highlighted;
         }
 
         public virtual void DeHighlight()
         {
-            GetComponent<MeshRenderer>().material.SetColor("_BaseColor", defaultColor);
+            if (activeVFX != null)
+            {
+                Destroy(activeVFX.gameObject);
+            }
+
             itemState = ItemState.None;
         }
 
@@ -48,6 +59,19 @@ namespace Interactable
             Destroy(gameObject);
         }
 
+        protected virtual void OnDestroy()
+        {
+            if (activeVFX != null)
+            {
+                Destroy(activeVFX);
+            }
+            if (interactVFX != null)
+            {
+                activeVFX = Instantiate(interactVFX, transform.position, Quaternion.identity);
+                activeVFX.Play();
+                Destroy(activeVFX, 1f);
+            }
+        }
     }
 
 }
