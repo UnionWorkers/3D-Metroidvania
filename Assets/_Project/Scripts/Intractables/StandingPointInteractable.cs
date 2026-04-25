@@ -6,7 +6,9 @@ using UnityEngine;
 public class StandingPointInteractable : BaseInteractable
 {
     [SerializeField] private Vector3 standingPoint;
-    
+    [SerializeField] private Transform vfxPlayer;
+
+
     [Header("Only use if the position is weird")]
     [SerializeField] private Vector3 offsetPlayer;
 
@@ -22,10 +24,56 @@ public class StandingPointInteractable : BaseInteractable
         set => offsetPlayer = value;
     }
 
+    private void OnValidate()
+    {
+        Validate();
+    }
+
+    protected override void Start()
+    {
+        if (interactableVFX != null)
+        {
+            interactableVFX.Stop();
+        }
+    }
+
     public void Validate()
     {
-        // VFX move thing  
+        if (vfxPlayer != null)
+        {
+            ParticleSystem particleSystem = vfxPlayer.GetComponent<ParticleSystem>();
+            if (particleSystem == null)
+            {
+                Debug.LogWarning("VFXPlayer dose not have a particleSystem");
+                interactableVFX = null;
+                return;
+            }
+            interactableVFX = particleSystem;
+            vfxPlayer.position = StandingPoint;
+        }
     }
+
+    public override void Highlight()
+    {
+        if (interactableVFX != null)
+        {
+            interactableVFX.Play();
+        }
+        itemState = ItemState.Highlighted;
+
+    }
+
+
+    public override void DeHighlight()
+    {
+        if (interactableVFX != null)
+        {
+            interactableVFX.Stop();
+        }
+        itemState = ItemState.None;
+
+    }
+
 
     protected override void InteractableAction(PlayerController inPlayerController)
     {
@@ -36,9 +84,9 @@ public class StandingPointInteractable : BaseInteractable
     }
 
     public Vector3 SetPlayerAtStandingPoint(float characterHeight)
-    { 
+    {
         Vector3 pos = StandingPoint + offsetPlayer;
-        pos.y += characterHeight; 
+        pos.y += characterHeight;
         return pos;
     }
 }

@@ -25,6 +25,11 @@ public class RopeInteractable : BaseInteractable
         set => endPoint = value - transform.position;
     }
 
+    private void OnValidate()
+    {
+        Validate();
+    }
+
     public void Validate()
     {
 
