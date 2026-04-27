@@ -125,4 +125,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6ac655c332df6547a493ad34bd88354, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KeyInteractable
+  interactVFX: {fileID: 0}
+  interactableVFX: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
   keySO: {fileID: 11400000, guid: 073d5e00f011d3d4da3c4f7160952feb, type: 2}

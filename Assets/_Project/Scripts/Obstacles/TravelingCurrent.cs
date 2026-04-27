@@ -27,6 +27,13 @@ public class TravelingCurrent : BaseEntity
     {
         splineAnimate = GetComponent<SplineAnimate>();
 
+        if(splineAnimate == null)
+        {
+            Debug.LogError("No Spline Animate on the current, scripted wont work");
+            EntityState = EntityState.Disabled;
+            return;
+        }
+
         previousGameSpeed = GameManager.Instance.ObjectsGameSpeed;
         previousNormalizedSpeed = splineAnimate.NormalizedTime;
         splineAnimate.MaxSpeed = maxSpeed * previousGameSpeed;

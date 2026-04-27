@@ -1,6 +1,7 @@
 using Entities.Controller;
 using Interactable;
 using Interactable.Key;
+using UnityEngine;
 
 public class KeyInteractable : BaseInteractable
 {
@@ -9,6 +10,9 @@ public class KeyInteractable : BaseInteractable
 
     protected override void InteractableAction(PlayerController inPlayerController)
     {
+        if (keySO == null) { Debug.LogWarning("Has no KeySO, this items will not work"); return; }
+
+        if (!keySO.HasKey) { Debug.LogWarning("KeySO Has no key, item will not work"); return; }
 
         inPlayerController.Inventory.AddKey(GetKey);
 

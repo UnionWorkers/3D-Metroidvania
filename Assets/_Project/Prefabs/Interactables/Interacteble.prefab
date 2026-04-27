@@ -125,3 +125,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 229aac846e2ca9547a00d683479b989e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Interactable.BaseInteractable
+  interactVFX: {fileID: 0}
+  interactableVFX: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}

@@ -16,6 +16,17 @@ public class ConveyorBelt : BaseEntity
 
     public override void OnInitialize()
     {
+        if (conveyorBeltMesh == null)
+        {
+            conveyorBeltMesh = GetComponent<MeshRenderer>();
+            if (conveyorBeltMesh == null)
+            {
+                Debug.LogError("Conveyor Belt has no assigned Mesh Renderer");
+                EntityState = EntityState.Disabled;
+                return;
+            }
+        }
+
         previousGameSpeed = GameManager.Instance.ObjectsGameSpeed;
         currentVectorOffset = conveyorBeltMesh.material.GetVector("_Offset");
     }

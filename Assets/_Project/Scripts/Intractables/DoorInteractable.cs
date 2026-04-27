@@ -1,4 +1,3 @@
-using System;
 using Entities.Controller;
 using Interactable;
 using Interactable.Key;
@@ -25,6 +24,20 @@ public class DoorInteractable : BaseInteractable
     [SerializeField] private KeySO keySO;
     private Key key => keySO.Key;
 
+    protected override void Start()
+    {
+        Validate();
+    }
+
+    private bool Validate()
+    {
+        if (keySO == null) { Debug.LogWarning("Has no KeySO, this items will not work"); return false; }
+
+        if (!keySO.HasKey) { Debug.LogWarning("KeySO Has no key, item will not work"); return false; }
+
+        return true;
+    }
+
     public override void Highlight()
     {
         base.Highlight();
@@ -37,6 +50,8 @@ public class DoorInteractable : BaseInteractable
 
     protected override void InteractableAction(PlayerController inPlayerController)
     {
+        if (!Validate()) { return; }
+
         if (doorState == DoorState.Locked && !inPlayerController.Inventory.HasKey(key))
         {
             return;
@@ -54,8 +69,6 @@ public class DoorInteractable : BaseInteractable
             case DoorAction.Inactive:
                 break;
         }
-
-        // base.InteractableAction(inPlayerController);
     }
 
     protected virtual void CommitAction(PlayerController inPlayerController)

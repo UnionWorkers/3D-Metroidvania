@@ -16,18 +16,37 @@ public class SpinningFan : BaseEntity
     }
 
     [SerializeField] private RotatingUtil rotatingUtil;
-    
-    [SerializeField] private GameSpeedOpen WhenIsPassableGameSpeed = GameSpeedOpen.NormalGameSpeed;
-    [SerializeField]
-    private List<TriggerCollisionMessenger> triggerCollisionMessengers = new();
+
+    [SerializeField] private GameSpeedOpen whenIsPassableGameSpeed = GameSpeedOpen.NormalGameSpeed;
+    [SerializeField] private List<TriggerCollisionMessenger> triggerCollisionMessengers = new();
     [SerializeField] private GameObject wallBlocker;
     private bool wallIsBlocking = true;
     private float gameSpeed = 1f;
 
     public override void OnInitialize()
     {
+        if (wallBlocker == null)
+        {
+            Debug.LogError("Has no wall blocker, fan will not work");
+            EntityState = EntityState.Disabled;
+            return;
+        }
+
+        if (triggerCollisionMessengers.Count <= 0)
+        {
+            Debug.LogError("triggerCollisionMessengers is empty, fan will not work");
+            EntityState = EntityState.Disabled;
+        }
+
         foreach (TriggerCollisionMessenger item in triggerCollisionMessengers)
         {
+            if (item == null)
+            {
+                Debug.LogWarning("there is a null in triggerCollisionMessengers, fan will not work");
+                EntityState = EntityState.Disabled;
+                return;
+            }
+
             item.OnTriggerCollision += TriggerMessage;
         }
     }
@@ -55,7 +74,7 @@ public class SpinningFan : BaseEntity
     {
         gameSpeed = GameManager.Instance.ObjectsGameSpeed;
 
-        switch (WhenIsPassableGameSpeed)
+        switch (whenIsPassableGameSpeed)
         {
             case GameSpeedOpen.NormalGameSpeed:
                 CheckIfWallCanOpen(1.01f);

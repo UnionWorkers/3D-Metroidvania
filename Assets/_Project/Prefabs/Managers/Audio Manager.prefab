@@ -175,6 +175,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7bc14e0801f3c3b44a90b17723cdb149, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  musicPreset: {fileID: 11400000, guid: 34c4fb47cb63ea640a73b789ecd13aeb, type: 2}
+  sfxPreset: {fileID: 11400000, guid: 973a7707c88c7d248b8a4a81ab631cad, type: 2}
+  playPreset: 1
   musicSounds:
   - name: ThisLevelTheme
     clip: {fileID: 0}

@@ -56,14 +56,17 @@ public class RatBastardController : BaseEntity
 
     private void Awake()
     {
-        visionConeTrigger.OnTriggerCollision += CollisionMessage;
-        panelTrigger.OnHealthChanged += PanelHealthChanged;
-        panelTrigger.OnDeath += PanelDestroyed;
         lineRenderer.enabled = false;
     }
 
     public override void OnInitialize()
     {
+        if (visionConeTrigger == null) { Debug.LogError("visionConeTrigger is null"); EntityState = EntityState.Disabled; return; }
+        if (panelTrigger == null) { Debug.LogError("panelTrigger is null"); EntityState = EntityState.Disabled; return; }
+
+        visionConeTrigger.OnTriggerCollision += CollisionMessage;
+        panelTrigger.OnHealthChanged += PanelHealthChanged;
+        panelTrigger.OnDeath += PanelDestroyed;
         currentMoveDirection = spotlightMove.MoveDirection;
         desiredMovePoint = NewDesiredMovePoint();
     }

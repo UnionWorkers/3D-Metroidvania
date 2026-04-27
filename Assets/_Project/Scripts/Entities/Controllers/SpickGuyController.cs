@@ -50,6 +50,9 @@ public class SpickGuyController : BaseEntity, IHealth
         playerTransform = GameManager.Instance.PlayerController.GetTransform;
         splineAnimate = GetComponent<SplineAnimate>();
 
+        if (playerTransform == null) { Debug.LogError("PlayerTransform is null"); EntityState = EntityState.Disabled; return; }
+        if (splineAnimate == null) { Debug.LogError("SplineAnimate is null"); EntityState = EntityState.Disabled; return; }
+
         previousGameSpeed = GameManager.Instance.ObjectsGameSpeed;
         previousNormalizedSpeed = splineAnimate.NormalizedTime;
         splineAnimate.MaxSpeed = maxSpeed * previousGameSpeed;

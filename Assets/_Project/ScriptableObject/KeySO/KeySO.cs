@@ -32,6 +32,8 @@ namespace Interactable.Key
     {
         [SerializeField] private Key keyInfo;
         public Key Key => keyInfo;
+        public bool HasKey => keyInfo != null;
+
     }
 
 }

@@ -15,6 +15,12 @@ public class CyclingPlatform : BaseEntity
 
     public override void OnInitialize()
     {
+        if (rotationObject == null)
+        {
+            Debug.LogError("Has not rotation object");
+            EntityState = EntityState.Disabled;
+            return;
+        }
         currentStartTimer = rotateToStartTimer;
         currentToFinishTimer = timeFromStartToFinished;
         rotateDirection = Utils.Math.MyMath.ClampVector(rotateDirection, Utils.Math.MyMath.ClampMode.ZeroToOne);

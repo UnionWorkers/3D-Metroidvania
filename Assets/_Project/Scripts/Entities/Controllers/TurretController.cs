@@ -39,8 +39,15 @@ public class TurretController : BaseEntity, IHealth
 
     private void Awake()
     {
-        visionCone.OnTriggerCollision += CollisionMessage;
+
         rotationDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+    }
+
+    public override void OnInitialize()
+    {
+        if (poleTransform == null) { Debug.LogError("poleTransform is null"); EntityState = EntityState.Disabled; return; }
+        if (visionCone == null) { Debug.LogError("visionCone is null"); EntityState = EntityState.Disabled; return; }
+        visionCone.OnTriggerCollision += CollisionMessage;
     }
 
     public void Heal(int inHealth) { return; }
