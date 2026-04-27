@@ -39,18 +39,18 @@ public class StandingPointInteractable : BaseInteractable
 
     public void Validate()
     {
-        if (vfxPlayer != null)
+        if (vfxPlayer == null) { return; }
+        
+        vfxPlayer.position = StandingPoint;
+
+        ParticleSystem particleSystem = vfxPlayer.GetComponent<ParticleSystem>();
+        if (particleSystem == null)
         {
-            ParticleSystem particleSystem = vfxPlayer.GetComponent<ParticleSystem>();
-            if (particleSystem == null)
-            {
-                Debug.LogWarning("VFXPlayer dose not have a particleSystem");
-                interactableVFX = null;
-                return;
-            }
-            interactableVFX = particleSystem;
-            vfxPlayer.position = StandingPoint;
+            Debug.LogWarning("VFXPlayer dose not have a particleSystem");
+            interactableVFX = null;
+            return;
         }
+        interactableVFX = particleSystem;
     }
 
     public override void Highlight()

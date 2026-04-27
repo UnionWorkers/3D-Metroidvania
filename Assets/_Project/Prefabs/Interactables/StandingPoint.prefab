@@ -32,6 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2984093199052431609}
+  - {fileID: 6707444714179594951}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1011679932701757878
@@ -46,9 +47,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4407906aa10543c4e82dd289dabf32f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StandingPointInteractable
-  interactableVFX: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
   interactVFX: {fileID: 0}
+  interactableVFX: {fileID: 1136195105625860971}
   standingPoint: {x: 0, y: 1.6239539, z: 0}
+  vfxPlayer: {fileID: 6707444714179594951}
   offsetPlayer: {x: 0, y: 0, z: 0}
 --- !u!136 &5048220552355723850
 CapsuleCollider:
@@ -187,3 +189,70 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!1001 &6480812480474219253
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2290027201624693943}
+    m_Modifications:
+    - target: {fileID: 352927784217774130, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 352927784217774130, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.623954
+      objectReference: {fileID: 0}
+    - target: {fileID: 352927784217774130, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 352927784217774130, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 352927784217774130, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 352927784217774130, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 352927784217774130, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 352927784217774130, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 352927784217774130, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 352927784217774130, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7006742032701988781, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+      propertyPath: m_Name
+      value: Sparkles
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+--- !u!198 &1136195105625860971 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: -3011522830605456994, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+  m_PrefabInstance: {fileID: 6480812480474219253}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6707444714179594951 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 352927784217774130, guid: dbd5518b1eef6984287cef2185718aac, type: 3}
+  m_PrefabInstance: {fileID: 6480812480474219253}
+  m_PrefabAsset: {fileID: 0}

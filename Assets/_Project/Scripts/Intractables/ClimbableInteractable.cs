@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class ClimbableInteractable : BaseInteractable
 {
+    [SerializeField] protected ParticleSystem interactableVFX2;
     [SerializeField] private Vector3 startPoint;
     [SerializeField] private Vector3 endPoint;
+    [SerializeField] private Transform startObject;
+    [SerializeField] private Transform endObject;
+
 
     public Vector3 StartPoint
     {
@@ -18,19 +22,71 @@ public class ClimbableInteractable : BaseInteractable
         set => endPoint = value - transform.position;
     }
 
+    private void OnValidate()
+    {
+        Validate();
+    }
+
     public void Validate()
     {
-        
+        if (startObject == null || endObject == null)
+        {
+            startObject = transform.GetChild(0).transform;
+            endObject = transform.GetChild(1).transform;
+        }
+
+        if (startObject == null || endObject == null) { return; }
+
+        startObject.position = StartPoint;
+        endObject.position = EndPoint;
+
+        if (interactableVFX == null || interactableVFX2 == null)
+        {
+            ParticleSystem particleSystem = startObject.GetComponent<ParticleSystem>();
+            ParticleSystem particleSystem2 = endObject.GetComponent<ParticleSystem>();
+            if (particleSystem == null || particleSystem2 == null)
+            {
+                Debug.LogWarning("VFXPlayerStart or vfxPlayerEnd dose not have a particleSystem");
+                interactableVFX = null;
+                return;
+            }
+            interactableVFX = particleSystem;
+            interactableVFX2 = particleSystem2;
+        }
     }
+
+    protected override void Start()
+    {
+        if (interactableVFX != null)
+        {
+            interactableVFX.Stop();
+        }
+        if (interactableVFX2 != null)
+        {
+            interactableVFX2.Stop();
+        }
+    }
+
 
     public override void Highlight()
     {
-        base.Highlight();
+        if (interactableVFX != null && interactableVFX2 != null)
+        {
+            interactableVFX.Play();
+            interactableVFX2.Play();
+        }
+        itemState = ItemState.Highlighted;
     }
+
 
     public override void DeHighlight()
     {
-        base.DeHighlight();
+        if (interactableVFX != null && interactableVFX2 != null)
+        {
+            interactableVFX.Stop();
+            interactableVFX2.Stop();
+        }
+        itemState = ItemState.None;
     }
 
     protected override void InteractableAction(PlayerController inPlayerController)

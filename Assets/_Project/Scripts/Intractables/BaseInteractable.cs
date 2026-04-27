@@ -12,8 +12,8 @@ namespace Interactable
         public Transform GetTransform => transform;
         protected ItemState itemState = ItemState.None;
         protected ParticleSystem activeVFX;
-        [SerializeField] protected ParticleSystem interactableVFX;
         [SerializeField] protected ParticleSystem interactVFX;
+        [SerializeField] protected ParticleSystem interactableVFX;
 
 
         public ItemState MyItemState
