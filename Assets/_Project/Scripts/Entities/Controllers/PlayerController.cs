@@ -70,7 +70,7 @@ namespace Entities.Controller
         public CheckPoint CheckPoint
         {
             get => currentCheckPoint;
-            set { currentCheckPoint = value; Debug.Log(currentCheckPoint); }
+            set { currentCheckPoint = value; }
         }
 
         private void Awake()
@@ -133,13 +133,11 @@ namespace Entities.Controller
             // Add knockback, using DamageInfo HitObject
             healthComponent.CurrentHealth -= inDamageInfo.DamageAmount;
             OnHealthChanged?.Invoke(healthComponent.CurrentHealth);
+
             Debug.Log(healthComponent.CurrentHealth);
 
             if (healthComponent.CurrentHealth <= 0)
             {
-                playerCharacterController.CharacterController.enabled = false;
-                transform.position = new Vector3(0,0,0);
-                playerCharacterController.CharacterController.enabled = true;
                 OnDeath?.Invoke();
                 return;
             }
@@ -161,8 +159,9 @@ namespace Entities.Controller
         public override void OnInitialize()
         {
             Cursor.lockState = CursorLockMode.Locked;
-            healthComponent.Initialize(); 
+            healthComponent.Initialize();
             GameManager.Instance.InitPlayerUi(this);
+            GameManager.Instance.RespawnPlayer(RespawnType.FullRespawn);
         }
 
         public override void OnBeforeDestroy()

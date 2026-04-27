@@ -59,9 +59,13 @@ public class TurretController : BaseEntity, IHealth
         if (healthComponent.CurrentHealth <= 0)
         {
             OnDeath?.Invoke();
-            EntityState = EntityState.Disabled;
-            visionCone.gameObject.SetActive(false);
+            EntityState = EntityState.ToDestroy;
         }
+    }
+    public override void OnBeforeDestroy()
+    {
+        // add fun effect
+        OnEntityDestroy?.Invoke(this);
     }
 
     public override void OnFixedUpdate()

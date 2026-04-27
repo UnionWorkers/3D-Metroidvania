@@ -45,6 +45,12 @@ public class SpickGuyController : BaseEntity, IHealth
         }
     }
 
+    public override void OnBeforeDestroy()
+    {
+        // add fun effect
+        OnEntityDestroy?.Invoke(this);
+    }
+
     public override void OnInitialize()
     {
         playerTransform = GameManager.Instance.PlayerController.GetTransform;

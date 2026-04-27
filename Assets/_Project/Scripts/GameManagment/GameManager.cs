@@ -38,7 +38,9 @@ namespace Managers
 
         private SceneLoader sceneLoader;
         [SerializeField] private PauseMenuUi pauseMenuUi;
+        [SerializeField] private GameOverMenuUi gameOverMenuUi;
         [SerializeField] private PlayerUiHandler playerUiHandler;
+        [SerializeField] private LayerMask playerSpawnLayerMask;
 
         private List<BaseEntity> activeEntities = new();
         private List<BaseEntity> disabledEntities = new();
@@ -73,6 +75,7 @@ namespace Managers
                 return playerUiHandler;
             }
         }
+
         public void InitPlayerUi(PlayerController inPlayerController)
         {
             if (PlayerUiHandler == null)
@@ -83,11 +86,14 @@ namespace Managers
             PlayerUiHandler.OnInitialize(inPlayerController);
         }
 
-
-
         public void ChangeScene(ref SceneData sceneData)
         {
             sceneLoader.LoadScene(sceneData);
+        }
+
+        public void LoadThisScene()
+        {
+            sceneLoader.LoadScene(sceneLoader.CurrentDataScene);
         }
 
         private void Awake()
@@ -204,12 +210,28 @@ namespace Managers
                 if (baseEntity is PlayerController)
                 {
                     playerController = baseEntity as PlayerController;
+                    playerController.OnDeath += OnPlayerDeath;
+
+
                 }
                 else if (baseEntity is CameraController)
                 {
                     cameraController = baseEntity as CameraController;
                 }
 
+            }
+
+            if (playerSpawner == null)
+            {
+                GameObject tmpGameObject = new GameObject("PlayerSpawner");
+                tmpGameObject.transform.position = playerController.GetTransform.position;
+
+                if (Physics.Raycast(tmpGameObject.transform.position, Vector3.down, out RaycastHit hit, 1000, playerSpawnLayerMask))
+                {
+                    tmpGameObject.transform.position = hit.point;
+                }
+
+                playerSpawner = tmpGameObject.AddComponent<PlayerSpawner>();
             }
 
             // add and init
@@ -248,23 +270,29 @@ namespace Managers
                     }
 
                     ChangePauseMenuState(false);
+
                     break;
 
                 case GameState.Paused:
-
                     enabled = false;
                     Cursor.lockState = CursorLockMode.Confined;
                     Cursor.visible = true;
                     ChangePauseMenuState(true);
+
                     break;
 
                 case GameState.GameOver:
+                    enabled = false;
+                    Cursor.lockState = CursorLockMode.Confined;
+                    Cursor.visible = true;
+                    ChangeGameOverScreen(true);
 
                     break;
             }
 
             OnGameStateChanged?.Invoke(currentGameState);
         }
+
 
         private void ActOnOldEntityState(BaseEntity inEntity)
         {
@@ -289,6 +317,7 @@ namespace Managers
                     activeEntities.Add(inEntity);
                     break;
                 case EntityState.Disabled:
+                    inEntity.OnBeingDisable();
                     disabledEntities.Add(inEntity);
                     break;
                 case EntityState.ToDestroy:
@@ -347,14 +376,31 @@ namespace Managers
             pauseMenuUi.ChangeActiveState(state);
         }
 
+        private void ChangeGameOverScreen(bool state)
+        {
+            if (gameOverMenuUi == null)
+            {
+                gameOverMenuUi = FindAnyObjectByType<GameOverMenuUi>(FindObjectsInactive.Include);
+                if (gameOverMenuUi == null)
+                {
+                    return;
+                }
+            }
+
+            gameOverMenuUi.ChangeActiveState(state);
+
+        }
+
         public void RespawnPlayer(RespawnType inRespawnType)
         {
+            if (playerSpawner == null) { Debug.LogError("playerSpawner is null"); return; }
+
             switch (inRespawnType)
             {
                 case RespawnType.FullRespawn:
                     if (playerSpawner != null)
                     {
-                        playerSpawner.SpawnPlayer(playerController);
+                        playerSpawner.FullSpawnPlayer(playerController);
                     }
                     break;
                 case RespawnType.CheckpointRespawn:
@@ -374,6 +420,11 @@ namespace Managers
 
 
             timeDirection = inTimeDirection;
+        }
+
+        private void OnPlayerDeath()
+        {
+            ChangeGameState(GameState.GameOver);
         }
     }
 

@@ -20,6 +20,15 @@ namespace Utils.SceneLoader
             SceneName = inSceneName;
         }
 
+        public bool LoseCompare(SceneData inSceneData)
+        {
+            if (inSceneData.SceneIndex == SceneIndex || inSceneData.SceneName.ToLower() == SceneName.ToLower())
+            {
+                return true;
+            }
+            return false;
+        }
+
     }
 
     public class SceneLoader
@@ -59,6 +68,13 @@ namespace Utils.SceneLoader
                 return;
             }
 
+            // Reload this scene
+            if (currentDataScene.LoseCompare(newSceneData))
+            {
+                // load this scene 
+                return;
+            }
+
             oldDataScene = currentDataScene;
             currentDataScene = newSceneData;
 
@@ -69,7 +85,7 @@ namespace Utils.SceneLoader
         {
             // Load New scene
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync((int)currentDataScene.SceneIndex, LoadSceneMode.Additive);
-            
+
             // Unity will complain if this is not done, this should probably be done on the loading object
             Camera.main.GetComponent<AudioListener>().enabled = false;
             GameObject.FindAnyObjectByType<EventSystem>().gameObject.SetActive(false);

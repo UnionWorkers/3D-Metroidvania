@@ -56,6 +56,7 @@ public class RatBastardController : BaseEntity
 
     private void Awake()
     {
+        if (lineRenderer == null) { Debug.LogError("lineRenderer is null"); EntityState = EntityState.Disabled; return; }
         lineRenderer.enabled = false;
     }
 
@@ -177,6 +178,10 @@ public class RatBastardController : BaseEntity
     private void PanelDestroyed()
     {
         EntityState = EntityState.Disabled;
+    }
+
+    public override void OnBeingDisable()
+    {
         visionConeTrigger.gameObject.SetActive(false);
         lineRenderer.enabled = false;
         panelTrigger.gameObject.SetActive(false);

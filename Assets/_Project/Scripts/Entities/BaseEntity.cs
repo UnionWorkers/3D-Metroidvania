@@ -46,6 +46,11 @@ namespace Entities
             OnEntityDestroy?.Invoke(this);
         }
 
+        public virtual void OnBeingDisable()
+        {
+            return;
+        }
+
         public virtual void OnUpdate()
         {
             return;
