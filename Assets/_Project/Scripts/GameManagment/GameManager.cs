@@ -192,6 +192,7 @@ namespace Managers
 
         private void SceneSetUp()
         {
+            OnGameStateChanged = null;
             activeEntities = new();
             disabledEntities = new();
             entitiesChangedQueue = new();
@@ -221,7 +222,7 @@ namespace Managers
 
             }
 
-            if (playerSpawner == null)
+            if (playerSpawner == null && playerController != null)
             {
                 GameObject tmpGameObject = new GameObject("PlayerSpawner");
                 tmpGameObject.transform.position = playerController.GetTransform.position;
@@ -424,6 +425,8 @@ namespace Managers
 
         private void OnPlayerDeath()
         {
+            playerController.enabled = false;
+            cameraController.gameObject.SetActive(false);
             ChangeGameState(GameState.GameOver);
         }
     }

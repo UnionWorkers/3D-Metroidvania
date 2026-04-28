@@ -13,6 +13,11 @@ namespace Utils.Effect
             GameManager.Instance.OnGameStateChanged += OnGameStateChanged;
         }
 
+        private void OnDisable()
+        {
+            GameManager.Instance.OnGameStateChanged -= OnGameStateChanged;
+        }
+
         private void OnGameStateChanged(GameState state)
         {
             switch (state)
@@ -33,6 +38,6 @@ namespace Utils.Effect
             rotatingUtil.RotateObject(transform, Time.fixedDeltaTime);
         }
 
-}
+    }
 
 }

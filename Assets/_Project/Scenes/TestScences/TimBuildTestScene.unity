@@ -621,9 +621,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: ClimbingObject
       objectReference: {fileID: 0}
+    - target: {fileID: 6997003624523753078, guid: 0fa490672f913a04887aa43c0fdc426b, type: 3}
+      propertyPath: startPoint.y
+      value: 2.0082948
+      objectReference: {fileID: 0}
     - target: {fileID: 7332964536264694110, guid: 0fa490672f913a04887aa43c0fdc426b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.8044088
+      value: 0.6694316
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1306,10 +1310,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3117763623955513936, guid: 9c443afdcae5d554ba3c830f9afb64f2, type: 3}
-      propertyPath: debugState
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6124390612864617788, guid: 9c443afdcae5d554ba3c830f9afb64f2, type: 3}
       propertyPath: m_Name
       value: ConveyorBeltHolder
@@ -2358,26 +2358,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cameras
       objectReference: {fileID: 0}
-    - target: {fileID: 5815858513654576122, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
-      propertyPath: cinemachineInput
-      value: 
-      objectReference: {fileID: 1628449335}
+    - target: {fileID: 9174757596471001241, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
---- !u!114 &1628449335 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4131695475561856845, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
-  m_PrefabInstance: {fileID: 1628449334}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineInputAxisController
 --- !u!1001 &1683616411
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2386,6 +2375,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 493684653686276335, guid: 52b7a4ea0b2049b45a1c9234cc161c58, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 493684653686276335, guid: 52b7a4ea0b2049b45a1c9234cc161c58, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1622856688005643956, guid: 52b7a4ea0b2049b45a1c9234cc161c58, type: 3}
       propertyPath: m_Name
       value: Canvas
@@ -2777,10 +2774,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 5870087045234354168, guid: 49e37d8664c60624db747779ba9d3e5e, type: 3}
-      propertyPath: debugState
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5887694638419928330, guid: 49e37d8664c60624db747779ba9d3e5e, type: 3}
       propertyPath: m_Name
       value: MovingObject
@@ -2841,14 +2834,6 @@ PrefabInstance:
     - target: {fileID: 230970607230939924, guid: f3e2abbd40e31024494e1596f39b6e7f, type: 3}
       propertyPath: m_Name
       value: Falling
-      objectReference: {fileID: 0}
-    - target: {fileID: 3497594151144711207, guid: f3e2abbd40e31024494e1596f39b6e7f, type: 3}
-      propertyPath: debugState
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3497594151144711207, guid: f3e2abbd40e31024494e1596f39b6e7f, type: 3}
-      propertyPath: moveDistance
-      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7488289908170400063, guid: f3e2abbd40e31024494e1596f39b6e7f, type: 3}
       propertyPath: m_LocalPosition.x

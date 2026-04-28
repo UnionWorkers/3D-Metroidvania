@@ -86,7 +86,6 @@ public class GameOverMenuUi : MonoBehaviour
     private void Quit()
     {
         SceneData sceneData = mainMenuScene.SceneData;
-        Debug.Log($"{sceneData}, {sceneData.SceneName}, {sceneData.SceneIndex}");
         GameManager.Instance.ChangeScene(ref sceneData);
     }
 }

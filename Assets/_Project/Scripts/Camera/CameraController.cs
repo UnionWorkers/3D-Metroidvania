@@ -1,4 +1,3 @@
-using System;
 using Managers;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -40,10 +39,14 @@ namespace Entities.CameraControl
             switch (state)
             {
                 case GameState.Running:
+                    if (cinemachineCamera == null || cinemachineInput == null) { return; }
+
                     cinemachineCamera.enabled = true;
                     cinemachineInput.enabled = true;
                     break;
                 case GameState.Paused:
+                    if (cinemachineCamera == null || cinemachineInput == null) { return; }
+                    
                     cinemachineCamera.enabled = false;
                     cinemachineInput.enabled = false;
 

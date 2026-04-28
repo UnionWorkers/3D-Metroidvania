@@ -120,7 +120,11 @@ namespace Entities.Controller
             escInput.OnDisable();
             interactInput.OnDisable();
             jumpInput.OnDisable();
+            timeManipulateInput.OnDisable();
             moveInput.OnDisable();
+            attackInput.OnDisable();
+            dashInput.OnDisable();
+            glideInput.OnDisable();
         }
 
         public void Heal(int inHealth)
@@ -133,8 +137,6 @@ namespace Entities.Controller
             // Add knockback, using DamageInfo HitObject
             healthComponent.CurrentHealth -= inDamageInfo.DamageAmount;
             OnHealthChanged?.Invoke(healthComponent.CurrentHealth);
-
-            Debug.Log(healthComponent.CurrentHealth);
 
             if (healthComponent.CurrentHealth <= 0)
             {

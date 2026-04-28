@@ -71,7 +71,7 @@ namespace Utils.SceneLoader
             // Reload this scene
             if (currentDataScene.LoseCompare(newSceneData))
             {
-                // load this scene 
+                GameManager.Instance.StartCoroutine(AsyncLoadSameScene());
                 return;
             }
 
@@ -83,6 +83,8 @@ namespace Utils.SceneLoader
 
         private IEnumerator AsyncLoadScene()
         {
+            Scene activeScene = SceneManager.GetActiveScene();
+
             // Load New scene
             AsyncOperation asyncLoad = SceneManager.LoadSceneAsync((int)currentDataScene.SceneIndex, LoadSceneMode.Additive);
 
@@ -97,6 +99,35 @@ namespace Utils.SceneLoader
 
             // Unload old scene
             AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync((int)oldDataScene.SceneIndex, UnloadSceneOptions.None);
+
+            while (!asyncUnload.isDone)
+            {
+                yield return null;
+            }
+
+            OnFinishedLoading?.Invoke(true);
+        }
+
+        private IEnumerator AsyncLoadSameScene()
+        {
+            Scene activeScene = SceneManager.GetActiveScene();
+
+            // Unity will complain if this is not done, this should probably be done on the loading object
+            Camera.main.GetComponent<AudioListener>().enabled = false;
+            Camera.main.gameObject.SetActive(false);
+            GameObject.FindAnyObjectByType<EventSystem>().gameObject.SetActive(false);
+
+            // Load New scene
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync((int)currentDataScene.SceneIndex, LoadSceneMode.Additive);
+
+            while (!asyncLoad.isDone)
+            {
+                yield return null;
+            }
+
+            // Unload old scene
+            AsyncOperation asyncUnload = SceneManager.UnloadSceneAsync(activeScene);
+            
 
             while (!asyncUnload.isDone)
             {

@@ -465,3 +465,4 @@ MonoBehaviour:
   debugState: 0
   targetTransform: {fileID: 0}
   cinemachineCamera: {fileID: 8088311219138252517}
+  cinemachineInput: {fileID: 4131695475561856845}

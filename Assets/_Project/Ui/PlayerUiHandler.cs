@@ -16,6 +16,8 @@ public class PlayerUiHandler : MonoBehaviour
         healthBar.maxValue = inPlayerController.HealthComponent.MaxHealth;
         healthBar.value = inPlayerController.HealthComponent.CurrentHealth;
         inPlayerController.OnHealthChanged += PlayerHealthUpdate;
+
+        gameObject.SetActive(true);
     }
 
     private void PlayerHealthUpdate(int currentHealth)
