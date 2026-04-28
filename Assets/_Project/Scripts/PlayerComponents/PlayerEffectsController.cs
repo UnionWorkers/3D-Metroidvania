@@ -40,6 +40,7 @@ public class PlayerEffectsController
                     canRun = false;
                     break;
                 case AnimationState.InAir:
+                    CharacterAnimator.SetBool("InAir", false);
                     break;
 
             }
@@ -48,10 +49,12 @@ public class PlayerEffectsController
             switch (value)
             {
                 case AnimationState.Grounded:
+                    CharacterAnimator.SetTrigger("Landing");
                     PlayerSFX("Land " + Random.Range(1, 3));
                     canRun = true;
                     break;
                 case AnimationState.InAir:
+                    CharacterAnimator.SetBool("InAir", true);
                     break;
             }
             animationState = value;
@@ -65,7 +68,7 @@ public class PlayerEffectsController
             Debug.LogError("AudioManager is not available cant play audio");
             return;
         }
-        
+
         AudioManager.Instance.PlaySFX(audioName);
     }
 
@@ -84,7 +87,6 @@ public class PlayerEffectsController
     {
         if (fallSpeed > 0)
         {
-            CharacterAnimator.SetFloat("FallSpeed", fallSpeed);
             return;
         }
         AnimationState = AnimationState.InAir;
@@ -94,7 +96,7 @@ public class PlayerEffectsController
     {
         if (!canRun) { return; }
 
-        CharacterAnimator.SetFloat("RunVelocity", velocity);
+        CharacterAnimator.SetFloat("WalkSpeed", velocity);
 
         if (velocity > 0.5 && !isWalkCooldownActive)
         {
@@ -119,29 +121,28 @@ public class PlayerEffectsController
     public void TriggerJumpAnimation(bool isNormalJump)
     {
 
-        CharacterAnimator.SetTrigger("Jump");
-
         if (isNormalJump)
         {
+            CharacterAnimator.SetTrigger("Jump");
             PlayerSFX("Jump " + Random.Range(1, 5));
-
         }
         else
         {
+            CharacterAnimator.Play("Jump", -1, 0f);
             PlayerSFX("DoubleJump " + Random.Range(1, 3));
         }
     }
 
     public void TriggerAttackAnimation()
     {
-        CharacterAnimator.SetTrigger("Attack");
+        // CharacterAnimator.SetTrigger("Attack");
         PlayerSFX("Attack " + Random.Range(1, 3));
     }
 
 
     public void TriggerHitAnimation()
     {
-        CharacterAnimator.SetTrigger("Hit");
+        // CharacterAnimator.SetTrigger("Hit");
         PlayerSFX("TakeDamage " + Random.Range(1, 3));
     }
 

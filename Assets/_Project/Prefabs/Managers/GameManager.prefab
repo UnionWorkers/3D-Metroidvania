@@ -45,9 +45,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Managers.GameManager
   pauseMenuUi: {fileID: 0}
+  gameOverMenuUi: {fileID: 0}
+  playerUiHandler: {fileID: 0}
+  playerSpawnLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
   debugStats:
     isActive: 0
-    timeScale: 1
+    timeScale: 0.5
   objectsGameSpeedChangeRate: 2
   maxObjectsGameSlowDown: 0.3
   maxObjectsGameSpeedUp: 1.7
