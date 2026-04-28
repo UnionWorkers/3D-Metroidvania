@@ -835,7 +835,7 @@ namespace CustomCharacterController
                     CurrentDashStage = DashStage.CancelDash;
                 }
 
-                EffectsController.TriggerJumpAnimation(true);
+                EffectsController.TriggerJumpAnimation(true, this);
 
                 JumpStage = JumpStage.CanDoubleJump;
             }
@@ -856,7 +856,7 @@ namespace CustomCharacterController
                     CurrentDashStage = DashStage.CancelDash;
                 }
 
-                EffectsController.TriggerJumpAnimation(false);
+                EffectsController.TriggerJumpAnimation(false, this);
             }
 
         }

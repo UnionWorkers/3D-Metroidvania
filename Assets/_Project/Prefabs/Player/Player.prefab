@@ -116,6 +116,8 @@ MonoBehaviour:
     climbAroundSpeed: 5
   EffectsController:
     walkCooldown: 0.5
+    doubleJumpPlatform: {fileID: 190070093962350219}
+    doubleJumpCooldown: 0.3
 --- !u!143 &2010560559569310025
 CharacterController:
   m_ObjectHideFlags: 0
@@ -214,6 +216,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63a5a2f91f325424cbb9f22cd66d097b, type: 3}
+--- !u!4 &190070093962350219 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 9201989578012733696, guid: 63a5a2f91f325424cbb9f22cd66d097b, type: 3}
+  m_PrefabInstance: {fileID: 9013756166719061899}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7097802088959967000 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2276356439242784915, guid: 63a5a2f91f325424cbb9f22cd66d097b, type: 3}

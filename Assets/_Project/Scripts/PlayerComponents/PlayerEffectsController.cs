@@ -20,6 +20,10 @@ public class PlayerEffectsController
     private float currentWalkTimer = 0;
     private bool isWalkCooldownActive = false;
 
+    [SerializeField] private Transform doubleJumpPlatform;
+    [SerializeField] private float doubleJumpCooldown = 0.3f;
+    private float currentDoubleJumpTimer = 0;
+
     [NonSerialized] public Animator CharacterAnimator;
     public PlayerEffectsController(Animator inCharacterAnimator = null)
     {
@@ -118,7 +122,7 @@ public class PlayerEffectsController
         currentWalkTimer = 0;
     }
 
-    public void TriggerJumpAnimation(bool isNormalJump)
+    public void TriggerJumpAnimation(bool isNormalJump, MonoBehaviour inMonoBehaviour)
     {
 
         if (isNormalJump)
@@ -128,9 +132,26 @@ public class PlayerEffectsController
         }
         else
         {
+            if (doubleJumpPlatform != null)
+            {
+                doubleJumpPlatform.gameObject.SetActive(true);
+                inMonoBehaviour.StartCoroutine(DoubleJumpPlatformTurnOff());
+            }
+
             CharacterAnimator.Play("Jump", -1, 0f);
             PlayerSFX("DoubleJump " + Random.Range(1, 3));
         }
+    }
+
+    private IEnumerator DoubleJumpPlatformTurnOff()
+    {
+        while (currentDoubleJumpTimer < doubleJumpCooldown)
+        {
+            currentDoubleJumpTimer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        doubleJumpPlatform.gameObject.SetActive(false);
+        currentDoubleJumpTimer = 0;
     }
 
     public void TriggerAttackAnimation()
