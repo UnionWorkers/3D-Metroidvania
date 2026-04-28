@@ -10,19 +10,42 @@ public enum AnimationState : byte
     InAir,
 }
 
+public enum GlideState : byte
+{
+    None,
+    Active
+}
+
+public enum DashState : byte
+{
+    None,
+    Active
+}
+
 [System.Serializable]
 public class PlayerEffectsController
 {
     private AnimationState animationState;
+    private GlideState glideState;
+    private DashState dashState;
+
     private bool canRun = true;
 
     [SerializeField] private float walkCooldown = 0.5f;
     private float currentWalkTimer = 0;
     private bool isWalkCooldownActive = false;
 
+    [Space(15)]
     [SerializeField] private Transform doubleJumpPlatform;
     [SerializeField] private float doubleJumpCooldown = 0.3f;
     private float currentDoubleJumpTimer = 0;
+
+
+    [Space(15)]
+    [SerializeField] private ParticleSystem glideParticles;
+    [SerializeField] private ParticleSystem landParticles;
+    [SerializeField] private ParticleSystem dashParticles;
+
 
     [NonSerialized] public Animator CharacterAnimator;
     public PlayerEffectsController(Animator inCharacterAnimator = null)
@@ -55,6 +78,10 @@ public class PlayerEffectsController
                 case AnimationState.Grounded:
                     CharacterAnimator.SetTrigger("Landing");
                     PlayerSFX("Land " + Random.Range(1, 3));
+                    if (landParticles != null)
+                    {
+                        landParticles.Play();
+                    }
                     canRun = true;
                     break;
                 case AnimationState.InAir:
@@ -62,6 +89,48 @@ public class PlayerEffectsController
                     break;
             }
             animationState = value;
+        }
+    }
+
+    public GlideState GlideState
+    {
+        get => glideState;
+        set
+        {
+            if (glideState == value || glideParticles == null) { return; }
+            glideState = value;
+
+            switch (glideState)
+            {
+                case GlideState.None:
+                    glideParticles.Stop();
+                    break;
+                case GlideState.Active:
+                    glideParticles.Play();
+                    break;
+            }
+
+        }
+    }
+
+    public DashState DashState
+    {
+        get => dashState;
+        set
+        {
+            if (dashState == value || dashParticles == null) { return; }
+            dashState = value;
+
+            switch (dashState)
+            {
+                case DashState.None:
+                    dashParticles.Stop();
+                    break;
+                case DashState.Active:
+                    dashParticles.Play();
+                    break;
+            }
+
         }
     }
 
@@ -166,6 +235,4 @@ public class PlayerEffectsController
         // CharacterAnimator.SetTrigger("Hit");
         PlayerSFX("TakeDamage " + Random.Range(1, 3));
     }
-
-
 }

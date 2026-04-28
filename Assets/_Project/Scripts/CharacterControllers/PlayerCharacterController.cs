@@ -245,6 +245,7 @@ namespace CustomCharacterController
         private Vector3 groundHitNormal;
 
         // Dash
+        private DashStage currentDashStage;
         private float currentDashTimer = 0f;
         private Vector3 dashDirection = Vector3.zero;
         private float dahsRotationDirection = 0;
@@ -262,7 +263,25 @@ namespace CustomCharacterController
         [NonSerialized] public bool CanGlide = false;
         [NonSerialized] public bool LockGlide = false;
         [NonSerialized] public bool PressingJump = false;
-        [NonSerialized] public DashStage CurrentDashStage;
+        public DashStage CurrentDashStage
+        {
+            get => currentDashStage;
+            set
+            {
+                if (currentDashStage == value) { return; }
+                currentDashStage = value;
+
+                switch (currentDashStage)
+                {
+                    case DashStage.IsDashing:
+                        EffectsController.DashState = DashState.Active;
+                        break;
+                    default:
+                        EffectsController.DashState = DashState.None;
+                        break;
+                }
+            }
+        }
         [Space(15)]
         public PlayerEffectsController EffectsController = new();
 
@@ -612,6 +631,8 @@ namespace CustomCharacterController
 
             if (LockGlide && CanGlide)
             {
+                EffectsController.GlideState = GlideState.Active;
+
                 if (externalForces.y >= moveStats.GlideMaxFallSpeed)
                 {
                     externalForces.y += downVelocity * gravityScale * Time.fixedDeltaTime;
@@ -623,6 +644,8 @@ namespace CustomCharacterController
             }
             else
             {
+                EffectsController.GlideState = GlideState.None;
+
                 if (externalForces.y >= moveStats.MaxFallSpeed)
                 {
                     externalForces.y += downVelocity * gravityScale * Time.fixedDeltaTime;
