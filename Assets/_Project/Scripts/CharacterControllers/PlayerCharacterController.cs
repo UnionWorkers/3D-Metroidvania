@@ -1231,6 +1231,11 @@ namespace CustomCharacterController
             characterController.Move(finalForce);
         }
 
+        public void Knockback(Transform inHitObject)
+        {
+            throw new NotImplementedException();
+        }
+
 
         // private void RopeMovement(ref Vector2 inDirection, ref Transform cameraTransform)
         // {

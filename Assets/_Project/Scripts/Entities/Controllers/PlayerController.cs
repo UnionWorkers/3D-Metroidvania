@@ -143,7 +143,11 @@ namespace Entities.Controller
                 OnDeath?.Invoke();
                 return;
             }
-
+            if (inDamageInfo.HitObject != null)
+            {
+                playerCharacterController.Knockback(inDamageInfo.HitObject);
+            }
+            
             playerCharacterController.EffectsController.TriggerHitAnimation();
         }
 
