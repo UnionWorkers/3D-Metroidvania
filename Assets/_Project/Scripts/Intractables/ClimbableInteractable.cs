@@ -22,6 +22,10 @@ public class ClimbableInteractable : BaseInteractable
         set => endPoint = value - transform.position;
     }
 
+    public Vector3 MoveForward => (endPoint - startPoint).normalized;
+    public float ClimeDistance => Vector3.Distance(StartPoint, EndPoint);
+    public float DistanceFromStartToPoint(Vector3 point) => Vector3.Distance(StartPoint, point);
+
     private void OnValidate()
     {
         Validate();

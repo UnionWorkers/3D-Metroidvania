@@ -57,6 +57,9 @@ namespace Entities.Controller
 
         // Components and other scripts
         [SerializeField] private HealthComponent healthComponent;
+        [SerializeField] private float invisibilityTimer = 0.3f;
+        private float currentInvisibilityTimer = 0;
+        private bool canTakeDamage = true;
 
         [SerializeField] private PlayerCharacterController playerCharacterController;
         private CameraController cameraController;
@@ -134,9 +137,13 @@ namespace Entities.Controller
         }
         public void TakeDamage(DamageInfo inDamageInfo)
         {
+            if (!canTakeDamage) { return; }
+
             // Add knockback, using DamageInfo HitObject
             healthComponent.CurrentHealth -= inDamageInfo.DamageAmount;
             OnHealthChanged?.Invoke(healthComponent.CurrentHealth);
+
+            canTakeDamage = false;
 
             if (healthComponent.CurrentHealth <= 0)
             {
@@ -147,7 +154,7 @@ namespace Entities.Controller
             {
                 playerCharacterController.Knockback(inDamageInfo.HitObject);
             }
-            
+
             playerCharacterController.EffectsController.TriggerHitAnimation();
         }
 
@@ -189,6 +196,19 @@ namespace Entities.Controller
                     {
                         playerCharacterController.MoveType = MoveType.Normal;
                     }
+                }
+            }
+
+            if (!canTakeDamage)
+            {
+                if (currentInvisibilityTimer < invisibilityTimer)
+                {
+                    currentInvisibilityTimer += Time.deltaTime;
+                }
+                else
+                {
+                    canTakeDamage = true;
+                    currentInvisibilityTimer = 0;
                 }
             }
 

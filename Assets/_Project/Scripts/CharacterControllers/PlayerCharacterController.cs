@@ -31,6 +31,12 @@ namespace CustomCharacterController
         Reset
     }
 
+    public enum ForceSource : byte
+    {
+        NotSpecific,
+        JumpPad,
+    }
+
 
     [System.Serializable]
     public struct MoveStats
@@ -1098,6 +1104,11 @@ namespace CustomCharacterController
                 MoveType = MoveType.Normal;
                 return;
             }
+
+            if (JumpStage != JumpStage.CanJump && JumpStage != JumpStage.CommitJump)
+            {
+                JumpStage = JumpStage.CanJump;
+            }
         }
 
         private void AttachClimbable()
@@ -1138,15 +1149,64 @@ namespace CustomCharacterController
 
             if (inDirection != Vector2.zero)
             {
-                currentMoveDirection.y = inDirection.y;
-                currentMoveDirection.z = inDirection.x;
+                currentMoveDirection.y = Mathf.RoundToInt(inDirection.y) ;
+                currentMoveDirection.z = Mathf.RoundToInt(inDirection.x);
             }
             else
             {
                 currentMoveDirection = Vector3.zero;
             }
 
-            if (currentMoveDirection != Vector3.zero)
+            float climbDist = ClimbableObject.ClimeDistance;
+            float startToPlayer = ClimbableObject.DistanceFromStartToPoint(new Vector3(ClimbableObject.StartPoint.x, transform.position.y, ClimbableObject.StartPoint.z));
+            float lerpAlfa = startToPlayer / climbDist;
+
+            if (lerpAlfa <= 0.05)
+            {
+                float dotProduct = Vector3.Dot(Vector3.up, ClimbableObject.MoveForward);
+                if (dotProduct != 0)
+                {
+                    if (currentMoveDirection.y == -ClimbableObject.MoveForward.y)
+                    {
+                        currentMoveDirection.y = 0;
+                    }
+                }
+            }
+            else if (lerpAlfa >= 0.95)
+            {
+                float dotProduct = Vector3.Dot(Vector3.up, ClimbableObject.MoveForward);
+                if (dotProduct != 0)
+                {
+                    if (currentMoveDirection.y == ClimbableObject.MoveForward.y)
+                    {
+                        currentMoveDirection.y = 0;
+                    }
+                }
+            }
+
+            // Moving left and right
+            if (currentMoveDirection.z != 0)
+            {
+                characterController.enabled = false;
+
+                Vector3 pivot = ClimbableObject.GetClosestPointOnSegment(transform.position);
+                transform.position = Quaternion.Euler(0, climbingInfo.ClimbAroundSpeed * (currentMoveDirection.z * -1), 0) * (transform.position - pivot) + pivot;
+                pivot.y = transform.position.y;
+                transform.LookAt(pivot);
+                currentMoveDirection.z = 0;
+
+                characterController.enabled = true;
+            }
+
+
+            finalForce = ClimbMovement() * Time.fixedDeltaTime;
+
+            characterController.Move(finalForce);
+        }
+
+        private Vector3 ClimbMovement()
+        {
+            if (currentMoveDirection.y != 0)
             {
                 if (currentVelocity < climbingInfo.ClimbSpeed)
                 {
@@ -1169,71 +1229,29 @@ namespace CustomCharacterController
                 }
             }
 
-            // Moving left and right 
-            if (currentMoveDirection.z != 0)
+            return currentMoveDirection * currentVelocity;
+        }
+
+
+        public void AddForce(Vector3 inForce, ForceSource forceSource = ForceSource.NotSpecific)
+        {
+            switch (forceSource)
             {
-                characterController.enabled = false;
+                case ForceSource.JumpPad:
+                    gravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
+                    externalForces.y += inForce.y;
+                    break;
 
-                Vector3 pivot = ClimbableObject.GetClosestPointOnSegment(transform.position);
-                transform.position = Quaternion.Euler(0, climbingInfo.ClimbAroundSpeed * (currentMoveDirection.z * -1), 0) * (transform.position - pivot) + pivot;
-                currentMoveDirection.z = 0;
-
-                transform.LookAt(pivot);
-
-                characterController.enabled = true;
+                default:
+                    externalForces += inForce;
+                    break;
             }
 
-            finalForce = (currentMoveDirection * currentVelocity) * Time.fixedDeltaTime;
-
-            float startCheck = Mathf.Abs(ClimbableObject.StartPoint.y - transform.position.y);
-            float endCheck = Mathf.Abs(ClimbableObject.EndPoint.y - transform.position.y);
-
-            // Limiting so the player cant go over or under the climbing object 
-            if (startCheck < 0.5)
-            {
-                Vector3 otherPos = Vector3.Normalize(ClimbableObject.StartPoint - transform.position);
-                float dotProduct = Vector3.Dot(transform.TransformDirection(Vector3.up), otherPos);
-                if (dotProduct > 0)
-                {
-                    if (finalForce.y > 0)
-                    {
-                        finalForce.y = 0;
-                    }
-                }
-                else
-                {
-                    if (finalForce.y < 0)
-                    {
-                        finalForce.y = 0;
-                    }
-                }
-            }
-            else if (endCheck < 0.5)
-            {
-                Vector3 otherPos = Vector3.Normalize(ClimbableObject.EndPoint - transform.position);
-                float dotProduct = Vector3.Dot(transform.TransformDirection(Vector3.up), otherPos);
-                if (dotProduct > 0)
-                {
-                    if (finalForce.y > 0)
-                    {
-                        finalForce.y = 0;
-                    }
-                }
-                else
-                {
-                    if (finalForce.y < 0)
-                    {
-                        finalForce.y = 0;
-                    }
-                }
-            }
-
-            characterController.Move(finalForce);
         }
 
         public void Knockback(Transform inHitObject)
         {
-            throw new NotImplementedException();
+            Debug.LogWarning("Knockback not implemented");
         }
 
 

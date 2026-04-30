@@ -1,16 +1,17 @@
+using CustomCharacterController;
 using UnityEngine;
 
 public class JumpPad : MonoBehaviour
 {
-    public float jumpForce;
+    public float jumpForce = 15;
 
-    private void OnTriggerEnter(Collider other)
+
+    private void OnTriggerStay(Collider other)
     {
-        if (other.gameObject.CompareTag("Player"))
+        if (other.CompareTag("Player"))
         {
-            CharacterController PlayerRef = other.transform.GetComponent<CharacterController>();
-            Vector3 PlayerPush = this.transform.up;
-            PlayerRef.Move(PlayerPush *  jumpForce);
+            PlayerCharacterController PlayerRef = other.transform.GetComponent<PlayerCharacterController>();
+            PlayerRef.AddForce(Vector3.up * jumpForce, ForceSource.JumpPad);
         }
     }
 }

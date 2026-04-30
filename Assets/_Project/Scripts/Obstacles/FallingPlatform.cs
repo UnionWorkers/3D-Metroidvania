@@ -65,7 +65,7 @@ public class FallingPlatform : MovingObject
 
                     eulorAngels = new(Clamp(eulorAngels.x), Clamp(eulorAngels.y), Clamp(eulorAngels.z));
                     transform.eulerAngles = eulorAngels;
-                    
+
                     currentFallCountdown -= Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
                 }
 
@@ -111,10 +111,9 @@ public class FallingPlatform : MovingObject
             currentVelocity += (moveSpeed * currentBootedFallSpeed) * Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
         }
 
-        float dist = Vector3.Distance(transform.position, desiredMovePoint);
+        float dotProduct = Vector3.Dot((transform.position - desiredMovePoint).normalized, (NewDesiredMovePoint() - desiredMovePoint).normalized);
 
-
-        if (dist > 0.15f)
+        if (dotProduct <= 0)
         {
             transform.position += currentVelocity * Time.fixedDeltaTime * currentMoveDirection;
             return false;
