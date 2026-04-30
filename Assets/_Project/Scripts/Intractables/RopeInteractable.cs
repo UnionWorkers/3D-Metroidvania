@@ -104,7 +104,8 @@ public class RopeInteractable : BaseInteractable
         inPlayerController.SwitchMoveType(CustomCharacterController.MoveType.OnRope);
     }
 
-    public Vector3 GetClosestPointOnSegment(Vector3 inPos)
+    // add so it uses the limiter
+    public Vector3 GetClosestPointOnSegment(Vector3 inPos, float alphaLimiter)
     {
         Vector3 pointToPos = inPos - EndPoint;
         Vector3 endToEnd = StartPoint - EndPoint;

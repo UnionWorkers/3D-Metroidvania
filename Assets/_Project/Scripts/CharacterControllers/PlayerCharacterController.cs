@@ -981,7 +981,7 @@ namespace CustomCharacterController
             canMove = false;
             characterController.enabled = false;
 
-            transform.position = RopeObject.GetClosestPointOnSegment(transform.position);
+            transform.position = RopeObject.GetClosestPointOnSegment(transform.position, 0.07f);
 
             canMove = true;
             characterController.enabled = true;
@@ -1030,7 +1030,7 @@ namespace CustomCharacterController
 
             float ropeDist = RopeObject.RopeDistance;
             float startToPlayer = RopeObject.DistanceFromStartToPoint(new Vector3(transform.position.x, RopeObject.StartPoint.y, transform.position.z));
-            float lerpAlfa = startToPlayer / ropeDist;
+            float lerpAlpha = startToPlayer / ropeDist;
 
             if (wantedMoveDirection == -RopeObject.MoveForward)
             {
@@ -1041,7 +1041,7 @@ namespace CustomCharacterController
                 transform.forward = RopeObject.MoveForward;
             }
 
-            if (lerpAlfa <= 0.05)
+            if (lerpAlpha <= 0.05)
             {
                 float dotProduct = Vector3.Dot(transform.forward, RopeObject.MoveForward);
 
@@ -1054,7 +1054,7 @@ namespace CustomCharacterController
                     }
                 }
             }
-            else if (lerpAlfa >= 0.95)
+            else if (lerpAlpha >= 0.95)
             {
                 float dotProduct = Vector3.Dot(transform.forward, RopeObject.MoveForward);
 
@@ -1116,7 +1116,7 @@ namespace CustomCharacterController
             canMove = false;
             characterController.enabled = false;
 
-            Vector3 point = ClimbableObject.GetClosestPointOnSegment(transform.position);
+            Vector3 point = ClimbableObject.GetClosestPointOnSegment(transform.position, 0.07f);
             transform.position = point + new Vector3(characterController.radius, 0, characterController.radius);
             transform.LookAt(point);
 
@@ -1159,9 +1159,9 @@ namespace CustomCharacterController
 
             float climbDist = ClimbableObject.ClimeDistance;
             float startToPlayer = ClimbableObject.DistanceFromStartToPoint(new Vector3(ClimbableObject.StartPoint.x, transform.position.y, ClimbableObject.StartPoint.z));
-            float lerpAlfa = startToPlayer / climbDist;
+            float lerpAlpha = startToPlayer / climbDist;
 
-            if (lerpAlfa <= 0.05)
+            if (lerpAlpha <= 0.05)
             {
                 float dotProduct = Vector3.Dot(Vector3.up, ClimbableObject.MoveForward);
                 if (dotProduct != 0)
@@ -1172,7 +1172,7 @@ namespace CustomCharacterController
                     }
                 }
             }
-            else if (lerpAlfa >= 0.95)
+            else if (lerpAlpha >= 0.95)
             {
                 float dotProduct = Vector3.Dot(Vector3.up, ClimbableObject.MoveForward);
                 if (dotProduct != 0)
@@ -1189,7 +1189,7 @@ namespace CustomCharacterController
             {
                 characterController.enabled = false;
 
-                Vector3 pivot = ClimbableObject.GetClosestPointOnSegment(transform.position);
+                Vector3 pivot = ClimbableObject.GetClosestPointOnSegment(transform.position, 0.07f);
                 transform.position = Quaternion.Euler(0, climbingInfo.ClimbAroundSpeed * (currentMoveDirection.z * -1), 0) * (transform.position - pivot) + pivot;
                 pivot.y = transform.position.y;
                 transform.LookAt(pivot);
