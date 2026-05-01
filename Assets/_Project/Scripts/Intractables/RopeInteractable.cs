@@ -107,22 +107,25 @@ public class RopeInteractable : BaseInteractable
     // add so it uses the limiter
     public Vector3 GetClosestPointOnSegment(Vector3 inPos, float alphaLimiter)
     {
-        Vector3 pointToPos = inPos - EndPoint;
-        Vector3 endToEnd = StartPoint - EndPoint;
+        Vector3 limitedStart = Vector3.Lerp(StartPoint, EndPoint, alphaLimiter);
+        Vector3 limitedEnd = Vector3.Lerp(StartPoint, EndPoint, (1 - alphaLimiter));
+
+        Vector3 pointToPos = inPos - limitedEnd;
+        Vector3 endToEnd = limitedStart - limitedEnd;
 
         // is nearest end point 
         float dotProduct = Vector3.Dot(pointToPos, endToEnd);
-        if (dotProduct <= 0f) { return EndPoint; }
+        if (dotProduct <= 0f) { return limitedEnd; }
 
-        pointToPos = inPos - StartPoint;
-        endToEnd = EndPoint - StartPoint;
+        pointToPos = inPos - limitedStart;
+        endToEnd = limitedEnd - limitedStart;
 
         // is nearest start point 
         dotProduct = Vector3.Dot(pointToPos, endToEnd);
-        if (dotProduct <= 0f) { return StartPoint; }
+        if (dotProduct <= 0f) { return limitedStart; }
 
         // point in segment
-        return StartPoint + endToEnd.normalized * (dotProduct / endToEnd.magnitude);
+        return limitedStart + endToEnd.normalized * (dotProduct / endToEnd.magnitude);
     }
 
 }
