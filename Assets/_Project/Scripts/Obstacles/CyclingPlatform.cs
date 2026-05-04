@@ -12,6 +12,7 @@ public class CyclingPlatform : BaseEntity
 
     private float currentStartTimer;
     private float currentToFinishTimer;
+    private float previousRotation;
 
     public override void OnInitialize()
     {
@@ -23,6 +24,7 @@ public class CyclingPlatform : BaseEntity
         }
         currentStartTimer = rotateToStartTimer;
         currentToFinishTimer = timeFromStartToFinished;
+        previousRotation = rotationObject.localEulerAngles.y;
         rotateDirection = Utils.Math.MyMath.ClampVector(rotateDirection, Utils.Math.MyMath.ClampMode.ZeroToOne);
     }
 
@@ -32,11 +34,15 @@ public class CyclingPlatform : BaseEntity
         {
             if (currentToFinishTimer >= 0f)
             {
-                rotationObject.Rotate(rotateDirection * (rotateAmount / timeFromStartToFinished * Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed));
+                rotationObject.localEulerAngles += rotateDirection * (rotateAmount / timeFromStartToFinished * Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed);
                 currentToFinishTimer -= Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
             }
             else
             {
+                Vector3 eulerAngles = rotationObject.localEulerAngles; 
+                eulerAngles.y = previousRotation + rotateAmount;
+                rotationObject.localEulerAngles = eulerAngles;
+                previousRotation = rotationObject.localEulerAngles.y;
                 currentStartTimer = rotateToStartTimer;
                 currentToFinishTimer = timeFromStartToFinished;
             }

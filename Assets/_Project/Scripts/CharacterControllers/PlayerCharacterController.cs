@@ -1,5 +1,8 @@
 using System;
+using System.Collections;
+using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
+using UnityEngine.LowLevelPhysics;
 using UnityEngine.VFX;
 
 namespace CustomCharacterController
@@ -259,6 +262,9 @@ namespace CustomCharacterController
 
         private Vector3 t_lastPos;
         private Transform T_Ground;
+
+        private bool isLerpToPosActive = false;
+
         #endregion
 
         #region Public
@@ -976,15 +982,88 @@ namespace CustomCharacterController
             }
         }
 
-        private void AttachToRope()
+        public void AddForce(Vector3 inForce, ForceSource forceSource = ForceSource.NotSpecific)
+        {
+            switch (forceSource)
+            {
+                case ForceSource.JumpPad:
+                    gravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
+                    externalForces.y += inForce.y;
+                    break;
+
+                default:
+                    externalForces += inForce;
+                    break;
+            }
+        }
+
+        public void Knockback(Transform inHitObject)
+        {
+            Debug.LogWarning("Knockback not implemented");
+        }
+
+        private IEnumerator LerpToPosition(Vector3 newPos)
         {
             canMove = false;
             characterController.enabled = false;
+            isLerpToPosActive = true;
 
-            transform.position = RopeObject.GetClosestPointOnSegment(transform.position, 0.07f);
+            float desierdDurection = 0.05f;
+            float elapsedTime = 0;
+            float learpAlfa = 0;
+            Vector3 startPos = transform.position;
 
+            while (learpAlfa < 1)
+            {
+                elapsedTime += Time.deltaTime;
+                learpAlfa = (elapsedTime / desierdDurection);
+
+                transform.position = Vector3.Lerp(startPos, newPos, learpAlfa);
+                yield return new WaitForEndOfFrame();
+            }
+
+            transform.position = newPos;
+
+
+            isLerpToPosActive = false;
             canMove = true;
             characterController.enabled = true;
+        }
+
+        private IEnumerator LerpToPosition(Vector3 newPos, Vector3 lookPoint)
+        {
+            canMove = false;
+            characterController.enabled = false;
+            isLerpToPosActive = true;
+
+            float desierdDurection = 0.05f;
+            float elapsedTime = 0;
+            float learpAlfa = 0;
+            Vector3 startPos = transform.position;
+
+            while (learpAlfa < 1)
+            {
+                elapsedTime += Time.deltaTime;
+                learpAlfa = (elapsedTime / desierdDurection);
+
+                transform.position = Vector3.Lerp(startPos, newPos, learpAlfa);
+                yield return new WaitForEndOfFrame();
+            }
+
+            transform.position = newPos;
+            transform.LookAt(lookPoint);
+
+            isLerpToPosActive = false;
+            canMove = true;
+            characterController.enabled = true;
+        }
+
+        private void AttachToRope()
+        {
+            if (!isLerpToPosActive)
+            {
+                StartCoroutine(LerpToPosition(RopeObject.GetClosestPointOnSegment(transform.position, 0.07f)));
+            }
         }
 
         private void RopeMovement(ref Vector2 inDirection, ref Transform cameraTransform)
@@ -1078,13 +1157,10 @@ namespace CustomCharacterController
 
         private void AttachStandingPoint()
         {
-            canMove = false;
-            characterController.enabled = false;
-
-            transform.position = StandingPointObject.SetPlayerAtStandingPoint(BottomValue);
-
-            canMove = true;
-            characterController.enabled = true;
+            if (!isLerpToPosActive)
+            {
+                StartCoroutine(LerpToPosition(StandingPointObject.SetPlayerAtStandingPoint(BottomValue)));
+            }
         }
 
         private void StandingPointMovement(ref Vector2 inDirection, ref Transform cameraTransform)
@@ -1113,15 +1189,11 @@ namespace CustomCharacterController
 
         private void AttachClimbable()
         {
-            canMove = false;
-            characterController.enabled = false;
-
             Vector3 point = ClimbableObject.GetClosestPointOnSegment(transform.position, 0.07f);
-            transform.position = point + new Vector3(characterController.radius, 0, characterController.radius);
-            transform.LookAt(point);
-
-            canMove = true;
-            characterController.enabled = true;
+            if (!isLerpToPosActive)
+            {
+                StartCoroutine(LerpToPosition(point + new Vector3(characterController.radius, 0, characterController.radius), point));
+            }
         }
 
         private void ClimbingMovement(ref Vector2 inDirection, ref Transform cameraTransform)
@@ -1149,7 +1221,7 @@ namespace CustomCharacterController
 
             if (inDirection != Vector2.zero)
             {
-                currentMoveDirection.y = Mathf.RoundToInt(inDirection.y) ;
+                currentMoveDirection.y = Mathf.RoundToInt(inDirection.y);
                 currentMoveDirection.z = Mathf.RoundToInt(inDirection.x);
             }
             else
@@ -1231,294 +1303,6 @@ namespace CustomCharacterController
 
             return currentMoveDirection * currentVelocity;
         }
-
-
-        public void AddForce(Vector3 inForce, ForceSource forceSource = ForceSource.NotSpecific)
-        {
-            switch (forceSource)
-            {
-                case ForceSource.JumpPad:
-                    gravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
-                    externalForces.y += inForce.y;
-                    break;
-
-                default:
-                    externalForces += inForce;
-                    break;
-            }
-
-        }
-
-        public void Knockback(Transform inHitObject)
-        {
-            Debug.LogWarning("Knockback not implemented");
-        }
-
-
-        // private void RopeMovement(ref Vector2 inDirection, ref Transform cameraTransform)
-        // {
-        //     if (MagnetObject == null)
-        //     {
-        //         MoveType = MoveType.Normal;
-        //         return;
-        //     }
-
-        //     if (!canMove)
-        //     {
-        //         return;
-        //     }
-
-        //     // Input direction
-        //     Vector3 moveVector = new Vector3(inDirection.x, 0, inDirection.y).normalized;
-
-        //     // move in the direction of player input
-        //     if (moveVector != Vector3.zero)
-        //     {
-
-        //         // Face direction of input based on camera forward
-        //         // targetRotation = Mathf.Atan2(moveVector.x, moveVector.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
-        //         // transform.rotation = Quaternion.Euler(0f, targetRotation, 0f);
-
-        //         Accelerate();
-        //     }
-        //     else
-        //     {
-        //         Decelerate();
-        //     }
-
-        //     Vector3 targetMoveDirection = MagnetObject.MoveForward * moveVector.z;
-        //     //Vector3 targetMoveDirection = (Quaternion.Euler(0f, targetRotation, 0f) * Vector3.forward).normalized;
-
-        //     Vector3 finalMoveVector = (targetMoveDirection * currentVelocity + movingGroundInfo.MoveVector) * Time.fixedDeltaTime;
-
-        //     characterController.Move(finalMoveVector);
-        // }
-
     }
 
 }
-
-
-
-
-// Old Movement code, might delete later 😏
-/*
-
- // old movement debugging
-                // else if (moveType == MoveType.TestNormal)
-                // {
-                //     Vector3 forceDirection = new Vector3(moveTargetPoint.x + transform.position.x, transform.position.y, moveTargetPoint.z + transform.position.z);
-                //     Vector3 moveDirection = new Vector3(effectMoveTarget.x + transform.position.x, 0, effectMoveTarget.z + transform.position.z) * moveStats.MaxSpeed;
-                //     moveDirection.y = transform.position.y;
-
-                //     Gizmos.color = new Color(0.5f, 0f, 0f, 1f);
-                //     Gizmos.DrawSphere(forceDirection, 0.6f);
-                //     Gizmos.DrawLine(transform.position, forceDirection);
-
-                //     Gizmos.color = new Color(0f, 0.5f, 0f, 1f);
-                //     Gizmos.DrawLine(transform.position, moveDirection);
-                //     Gizmos.DrawSphere(moveDirection, 0.6f);
-                // }
-
-
- private void TestNormalMovement(ref Vector2 inDirection, ref Transform cameraTransform)
-        {
-            if (jumpStage == JumpStage.CommitJump || jumpStage == JumpStage.CommitDoubleJump)
-            {
-                CommitJump();
-            }
-
-            if (!isOnSlope)
-            {
-                // reset hit slope velocity when grounded
-                hitNormal = Vector3.zero;
-                externalVector.x = 0;
-                externalVector.z = 0;
-            }
-            else
-            {
-                // Check for slope
-                if (hitNormal != Vector3.zero)
-                {
-                    CalculateSlopeVector();
-                    currentVelocity = 0;
-                    hitNormal = Vector3.zero;
-                    CanGlide = false;
-                }
-            }
-
-            if (characterController.isGrounded && !isOnSlope)
-            {
-                WhenPlayerGrounded();
-                CanGlide = false;
-            }
-            else if (currentCoyoteTime <= moveStats.MaxCoyoteTime)
-            {
-                currentCoyoteTime += Time.fixedDeltaTime;
-                CanGlide = true;
-            }
-            else if (jumpStage != JumpStage.Reset && jumpStage != JumpStage.CanDoubleJump)
-            {
-                JumpStage = JumpStage.CanDoubleJump;
-                CanGlide = true;
-            }
-
-            // Input direction
-            Vector3 moveVector = new Vector3(inDirection.x, 0, inDirection.y).normalized;
-
-            if (moveVector != Vector3.zero)
-            {
-                // Face direction of input based on camera forward
-                targetRotation = Mathf.Atan2(moveVector.x, moveVector.z) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
-                transform.rotation = Quaternion.Euler(0f, targetRotation, 0f);
-
-                Accelerate();
-            }
-            else
-            {
-                Decelerate();
-            }
-
-            effectMoveTarget = (Quaternion.Euler(0f, targetRotation, 0f) * Vector3.forward).normalized;
-
-            ApplyGravity();
-
-            effectMoveTarget *= currentVelocity;
-
-            moveTargetPoint = effectMoveTarget;
-
-            // add external vectors
-            Vector3 finalMoveVector = (moveTargetPoint + movingGroundInfo.MoveVector + externalVector) * Time.fixedDeltaTime;
-
-            characterController.Move(finalMoveVector);
-
-            effectMoveTarget = Vector3.zero; // temp
-
-            // is the angel of the ground lower then the slop limit
-            isOnSlope = Vector3.Angle(Vector3.up, hitNormal) >= characterController.slopeLimit;
-        }
-
-        private void ApplyGravity()
-        {
-            float downVelocity;
-
-            float newGravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
-            gravityScale = newGravityScale;
-
-            if (!characterController.isGrounded && externalVector.y < 0f)
-            {
-                gravityScale = gravityScale * moveStats.GravityMultiplier;
-                downVelocity = moveStats.GravityValue;
-            }
-            else if (!PressingJump && externalVector.y > 0.05f && jumpStage == JumpStage.CanDoubleJump)
-            {
-                gravityScale = gravityScale * moveStats.GravityMultiplier * moveStats.VariableJumpGravityIncrease;
-                downVelocity = moveStats.GravityValue;
-            }
-            else
-            {
-                gravityScale = gravityScale * 1;
-                downVelocity = moveStats.GravityValue * 1;
-            }
-
-            if (externalVector.y >= moveStats.MaxFallSpeed)
-            {
-                externalVector.y += downVelocity * gravityScale * Time.fixedDeltaTime;
-            }
-            else
-            {
-                externalVector.y = moveStats.MaxFallSpeed;
-            }
-
-        }
-
-        // Jump code 
-            if (jumpStage == JumpStage.CommitJump || moveType == MoveType.OnRope)
-                    {
-                        if (moveType != MoveType.Normal)
-                        {
-                            MoveType = MoveType.Normal;
-                        }
-
-                        externalVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight);
-                        JumpStage = JumpStage.CanDoubleJump;
-                    }
-                    else if (jumpStage == JumpStage.CommitDoubleJump)
-                    {
-                        externalVector.y = Mathf.Sqrt(-2f * moveStats.GravityValue * gravityScale * moveStats.JumpHeight) * moveStats.DoubleJumpEffect;
-                        JumpStage = JumpStage.Reset;
-                    }
-
-                            private void Accelerate()
-        {
-            if (currentVelocity < moveStats.MaxSpeed)
-            {
-                currentVelocity += moveStats.MaxSpeed * (Time.fixedDeltaTime / moveStats.AccelerationTime);
-            }
-            else
-            {
-                currentVelocity = moveStats.MaxSpeed;
-            }
-        }
-
-        private void Decelerate()
-        {
-            if (currentVelocity > 0f)
-            {
-
-                currentVelocity -= moveStats.MaxSpeed * (Time.fixedDeltaTime / moveStats.DecelerationTime);
-            }
-            else
-            {
-                currentVelocity = 0f;
-            }
-        }
-
-
-  private void WhenPlayerGrounded()
-        {
-            gravityScale = 1f;
-            currentCoyoteTime = 0;
-            if (externalVector.y < 0.1f && jumpStage != JumpStage.CommitJump)
-            {
-                JumpStage = JumpStage.CanJump;
-            }
-
-            // Check if there is moving ground under the player
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 2f, groundLayerMask))
-            {
-                switch (LayerMask.LayerToName(hit.transform.gameObject.layer))
-                {
-                    case "MovingObject":
-
-                        MovingObject movingObject = hit.transform.GetComponent<MovingObject>();
-                        if (movingObject != null)
-                        {
-                            movingGroundInfo = new(movingObject.CurrentVelocity, movingObject.CurrentMoveDirection + new Vector3(0, 0.5f, 0));
-                        }
-
-                        break;
-                    case "ConveyorBelt":
-
-                        ConveyorBelt conveyorBelt = hit.transform.GetComponent<ConveyorBelt>();
-                        if (conveyorBelt != null)
-                        {
-                            movingGroundInfo = new(conveyorBelt.CurrentVelocity, conveyorBelt.CurrentMoveDirection + new Vector3(0, 0.5f, 0));
-                        }
-                        break;
-                }
-
-            }
-            else if (movingGroundInfo.MoveVector != Vector3.zero)
-            {
-                movingGroundInfo = new(0, Vector3.zero);
-            }
-
-            if (externalVector.y < -2f)
-            {
-                externalVector.y = -2f;
-            }
-        }
-
-
-*/
