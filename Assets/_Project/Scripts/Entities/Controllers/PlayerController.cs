@@ -263,10 +263,9 @@ namespace Entities.Controller
 
         public override void OnFixedUpdate()
         {
-            if (playerCharacterController.CanMove)
-            {
-                playerCharacterController.MovePlayer(moveDirection, cameraController.transform);
-            }
+            if (!playerCharacterController.CanMove) { return; }
+
+            playerCharacterController.MovePlayer(moveDirection, cameraController.transform);
         }
 
         private void CheckForInteractables()
@@ -354,18 +353,37 @@ namespace Entities.Controller
 
         private (IInteractable, int) GetClosestInteractable()
         {
-            if (interactables[0] == null)
+            (IInteractable myInteractable, int index) interactable = (null, -1);
+            for (int i = 0; i < interactables.Length; i++)
+            {
+                if (!InteractableValidation(ref interactables[i]))
+                {
+                    continue;
+                }
+                interactable = (interactables[i], i);
+                break;
+            }
+
+            if (interactable.myInteractable == null)
             {
                 return (null, -1);
             }
 
-            (float distFromPlayer, IInteractable myInteractable, int index) bestInteractable = (Vector3.Distance(transform.position, interactables[0].GetTransform.position), interactables[0], 0);
+            // this is ugly 🤮
+            (float distFromPlayer, IInteractable myInteractable, int index) bestInteractable =
+            (
+                Vector3.Distance(transform.position, interactable.myInteractable.GetTransform.position),
+                interactable.myInteractable,
+                interactable.index
+            );
+
             for (int i = 0; i < interactables.Length; i++)
             {
-                if (interactables[i] == null)
+                if (!InteractableValidation(ref interactables[i]))
                 {
                     continue;
                 }
+
                 float dist = Vector3.Distance(transform.position, interactables[i].GetTransform.position);
                 if (dist < bestInteractable.distFromPlayer)
                 {
@@ -375,8 +393,29 @@ namespace Entities.Controller
             return (bestInteractable.myInteractable, bestInteractable.index);
         }
 
+        private bool InteractableValidation(ref IInteractable interactable)
+        {
+            if (interactable == null)
+            {
+                return false;
+            }
+
+            bool returnState = true;
+
+            if (CharacterController.IsGround)
+            {
+                if (interactable is ClimbableInteractable) { returnState = false; }
+                else if (interactable is RopeInteractable) { returnState = false; }
+                else if (interactable is StandingPointInteractable) { returnState = false; }
+            }
+
+            return returnState;
+        }
+
         private void Jump(InputActionPhase phase)
         {
+            if (!playerCharacterController.CanMove) { return; }
+
             switch (phase)
             {
                 case InputActionPhase.Started:
@@ -414,6 +453,8 @@ namespace Entities.Controller
 
         private void Interact(InputActionPhase phase)
         {
+            if (!playerCharacterController.CanMove) { return; }
+
             switch (phase)
             {
                 case InputActionPhase.Performed:
@@ -457,6 +498,8 @@ namespace Entities.Controller
 
         private void TimeManipulate(InputActionPhase phase)
         {
+            if (!playerCharacterController.CanMove) { return; }
+
             switch (phase)
             {
                 case InputActionPhase.Performed:
@@ -469,6 +512,8 @@ namespace Entities.Controller
 
         private void Attack(InputActionPhase phase)
         {
+            if (!playerCharacterController.CanMove) { return; }
+
             switch (phase)
             {
                 case InputActionPhase.Performed:
@@ -484,6 +529,8 @@ namespace Entities.Controller
 
         private void Dash(InputActionPhase phase)
         {
+            if (!playerCharacterController.CanMove) { return; }
+
             switch (phase)
             {
                 case InputActionPhase.Performed:
@@ -499,6 +546,8 @@ namespace Entities.Controller
 
         private void Glide(InputActionPhase phase)
         {
+            if (!playerCharacterController.CanMove) { return; }
+
             switch (phase)
             {
                 case InputActionPhase.Performed:

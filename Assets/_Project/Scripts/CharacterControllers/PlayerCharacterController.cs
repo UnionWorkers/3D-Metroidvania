@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
-using UnityEditor.ProjectWindowCallback;
 using UnityEngine;
-using UnityEngine.LowLevelPhysics;
 using UnityEngine.VFX;
 
 namespace CustomCharacterController
@@ -202,7 +200,6 @@ namespace CustomCharacterController
         [SerializeField] private SOPlayerMoveData movePreset;
         [SerializeField] private MoveStats moveStats;
 
-
         [Space(15)]
         [SerializeField] private AttackInfo attackInfo;
 
@@ -219,6 +216,9 @@ namespace CustomCharacterController
         [Space(15)]
         [Header("Climb")]
         [SerializeField] private ClimbingInfo climbingInfo;
+
+        [Space(15)]
+        [SerializeField] private float durationToAttachPoint = 0.05f;
 
         #endregion
 
@@ -459,8 +459,10 @@ namespace CustomCharacterController
             groundHitNormal = hit.normal;
 
             // make the character fall 
-            if (transform.position.y - hit.transform.position.y < 0)
+            if (transform.position.y - hit.point.y < 0)
             {
+                bool collisionCheck = Physics.CapsuleCast(transform.position, transform.position + (transform.up * 0.1f), 0.4f, transform.up, 2f);
+                if (!collisionCheck) { return; }
                 if (externalForces.y > 0)
                 {
                     externalForces.y = 0;
@@ -682,8 +684,7 @@ namespace CustomCharacterController
                 JumpStage = JumpStage.CanJump;
             }
 
-            // Check if there is moving ground under the player
-            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 2f, movingGroundLayerMask))
+            if (Physics.CapsuleCast(transform.position + (transform.up * 0.8f), transform.position + (transform.up * 0.8f), 0.4f, -transform.up, out RaycastHit hit, 1f, movingGroundLayerMask))
             {
                 switch (LayerMask.LayerToName(hit.transform.gameObject.layer))
                 {
@@ -924,15 +925,8 @@ namespace CustomCharacterController
                     finalForce = Vector3.zero;
                     externalForces = Vector3.zero;
 
-                    // calculate start and end point of capsule
-                    Vector3 bottom = transform.position;
-                    Vector3 top = transform.position;
-                    // Limit the height of the capsule for better detection 
-                    float height = BottomValue * 0.4f;
-                    bottom.y -= height;
-                    top.y += height;
-
-                    if (Physics.CapsuleCast(bottom, top, characterController.radius, dashDirection, 0.7f, moveStats.DashLayerMask))
+                    // move up make bigger
+                    if (Physics.CapsuleCast(transform.position, transform.position + transform.up, characterController.radius, dashDirection, 0.7f, moveStats.DashLayerMask))
                     {
                         CurrentDashStage = DashStage.CancelDash;
                         return;
@@ -1008,17 +1002,16 @@ namespace CustomCharacterController
             characterController.enabled = false;
             isLerpToPosActive = true;
 
-            float desierdDurection = 0.05f;
             float elapsedTime = 0;
-            float learpAlfa = 0;
+            float lerpAlfa = 0;
             Vector3 startPos = transform.position;
 
-            while (learpAlfa < 1)
+            while (lerpAlfa < 1)
             {
                 elapsedTime += Time.deltaTime;
-                learpAlfa = (elapsedTime / desierdDurection);
+                lerpAlfa = (elapsedTime / durationToAttachPoint);
 
-                transform.position = Vector3.Lerp(startPos, newPos, learpAlfa);
+                transform.position = Vector3.Lerp(startPos, newPos, lerpAlfa);
                 yield return new WaitForEndOfFrame();
             }
 
@@ -1036,17 +1029,16 @@ namespace CustomCharacterController
             characterController.enabled = false;
             isLerpToPosActive = true;
 
-            float desierdDurection = 0.05f;
             float elapsedTime = 0;
-            float learpAlfa = 0;
+            float lerpAlfa = 0;
             Vector3 startPos = transform.position;
 
-            while (learpAlfa < 1)
+            while (lerpAlfa < 1)
             {
                 elapsedTime += Time.deltaTime;
-                learpAlfa = (elapsedTime / desierdDurection);
+                lerpAlfa = (elapsedTime / durationToAttachPoint);
 
-                transform.position = Vector3.Lerp(startPos, newPos, learpAlfa);
+                transform.position = Vector3.Lerp(startPos, newPos, lerpAlfa);
                 yield return new WaitForEndOfFrame();
             }
 

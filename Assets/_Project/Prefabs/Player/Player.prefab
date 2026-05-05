@@ -47,9 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51e78e28e6b649b4fb08ead13d11bfc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  debugState: 1
+  debugState: 0
   jumpInputBufferTimer: 0.1
-  interactRadius: 4
+  interactRadius: 2.5
   interactLayerMask:
     serializedVersion: 2
     m_Bits: 64
@@ -57,6 +57,7 @@ MonoBehaviour:
   dashCooldown: 1
   healthComponent:
     maxHealth: 3
+  invisibilityTimer: 0.3
   playerCharacterController: {fileID: 6958708317175323635}
 --- !u!114 &6958708317175323635
 MonoBehaviour:
@@ -114,6 +115,7 @@ MonoBehaviour:
     climbSpeed: 5
     climbAccelerationTime: 0.4
     climbAroundSpeed: 5
+  durationToAttachPoint: 0.05
   EffectsController:
     walkCooldown: 0.5
     doubleJumpPlatform: {fileID: 190070093962350219}
