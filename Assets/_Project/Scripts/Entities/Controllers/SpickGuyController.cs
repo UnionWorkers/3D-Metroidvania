@@ -59,7 +59,7 @@ public class SpickGuyController : BaseEntity, IHealth
         if (playerTransform == null) { Debug.LogError("PlayerTransform is null"); EntityState = EntityState.Disabled; return; }
         if (splineAnimate == null) { Debug.LogError("SplineAnimate is null"); EntityState = EntityState.Disabled; return; }
 
-        previousGameSpeed = GameManager.Instance.ObjectsGameSpeed;
+        previousGameSpeed = GameManager.Instance.GameSpeed;
         previousNormalizedSpeed = splineAnimate.NormalizedTime;
         splineAnimate.MaxSpeed = maxSpeed * previousGameSpeed;
 
@@ -86,12 +86,12 @@ public class SpickGuyController : BaseEntity, IHealth
         }
     }
 
-    public override void OnUpdate()
+    public override void OnUpdate(float gameSpeed)
     {
-        if (previousGameSpeed != GameManager.Instance.ObjectsGameSpeed)
+        if (previousGameSpeed != gameSpeed)
         {
             previousNormalizedSpeed = splineAnimate.NormalizedTime;
-            previousGameSpeed = GameManager.Instance.ObjectsGameSpeed;
+            previousGameSpeed = gameSpeed;
             splineAnimate.MaxSpeed = maxSpeed * previousGameSpeed;
             splineAnimate.NormalizedTime = previousNormalizedSpeed;
         }

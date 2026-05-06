@@ -841,6 +841,7 @@ MonoBehaviour:
     maxHealth: 3
   minRotationClamp: -50
   maxRotationClamp: 50
+  minTargetAngle: 5
   rotationSpeed: 20
   maxTimerToLoseTarget: 5
   damageStruct:

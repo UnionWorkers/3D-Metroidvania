@@ -16,7 +16,7 @@ public struct SpotlightMove
     public float MoveSpeed => moveSpeed;
     public float MoveDistance => moveDistance;
     public Vector3 MoveDirection => new Vector3(Mathf.Clamp01(moveDirection.x), Mathf.Clamp01(moveDirection.y), Mathf.Clamp01(moveDirection.z));
-    public float RealMaxVelocity => maxVelocity * GameManager.Instance.ObjectsGameSpeed;
+    public float RealMaxVelocity => maxVelocity * GameManager.Instance.GameSpeed;
 
 }
 
@@ -87,12 +87,12 @@ public class RatBastardController : BaseEntity
     }
 
 
-    public override void OnUpdate()
+    public override void OnUpdate(float gameSpeed)
     {
 
         if (currentShootTimer < shootCooldownTimer)
         {
-            currentShootTimer += Time.deltaTime * GameManager.Instance.ObjectsGameSpeed;
+            currentShootTimer += Time.deltaTime * gameSpeed;
         }
         else
         {
@@ -119,17 +119,17 @@ public class RatBastardController : BaseEntity
                 }
                 else
                 {
-                    currentTargetTimerToShoot += Time.deltaTime * GameManager.Instance.ObjectsGameSpeed;
+                    currentTargetTimerToShoot += Time.deltaTime * gameSpeed;
                 }
             }
         }
     }
 
-    public override void OnFixedUpdate()
+    public override void OnFixedUpdate(float gameSpeed)
     {
         if (currentVelocity < spotlightMove.RealMaxVelocity)
         {
-            currentVelocity += spotlightMove.MoveSpeed * Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
+            currentVelocity += spotlightMove.MoveSpeed * Time.fixedDeltaTime * gameSpeed;
         }
 
         float dist = Vector3.Distance(spotlightMove.MovingObject.position, desiredMovePoint);

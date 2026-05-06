@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5838017376375234859}
   - component: {fileID: 7585546127746805518}
   m_Layer: 6
-  m_Name: DoorInteracteble
+  m_Name: BadDoorInteracteble
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

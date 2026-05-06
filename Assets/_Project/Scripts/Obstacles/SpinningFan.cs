@@ -21,7 +21,7 @@ public class SpinningFan : BaseEntity
     [SerializeField] private List<TriggerCollisionMessenger> triggerCollisionMessengers = new();
     [SerializeField] private GameObject wallBlocker;
     private bool wallIsBlocking = true;
-    private float gameSpeed = 1f;
+    private float currentGameSpeed = 1f;
 
     public override void OnInitialize()
     {
@@ -70,9 +70,9 @@ public class SpinningFan : BaseEntity
         }
     }
 
-    public override void OnFixedUpdate()
+    public override void OnFixedUpdate(float gameSpeed)
     {
-        gameSpeed = GameManager.Instance.ObjectsGameSpeed;
+        currentGameSpeed = gameSpeed;
 
         switch (whenIsPassableGameSpeed)
         {
@@ -90,12 +90,12 @@ public class SpinningFan : BaseEntity
 
     private void CheckIfWallCanOpen(float gameSpeedRequired)
     {
-        if (gameSpeed <= gameSpeedRequired && wallIsBlocking)
+        if (currentGameSpeed <= gameSpeedRequired && wallIsBlocking)
         {
             wallBlocker.SetActive(false);
             wallIsBlocking = false;
         }
-        else if (gameSpeed > gameSpeedRequired && !wallIsBlocking)
+        else if (currentGameSpeed > gameSpeedRequired && !wallIsBlocking)
         {
             Debug.Log(wallBlocker);
 

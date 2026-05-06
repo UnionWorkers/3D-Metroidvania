@@ -2,6 +2,7 @@ using System;
 using Entities;
 using Managers;
 using UnityEngine;
+using UnityEngine.AI;
 using Utils.Triggers;
 
 [ExecuteInEditMode]
@@ -22,6 +23,7 @@ public class TurretController : BaseEntity, IHealth
     [Space(15)]
     [Range(-180, 180)]
     [SerializeField] private int minRotationClamp, maxRotationClamp;
+    [SerializeField] private int minTargetAngle;
     [SerializeField] private float rotationSpeed = 5;
 
     [Space(15)]
@@ -68,16 +70,16 @@ public class TurretController : BaseEntity, IHealth
         OnEntityDestroy?.Invoke(this);
     }
 
-    public override void OnFixedUpdate()
+    public override void OnFixedUpdate(float gameSpeed)
     {
         if (playerTransform != null)
         {
-            TargetRotate(playerTransform.position);
-            ChargingAndAttack();
+            TargetRotate(playerTransform.position, gameSpeed);
+            ChargingAndAttack(gameSpeed);
         }
         else if (lastPlayerLocation != Vector3.zero && currentTimerToLoseTarget <= maxTimerToLoseTarget)
         {
-            TargetRotate(lastPlayerLocation);
+            TargetRotate(lastPlayerLocation, gameSpeed);
             currentTimerToLoseTarget += Time.fixedDeltaTime;
         }
         else if (poleTransform != null)
@@ -100,24 +102,29 @@ public class TurretController : BaseEntity, IHealth
                 rotationDirection *= -1;
             }
 
-            RotateTurret();
+            RotateTurret(gameSpeed);
         }
     }
 
-    private void TargetRotate(Vector3 targetLocation)
+    private void TargetRotate(Vector3 targetLocation, float gameSpeed)
     {
         Vector3 targetDirection = targetLocation - poleTransform.position;
-        float angel = Vector3.SignedAngle(targetDirection, poleTransform.forward, Vector3.up);
+        Vector3 forward = poleTransform.forward;
+       
+        targetDirection.y = 0;
+        forward.y = 0;
+        
+        float angel = Vector3.SignedAngle(forward, targetDirection.normalized, Vector3.up);
 
-        if (angel >= -1 && angel <= 1)
+        if (Mathf.Abs(angel) < minTargetAngle)
         {
             rotationDirection = 0;
         }
-        else if (angel < 0)
+        else if (angel > 0)
         {
             rotationDirection = 1;
         }
-        else if (angel > 0)
+        else if (angel < 0)
         {
             rotationDirection = -1;
         }
@@ -127,17 +134,17 @@ public class TurretController : BaseEntity, IHealth
             rotationDirection = 0;
         }
 
-        RotateTurret();
+        RotateTurret(gameSpeed);
     }
 
-    private void RotateTurret()
+    private void RotateTurret(float gameSpeed)
     {
 
-        currentRotation += (rotationSpeed * GameManager.Instance.ObjectsGameSpeed) * rotationDirection * Time.fixedDeltaTime;
+        currentRotation += (rotationSpeed * gameSpeed) * rotationDirection * Time.fixedDeltaTime;
         poleTransform.rotation = Quaternion.Euler(0, currentRotation, 0);
     }
 
-    private void ChargingAndAttack()
+    private void ChargingAndAttack(float gameSpeed)
     {
         if (currentShootTimer >= shootTimer)
         {
@@ -151,7 +158,7 @@ public class TurretController : BaseEntity, IHealth
         }
         else
         {
-            currentShootTimer += Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
+            currentShootTimer += Time.fixedDeltaTime * gameSpeed;
         }
     }
 

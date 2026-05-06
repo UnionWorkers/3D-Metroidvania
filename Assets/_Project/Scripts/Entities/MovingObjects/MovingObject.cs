@@ -13,7 +13,7 @@ public class MovingObject : BaseEntity
     [SerializeField] protected float maxVelocity;
     [SerializeField] protected float moveDistance;
     [SerializeField] protected Vector3 moveDirection;
-    protected virtual float realMaxVelocity => maxVelocity * GameManager.Instance.ObjectsGameSpeed;
+    protected virtual float RealMaxVelocity(float gameSpeed) => maxVelocity * gameSpeed;
 
     public float CurrentVelocity => currentVelocity;
     public Vector3 CurrentMoveDirection => currentMoveDirection;
@@ -59,11 +59,11 @@ public class MovingObject : BaseEntity
         Gizmos.DrawLine(transform.position, transform.position + (currentMoveDirection * 2));
     }
 
-    public override void OnFixedUpdate()
+    public override void OnFixedUpdate(float gameSpeed)
     {
-        if (currentVelocity < realMaxVelocity)
+        if (currentVelocity < RealMaxVelocity(gameSpeed))
         {
-            currentVelocity += moveSpeed * Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
+            currentVelocity += moveSpeed * Time.fixedDeltaTime * gameSpeed;
         }
 
         float dist = Vector3.Distance(transform.position, desiredMovePoint);

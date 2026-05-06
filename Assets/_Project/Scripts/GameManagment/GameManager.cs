@@ -1,4 +1,4 @@
-using System;
+    using System;
 using System.Collections.Generic;
 using Entities;
 using Entities.CameraControl;
@@ -50,7 +50,7 @@ namespace Managers
         private PlayerSpawner playerSpawner;
 
         private int timeDirection = 0;
-        private float objectsGameSpeed = 1;
+        private float gameSpeed = 1;
 
         [SerializeField] private DebugStats debugStats;
         [SerializeField] private float objectsGameSpeedChangeRate = 2f;
@@ -58,7 +58,7 @@ namespace Managers
         [SerializeField] private float maxObjectsGameSpeedUp = 1.7f;
 
 
-        public float ObjectsGameSpeed => objectsGameSpeed;
+        public float GameSpeed => gameSpeed;
         public float MaxObjectsGameSlowDown => maxObjectsGameSlowDown;
         public float MaxObjectsGameSpeedUp => maxObjectsGameSpeedUp;
 
@@ -139,25 +139,25 @@ namespace Managers
             // Change objects game speed depending on player input 
             if (timeDirection != 0)
             {
-                if (timeDirection == 1 && objectsGameSpeed >= maxObjectsGameSpeedUp)
+                if (timeDirection == 1 && gameSpeed >= maxObjectsGameSpeedUp)
                 {
-                    objectsGameSpeed = maxObjectsGameSpeedUp;
+                    gameSpeed = maxObjectsGameSpeedUp;
                 }
-                else if (timeDirection == -1 && objectsGameSpeed <= maxObjectsGameSlowDown)
+                else if (timeDirection == -1 && gameSpeed <= maxObjectsGameSlowDown)
                 {
-                    objectsGameSpeed = maxObjectsGameSlowDown;
+                    gameSpeed = maxObjectsGameSlowDown;
                 }
                 else
                 {
-                    objectsGameSpeed += Time.deltaTime * objectsGameSpeedChangeRate * timeDirection;
+                    gameSpeed += Time.deltaTime * objectsGameSpeedChangeRate * timeDirection;
                 }
             }
-            else if (objectsGameSpeed != 1f)
+            else if (gameSpeed != 1f)
             {
-                objectsGameSpeed += Time.deltaTime * objectsGameSpeedChangeRate * (objectsGameSpeed < 0.99f ? 1 : -1);
-                if (objectsGameSpeed >= 0.95f && objectsGameSpeed <= 1.05f)
+                gameSpeed += Time.deltaTime * objectsGameSpeedChangeRate * (gameSpeed < 0.99f ? 1 : -1);
+                if (gameSpeed >= 0.95f && gameSpeed <= 1.05f)
                 {
-                    objectsGameSpeed = 1f;
+                    gameSpeed = 1f;
 
                 }
             }
@@ -165,7 +165,7 @@ namespace Managers
 
             foreach (var entity in activeEntities)
             {
-                entity.OnUpdate();
+                entity.OnUpdate(gameSpeed);
             }
 
             CleanUp();
@@ -175,7 +175,7 @@ namespace Managers
         {
             foreach (var entity in activeEntities)
             {
-                entity.OnFixedUpdate();
+                entity.OnFixedUpdate(gameSpeed);
             }
         }
 

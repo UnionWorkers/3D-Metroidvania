@@ -11,7 +11,7 @@ namespace Utils.Effect
 
         public virtual void RotateObject(Transform objectToRotate, float deltaTime)
         {
-            objectToRotate.Rotate(Rotation * rotationSpeed * deltaTime * GameManager.Instance.ObjectsGameSpeed);
+            objectToRotate.Rotate(Rotation * rotationSpeed * deltaTime * GameManager.Instance.GameSpeed);
         }
 
         public virtual void RotateRoundPivot(Transform objectToRotate, Vector3 pivot, float deltaTime)

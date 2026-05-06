@@ -34,7 +34,7 @@ public class TravelingCurrent : BaseEntity
             return;
         }
 
-        previousGameSpeed = GameManager.Instance.ObjectsGameSpeed;
+        previousGameSpeed = GameManager.Instance.GameSpeed;
         previousNormalizedSpeed = splineAnimate.NormalizedTime;
         splineAnimate.MaxSpeed = maxSpeed * previousGameSpeed;
 
@@ -60,12 +60,12 @@ public class TravelingCurrent : BaseEntity
                 break;
         }
     }
-    public override void OnUpdate()
+    public override void OnUpdate(float gameSpeed)
     {
-        if (previousGameSpeed != GameManager.Instance.ObjectsGameSpeed)
+        if (previousGameSpeed != gameSpeed)
         {
             previousNormalizedSpeed = splineAnimate.NormalizedTime;
-            previousGameSpeed = GameManager.Instance.ObjectsGameSpeed;
+            previousGameSpeed = gameSpeed;
             splineAnimate.MaxSpeed = maxSpeed * previousGameSpeed;
             splineAnimate.NormalizedTime = previousNormalizedSpeed;
         }

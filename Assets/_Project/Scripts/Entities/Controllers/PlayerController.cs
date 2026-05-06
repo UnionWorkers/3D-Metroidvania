@@ -182,7 +182,7 @@ namespace Entities.Controller
             OnEntityStateChanged?.Invoke(this);
         }
 
-        public override void OnUpdate()
+        public override void OnUpdate(float gameSpeed)
         {
             if (debugState)
             {
@@ -261,7 +261,7 @@ namespace Entities.Controller
             CheckForInteractables();
         }
 
-        public override void OnFixedUpdate()
+        public override void OnFixedUpdate(float gameSpeed)
         {
             if (!playerCharacterController.CanMove) { return; }
 

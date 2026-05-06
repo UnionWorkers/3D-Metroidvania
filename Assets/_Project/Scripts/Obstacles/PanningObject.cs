@@ -45,7 +45,7 @@ public class PanningObject : MonoBehaviour
             return;
 
         transform.rotation = Quaternion.LookRotation(dist, Vector3.up);
-        body.linearVelocity = dist.normalized * speed * GameManager.Instance.ObjectsGameSpeed;
+        body.linearVelocity = dist.normalized * speed * GameManager.Instance.GameSpeed;
 
         if (dist.magnitude > minDist)
             return;

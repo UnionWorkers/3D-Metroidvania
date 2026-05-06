@@ -51,12 +51,12 @@ namespace Entities
             return;
         }
 
-        public virtual void OnUpdate()
+        public virtual void OnUpdate(float gameSpeed)
         {
             return;
         }
 
-        public virtual void OnFixedUpdate()
+        public virtual void OnFixedUpdate(float gameSpeed)
         {
             return;
         }

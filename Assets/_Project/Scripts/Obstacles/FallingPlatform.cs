@@ -24,7 +24,7 @@ public class FallingPlatform : MovingObject
     [SerializeField] private float bootedFallSpeed = 2f;
     private float currentBootedFallSpeed = 1f;
 
-    protected override float realMaxVelocity => maxVelocity * currentBootedFallSpeed * GameManager.Instance.ObjectsGameSpeed;
+    protected override float RealMaxVelocity(float gameSpeed) => maxVelocity * currentBootedFallSpeed * gameSpeed;
 
 
     public override void OnInitialize()
@@ -43,7 +43,7 @@ public class FallingPlatform : MovingObject
         moveState = (MoveState)index;
     }
 
-    public override void OnFixedUpdate()
+    public override void OnFixedUpdate(float gameSpeed)
     {
         switch (moveState)
         {
@@ -66,13 +66,13 @@ public class FallingPlatform : MovingObject
                     eulorAngels = new(Clamp(eulorAngels.x), Clamp(eulorAngels.y), Clamp(eulorAngels.z));
                     transform.eulerAngles = eulorAngels;
 
-                    currentFallCountdown -= Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
+                    currentFallCountdown -= Time.fixedDeltaTime * gameSpeed;
                 }
 
                 break;
             case MoveState.Falling:
 
-                if (MoveToCompletion())
+                if (MoveToCompletion(gameSpeed))
                 {
                     NextState();
                 }
@@ -87,13 +87,13 @@ public class FallingPlatform : MovingObject
                 }
                 else
                 {
-                    currentResetTimer -= Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
+                    currentResetTimer -= Time.fixedDeltaTime * gameSpeed;
                 }
 
                 break;
             case MoveState.Reset:
 
-                if (MoveToCompletion())
+                if (MoveToCompletion(gameSpeed))
                 {
                     currentResetTimer = resetTimer;
                     currentFallCountdown = fallCountdown;
@@ -104,11 +104,11 @@ public class FallingPlatform : MovingObject
         }
     }
 
-    private bool MoveToCompletion()
+    private bool MoveToCompletion(float gameSpeed)
     {
-        if (currentVelocity < realMaxVelocity)
+        if (currentVelocity < RealMaxVelocity(gameSpeed))
         {
-            currentVelocity += (moveSpeed * currentBootedFallSpeed) * Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed;
+            currentVelocity += (moveSpeed * currentBootedFallSpeed) * Time.fixedDeltaTime * gameSpeed;
         }
 
         float dotProduct = Vector3.Dot((transform.position - desiredMovePoint).normalized, (NewDesiredMovePoint() - desiredMovePoint).normalized);

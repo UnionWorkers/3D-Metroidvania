@@ -129,7 +129,7 @@ public class LaserPoleController : BaseEntity
         }
     }
 
-    public override void OnFixedUpdate()
+    public override void OnFixedUpdate(float gameSpeed)
     {
         if (!canAnimate)
         {
@@ -139,7 +139,7 @@ public class LaserPoleController : BaseEntity
         if (remainingDist > 0)
         {
             animationObject.position = Vector3.Lerp(currentStartPoint, movePoint, 1 - (remainingDist / dist));
-            remainingDist -= moveSpeed * GameManager.Instance.ObjectsGameSpeed * Time.fixedDeltaTime;
+            remainingDist -= moveSpeed * gameSpeed * Time.fixedDeltaTime;
         }
         else
         {
@@ -151,6 +151,6 @@ public class LaserPoleController : BaseEntity
             remainingDist = dist;
         }
 
-        animationObject.Rotate(rotateDirection * rotationSpeed * Time.fixedDeltaTime * GameManager.Instance.ObjectsGameSpeed);
+        animationObject.Rotate(rotateDirection * rotationSpeed * Time.fixedDeltaTime * gameSpeed);
     }
 }
