@@ -238,6 +238,20 @@ namespace Entities.Controller
                 }
             }
 
+            if (!CharacterController.T_canBeKnockbacked)
+            {
+                if (CharacterController.T_currentRegainControlTimer < CharacterController.T_regainControlTimer)
+                {
+                    CharacterController.T_currentRegainControlTimer += Time.deltaTime;
+                }
+                else
+                {
+                    CharacterController.CanControl = true;
+                    CharacterController.T_canBeKnockbacked = true;
+                    CharacterController.T_currentRegainControlTimer = 0;
+                }
+            }
+
             if (jumpedQueued && currentJumpBufferTimer < jumpInputBufferTimer)
             {
                 currentJumpBufferTimer += Time.deltaTime;

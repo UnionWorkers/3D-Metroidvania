@@ -1,8 +1,6 @@
 using System;
 using Entities;
-using Managers;
 using UnityEngine;
-using UnityEngine.AI;
 using Utils.Triggers;
 
 [ExecuteInEditMode]
@@ -110,10 +108,10 @@ public class TurretController : BaseEntity, IHealth
     {
         Vector3 targetDirection = targetLocation - poleTransform.position;
         Vector3 forward = poleTransform.forward;
-       
+
         targetDirection.y = 0;
         forward.y = 0;
-        
+
         float angel = Vector3.SignedAngle(forward, targetDirection.normalized, Vector3.up);
 
         if (Mathf.Abs(angel) < minTargetAngle)

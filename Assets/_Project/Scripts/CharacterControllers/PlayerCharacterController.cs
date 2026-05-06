@@ -36,6 +36,7 @@ namespace CustomCharacterController
     {
         NotSpecific,
         JumpPad,
+        Knockback
     }
 
 
@@ -260,8 +261,8 @@ namespace CustomCharacterController
         private float dahsRotationDirection = 0;
 
 
-        private Vector3 t_lastPos;
-        private Transform T_Ground;
+        private Vector3 lastMovingGroundPos;
+        private Transform movingGround;
 
         private bool isLerpToPosActive = false;
 
@@ -298,6 +299,7 @@ namespace CustomCharacterController
         public PlayerEffectsController EffectsController = new();
 
         public bool CanMove => canMove;
+        public bool CanControl = true;
         public bool IsGround => characterController.isGrounded;
         public float BottomValue => characterController.height * 0.5f - characterController.center.y;
         public float MiddleValue => characterController.height * 0.5f;
@@ -389,7 +391,7 @@ namespace CustomCharacterController
         {
             if (debugState)
             {
-                if (currentMoveType == MoveType.Normal)
+                if (currentMoveType == MoveType.TestNormal)
                 {
                     Vector3 wantedMoveDir = (wantedMoveDirection * moveStats.MaxSpeed) + transform.position;
                     Vector3 moveDirection = (currentMoveDirection * currentVelocity) + transform.position;
@@ -413,6 +415,15 @@ namespace CustomCharacterController
                     Gizmos.color = new Color(0.5f, 0.5f, 0.5f, 1f);
                     Gizmos.DrawSphere(finalDir, 0.6f);
                     Gizmos.DrawLine(transform.position, finalDir);
+                }
+
+                if (t_knockBackDir != Vector3.zero || t_knockbackForce != Vector3.zero)
+                {
+                    Gizmos.color = new Color(0.5f, 0f, 0f, 1f);
+                    Gizmos.DrawRay(transform.position, (t_knockBackDir * t_knockBackAmount));
+
+                    Gizmos.color = new Color(0f, 0.5f, 0f, 1f);
+                    Gizmos.DrawRay(transform.position, t_knockbackForce);
                 }
 
                 //Physics.CapsuleCast(transform.position, transform.position + (transform.forward * 0.1f), attackInfo.Radius, transform.forward, attackInfo.ForwardDistance);
@@ -506,7 +517,7 @@ namespace CustomCharacterController
             }
 
             // Input handling
-            if (inDirection != Vector2.zero)
+            if (inDirection != Vector2.zero && CanControl)
             {
                 wantedRotation = Mathf.Atan2(inDirection.x, inDirection.y) * Mathf.Rad2Deg + cameraTransform.eulerAngles.y;
                 wantedMoveDirection = Quaternion.Euler(0, wantedRotation, 0) * Vector3.forward;
@@ -554,7 +565,7 @@ namespace CustomCharacterController
             else if (currentCoyoteTime <= moveStats.MaxCoyoteTime)
             {
                 movingGroundInfo = new(0, Vector3.zero);
-                T_Ground = null;
+                movingGround = null;
                 currentCoyoteTime += Time.fixedDeltaTime;
                 CanGlide = true;
             }
@@ -570,13 +581,14 @@ namespace CustomCharacterController
 
             // Apply forces
             finalForce = (MoveToWantedPoint() + externalForces + movingGroundInfo.MoveVector) * Time.fixedDeltaTime;
+           // Debug.Log(externalForces);
 
 
-            if (movingGroundInfo.MoveVector.y > 0 && T_Ground != null)
+            if (movingGroundInfo.MoveVector.y > 0 && movingGround != null)
             {
-                Vector3 platformDelta = T_Ground.position - t_lastPos;
+                Vector3 platformDelta = movingGround.position - lastMovingGroundPos;
                 characterController.Move(platformDelta * 1.1f);
-                t_lastPos = T_Ground.position;
+                lastMovingGroundPos = movingGround.position;
             }
 
             // Stepup check when moving 
@@ -612,6 +624,7 @@ namespace CustomCharacterController
 
         private void ApplyGravity()
         {
+
             float downVelocity;
 
             gravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
@@ -695,10 +708,10 @@ namespace CustomCharacterController
                         {
                             // add offset up so it docent giddier as much  
                             movingGroundInfo = new(movingObject.CurrentVelocity, movingObject.CurrentMoveDirection);
-                            if (T_Ground != hit.transform)
+                            if (movingGround != hit.transform)
                             {
-                                T_Ground = hit.transform;
-                                t_lastPos = T_Ground.position;
+                                movingGround = hit.transform;
+                                lastMovingGroundPos = movingGround.position;
                             }
                             //lastPos = hit.transform.position;
                         }
@@ -718,7 +731,7 @@ namespace CustomCharacterController
             else if (movingGroundInfo.MoveVector != Vector3.zero)
             {
                 movingGroundInfo = new(0, Vector3.zero);
-                T_Ground = null;
+                movingGround = null;
             }
 
             if (externalForces.y < -2f)
@@ -729,6 +742,8 @@ namespace CustomCharacterController
 
         private Vector3 MoveToWantedPoint()
         {
+            if (!CanControl) { return Vector3.zero; }
+
             // Moving on ground
             if (characterController.isGrounded)
             {
@@ -854,6 +869,8 @@ namespace CustomCharacterController
 
         public void CommitJump()
         {
+            if (!CanControl) { return; }
+
             if (jumpStage == JumpStage.CommitJump || currentMoveType == MoveType.OnRope)
             {
                 if (currentMoveType != MoveType.Normal)
@@ -985,16 +1002,49 @@ namespace CustomCharacterController
                     externalForces.y += inForce.y;
                     break;
 
+                case ForceSource.Knockback:
+                    gravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
+                    externalForces.y += inForce.y;
+                    break;
+
                 default:
                     externalForces += inForce;
                     break;
             }
         }
 
+        Vector3 t_knockBackDir = Vector3.zero;
+        Vector3 t_knockbackForce = Vector3.zero;
+        float t_knockBackAmount = 50f;
+        public bool T_canBeKnockbacked = true;
+        public float T_regainControlTimer = 1f;
+        public float T_currentRegainControlTimer = 0;
+
         public void Knockback(Transform inHitObject)
         {
-            Debug.LogWarning("Knockback not implemented");
+            if (!T_canBeKnockbacked) { return; }
+            
+            t_knockBackDir = -(inHitObject.position - transform.position).normalized;
+            t_knockBackDir.y = 0;
+            t_knockbackForce = (t_knockBackDir + transform.up) * t_knockBackAmount;
+
+            characterController.enabled = false;
+
+            CanControl = false;
+            T_currentRegainControlTimer = 0;
+
+
+            T_canBeKnockbacked = false;
+            Vector3 lookAt = inHitObject.position;
+            lookAt.y = transform.position.y;
+            transform.LookAt(lookAt);
+
+            characterController.enabled = true;
+
+            AddForce(t_knockbackForce, ForceSource.Knockback);
         }
+
+
 
         private IEnumerator LerpToPosition(Vector3 newPos)
         {
