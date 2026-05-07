@@ -578,10 +578,11 @@ namespace CustomCharacterController
 
             // Gravity 
             ApplyGravity();
+            ApplyFrictionOnExternalForces();
 
             // Apply forces
             finalForce = (MoveToWantedPoint() + externalForces + movingGroundInfo.MoveVector) * Time.fixedDeltaTime;
-           // Debug.Log(externalForces);
+            // Debug.Log(externalForces);
 
 
             if (movingGroundInfo.MoveVector.y > 0 && movingGround != null)
@@ -683,6 +684,34 @@ namespace CustomCharacterController
                 }
             }
 
+        }
+
+        private void ApplyFrictionOnExternalForces()
+        {
+            if (externalForces.x != 0)
+            {
+                if (characterController.isGrounded)
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+
+            if (externalForces.z != 0)
+            {
+                if (characterController.isGrounded)
+                {
+
+                }
+                else
+                {
+
+                }
+
+            }
         }
 
         private void WhenPlayerGrounded()
@@ -1004,7 +1033,7 @@ namespace CustomCharacterController
 
                 case ForceSource.Knockback:
                     gravityScale = (2 * moveStats.JumpHeight) / (moveStats.TimeToApex * moveStats.TimeToApex);
-                    externalForces.y += inForce.y;
+                    externalForces += inForce;
                     break;
 
                 default:
@@ -1015,7 +1044,8 @@ namespace CustomCharacterController
 
         Vector3 t_knockBackDir = Vector3.zero;
         Vector3 t_knockbackForce = Vector3.zero;
-        float t_knockBackAmount = 50f;
+        float t_knockBackAmount = 10f;
+        float t_knockUpAmount = 40f;
         public bool T_canBeKnockbacked = true;
         public float T_regainControlTimer = 1f;
         public float T_currentRegainControlTimer = 0;
@@ -1023,10 +1053,15 @@ namespace CustomCharacterController
         public void Knockback(Transform inHitObject)
         {
             if (!T_canBeKnockbacked) { return; }
-            
+
             t_knockBackDir = -(inHitObject.position - transform.position).normalized;
             t_knockBackDir.y = 0;
-            t_knockbackForce = (t_knockBackDir + transform.up) * t_knockBackAmount;
+            t_knockbackForce = (t_knockBackDir + transform.up);
+
+            t_knockbackForce.x *= t_knockBackAmount;
+            t_knockbackForce.z *= t_knockBackAmount;
+
+            t_knockbackForce.y *= t_knockUpAmount;
 
             characterController.enabled = false;
 

@@ -334,7 +334,7 @@ namespace Entities.Controller
                     oldInteractable.DeHighlight();
                     interactables[i] = null;
                 }
-                else if (canAdd && newInteractable.interactable.MyItemState != ItemState.Destroyed)
+                else if (canAdd && newInteractable.interactable != null && newInteractable.interactable.MyItemState != ItemState.Destroyed)
                 {
                     newInteractable.interactable.Highlight();
                     interactables[i] = newInteractable.interactable;
