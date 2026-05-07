@@ -92,6 +92,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MetalBeam1
       objectReference: {fileID: 0}
+    - target: {fileID: 1852655190594064999, guid: b75872b921c63ed429ae9ccba58ec366, type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2567473122182594716, guid: b75872b921c63ed429ae9ccba58ec366, type: 3}
       propertyPath: startPoint.y
       value: 0.08695343
@@ -134,6 +138,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5830373738808090499, guid: b75872b921c63ed429ae9ccba58ec366, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7137708702079903883, guid: b75872b921c63ed429ae9ccba58ec366, type: 3}
+      propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9184261476348060291, guid: b75872b921c63ed429ae9ccba58ec366, type: 3}
