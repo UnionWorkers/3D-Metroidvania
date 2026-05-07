@@ -1,4 +1,4 @@
-    using System;
+using System;
 using System.Collections.Generic;
 using Entities;
 using Entities.CameraControl;
@@ -14,7 +14,8 @@ namespace Managers
     {
         Running,
         Paused,
-        GameOver
+        GameOver,
+        GameCompleted
     }
 
     [System.Serializable]
@@ -40,6 +41,7 @@ namespace Managers
         [SerializeField] private PauseMenuUi pauseMenuUi;
         [SerializeField] private GameOverMenuUi gameOverMenuUi;
         [SerializeField] private PlayerUiHandler playerUiHandler;
+        [SerializeField] private GameplayUI gameplayUI;
         [SerializeField] private LayerMask playerSpawnLayerMask;
 
         private List<BaseEntity> activeEntities = new();
@@ -61,7 +63,6 @@ namespace Managers
         public float GameSpeed => gameSpeed;
         public float MaxObjectsGameSlowDown => maxObjectsGameSlowDown;
         public float MaxObjectsGameSpeedUp => maxObjectsGameSpeedUp;
-
 
         public PlayerController PlayerController => playerController;
         public PlayerUiHandler PlayerUiHandler
@@ -196,9 +197,12 @@ namespace Managers
             activeEntities = new();
             disabledEntities = new();
             entitiesChangedQueue = new();
+            gameplayUI = null;
 
             BaseEntity[] allEntities = FindObjectsByType<BaseEntity>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             playerSpawner = FindAnyObjectByType<PlayerSpawner>(FindObjectsInactive.Include);
+            gameplayUI = FindAnyObjectByType<GameplayUI>(FindObjectsInactive.Include);
+            ScorePickUpInteractable[] scorePickUps = FindObjectsByType<ScorePickUpInteractable>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
             // this can maybe break stuff in the future, scene can have object controlling this 
             ChangeGameState(GameState.Running);
@@ -245,10 +249,21 @@ namespace Managers
                 AddEntity(baseEntity);
             }
 
+            if (gameplayUI != null)
+            {
+                gameplayUI.OnInitialize(scorePickUps.Length);
+                gameplayUI.OnScoreCompleted += GameCompleted;
+            }
+
             if (playerController != null && cameraController != null)
             {
                 playerController.SetCameraController(cameraController);
             }
+        }
+
+        private void GameCompleted()
+        {
+            ChangeGameState(GameState.GameCompleted);
         }
 
         public void ChangeGameState(GameState newGameState)
@@ -289,6 +304,11 @@ namespace Managers
                     ChangeGameOverScreen(true);
 
                     break;
+
+                case GameState.GameCompleted:
+                    Debug.Log("Game Completed ");
+                    ChangeGameState(GameState.Running);
+                    return;
             }
 
             OnGameStateChanged?.Invoke(currentGameState);
@@ -428,6 +448,13 @@ namespace Managers
             playerController.enabled = false;
             cameraController.gameObject.SetActive(false);
             ChangeGameState(GameState.GameOver);
+        }
+
+        public void AddScoreToCounter(int amount)
+        {
+            if (gameplayUI == null) { return; }
+
+            gameplayUI.UpdatePointCounter(amount);
         }
     }
 

@@ -15,7 +15,6 @@ namespace Interactable
 
     public interface IInteractable
     {
-        public event Action OnActionCompleted;
         public Transform GetTransform => throw new NotImplementedException("GetTransform is not implemented");
         public ItemState MyItemState
         {

@@ -50,6 +50,12 @@ namespace Entities.Controller
         [SerializeField] private float dashCooldown = 1f;
         private float currentDashTimer = 0;
 
+        [SerializeField] private float regainControlTimer = 0.6f;
+        private float currentRegainControlTimer = 0;
+
+        [SerializeField] private float knockbackTimer = 1.5f;
+        private float currentKnockbackTimer = 0;
+
         // Health related
         public event Action<int> OnHealthChanged;
         public event Action OnDeath;
@@ -238,17 +244,29 @@ namespace Entities.Controller
                 }
             }
 
-            if (!CharacterController.T_canBeKnockbacked)
+            if (!CharacterController.CanControl)
             {
-                if (CharacterController.T_currentRegainControlTimer < CharacterController.T_regainControlTimer)
+                if (currentRegainControlTimer < regainControlTimer)
                 {
-                    CharacterController.T_currentRegainControlTimer += Time.deltaTime;
+                    currentRegainControlTimer += Time.deltaTime;
                 }
                 else
                 {
                     CharacterController.CanControl = true;
-                    CharacterController.T_canBeKnockbacked = true;
-                    CharacterController.T_currentRegainControlTimer = 0;
+                    currentRegainControlTimer = 0;
+                }
+            }
+
+            if (!CharacterController.CanBeKnockbacked)
+            {
+                if (currentKnockbackTimer < knockbackTimer)
+                {
+                    currentKnockbackTimer += Time.deltaTime;
+                }
+                else
+                {
+                    CharacterController.CanBeKnockbacked = true;
+                    currentKnockbackTimer = 0;
                 }
             }
 

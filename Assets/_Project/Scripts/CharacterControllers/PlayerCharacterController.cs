@@ -202,6 +202,11 @@ namespace CustomCharacterController
         [SerializeField] private MoveStats moveStats;
 
         [Space(15)]
+        [Header("Friction")]
+        [SerializeField] private float groundFrictionValue = 10;
+        [SerializeField] private float airFrictionValue = 6;
+
+        [Space(15)]
         [SerializeField] private AttackInfo attackInfo;
 
         [Space(15)]
@@ -220,6 +225,12 @@ namespace CustomCharacterController
 
         [Space(15)]
         [SerializeField] private float durationToAttachPoint = 0.05f;
+
+        // Knockback
+        [Space(15)]
+        [Header("Knockback")]
+        [SerializeField] private float knockBackAmount = 10f;
+        [SerializeField] private float knockUpAmount = 25f;
 
         #endregion
 
@@ -260,6 +271,9 @@ namespace CustomCharacterController
         private Vector3 dashDirection = Vector3.zero;
         private float dahsRotationDirection = 0;
 
+        // Knockback
+        private Vector3 knockBackDir = Vector3.zero;
+        private Vector3 knockbackForce = Vector3.zero;
 
         private Vector3 lastMovingGroundPos;
         private Transform movingGround;
@@ -276,6 +290,8 @@ namespace CustomCharacterController
         [NonSerialized] public bool CanGlide = false;
         [NonSerialized] public bool LockGlide = false;
         [NonSerialized] public bool PressingJump = false;
+        [NonSerialized] public bool CanBeKnockbacked = true;
+
         public DashStage CurrentDashStage
         {
             get => currentDashStage;
@@ -417,13 +433,13 @@ namespace CustomCharacterController
                     Gizmos.DrawLine(transform.position, finalDir);
                 }
 
-                if (t_knockBackDir != Vector3.zero || t_knockbackForce != Vector3.zero)
+                if (knockBackDir != Vector3.zero || knockbackForce != Vector3.zero)
                 {
                     Gizmos.color = new Color(0.5f, 0f, 0f, 1f);
-                    Gizmos.DrawRay(transform.position, (t_knockBackDir * t_knockBackAmount));
+                    Gizmos.DrawRay(transform.position, (knockBackDir * knockBackAmount));
 
                     Gizmos.color = new Color(0f, 0.5f, 0f, 1f);
-                    Gizmos.DrawRay(transform.position, t_knockbackForce);
+                    Gizmos.DrawRay(transform.position, knockbackForce);
                 }
 
                 //Physics.CapsuleCast(transform.position, transform.position + (transform.forward * 0.1f), attackInfo.Radius, transform.forward, attackInfo.ForwardDistance);
@@ -688,15 +704,26 @@ namespace CustomCharacterController
 
         private void ApplyFrictionOnExternalForces()
         {
+            if (Mathf.Abs(externalForces.x) < 0.2f)
+            {
+                externalForces.x = 0;
+            }
+
+            if (Mathf.Abs(externalForces.z) < 0.2f)
+            {
+                externalForces.z = 0;
+            }
+
+
             if (externalForces.x != 0)
             {
                 if (characterController.isGrounded)
                 {
-
+                    externalForces.x += (groundFrictionValue * Mathf.Clamp(-externalForces.x, -1, 1)) * Time.fixedDeltaTime;
                 }
                 else
                 {
-
+                    externalForces.x += (airFrictionValue * Mathf.Clamp(-externalForces.x, -1, 1)) * Time.fixedDeltaTime;
                 }
             }
 
@@ -704,13 +731,12 @@ namespace CustomCharacterController
             {
                 if (characterController.isGrounded)
                 {
-
+                    externalForces.z += (groundFrictionValue * Mathf.Clamp(-externalForces.z, -1, 1)) * Time.fixedDeltaTime;
                 }
                 else
                 {
-
+                    externalForces.z += (airFrictionValue * Mathf.Clamp(-externalForces.z, -1, 1)) * Time.fixedDeltaTime;
                 }
-
             }
         }
 
@@ -1042,41 +1068,32 @@ namespace CustomCharacterController
             }
         }
 
-        Vector3 t_knockBackDir = Vector3.zero;
-        Vector3 t_knockbackForce = Vector3.zero;
-        float t_knockBackAmount = 10f;
-        float t_knockUpAmount = 40f;
-        public bool T_canBeKnockbacked = true;
-        public float T_regainControlTimer = 1f;
-        public float T_currentRegainControlTimer = 0;
-
         public void Knockback(Transform inHitObject)
         {
-            if (!T_canBeKnockbacked) { return; }
+            if (!CanBeKnockbacked) { return; }
 
-            t_knockBackDir = -(inHitObject.position - transform.position).normalized;
-            t_knockBackDir.y = 0;
-            t_knockbackForce = (t_knockBackDir + transform.up);
+            // get backwards direction 
+            knockBackDir = -(inHitObject.position - transform.position).normalized;
+            knockBackDir.y = 0;
+            knockbackForce = (knockBackDir + transform.up);
 
-            t_knockbackForce.x *= t_knockBackAmount;
-            t_knockbackForce.z *= t_knockBackAmount;
+            // add knockback force 
+            knockbackForce.x *= knockBackAmount;
+            knockbackForce.z *= knockBackAmount;
+            knockbackForce.y *= knockUpAmount;
 
-            t_knockbackForce.y *= t_knockUpAmount;
+            CanControl = false;
+            CanBeKnockbacked = false;
 
             characterController.enabled = false;
 
-            CanControl = false;
-            T_currentRegainControlTimer = 0;
-
-
-            T_canBeKnockbacked = false;
             Vector3 lookAt = inHitObject.position;
             lookAt.y = transform.position.y;
             transform.LookAt(lookAt);
 
             characterController.enabled = true;
 
-            AddForce(t_knockbackForce, ForceSource.Knockback);
+            AddForce(knockbackForce, ForceSource.Knockback);
         }
 
 

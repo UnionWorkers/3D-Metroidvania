@@ -8,7 +8,6 @@ namespace Interactable
     public class BaseInteractable : MonoBehaviour, IInteractable
     {
 
-        public event Action OnActionCompleted;
         public Transform GetTransform => transform;
         protected ItemState itemState = ItemState.None;
         protected ParticleSystem activeVFX;
@@ -55,7 +54,6 @@ namespace Interactable
         protected virtual void InteractableAction(PlayerController inPlayerController)
         {
             itemState = ItemState.Destroyed;
-            OnActionCompleted?.Invoke();
             Destroy(gameObject);
         }
 
