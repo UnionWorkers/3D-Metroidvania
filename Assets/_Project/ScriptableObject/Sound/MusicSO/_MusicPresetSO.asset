@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0898aef84dd0716468055b31ccde7653, type: 3}
   m_Name: _MusicPresetSO
   m_EditorClassIdentifier: Assembly-CSharp::SoundsPresetSO
-  SoundPresets: []
+  SoundPresets:
+  - {fileID: 11400000, guid: 4476add841b17c844a55300dbca1e09f, type: 2}

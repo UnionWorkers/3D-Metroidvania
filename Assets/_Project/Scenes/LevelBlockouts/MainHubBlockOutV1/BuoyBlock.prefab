@@ -9,12 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 138546056088569434}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: BuoyBlock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &138546056088569434
 Transform:
@@ -46,12 +46,12 @@ GameObject:
   - component: {fileID: 1974646846380141677}
   - component: {fileID: 8511678087789055040}
   - component: {fileID: 6932375900395831625}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Cylinder (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5516965596418039836
 Transform:
@@ -160,12 +160,12 @@ GameObject:
   - component: {fileID: 2346190876098620469}
   - component: {fileID: 5449291202877847369}
   - component: {fileID: 7180354383500843329}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5933783074270732199
 Transform:
@@ -272,11 +272,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 244043528508849770, guid: ed327484a389ae34dbe60273745f666d, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 645196832470097801, guid: ed327484a389ae34dbe60273745f666d, type: 3}
       propertyPath: m_Name
       value: SpireJumpPoint
+      objectReference: {fileID: 0}
+    - target: {fileID: 645196832470097801, guid: ed327484a389ae34dbe60273745f666d, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6017504107679194203, guid: ed327484a389ae34dbe60273745f666d, type: 3}
       propertyPath: m_LocalPosition.x
