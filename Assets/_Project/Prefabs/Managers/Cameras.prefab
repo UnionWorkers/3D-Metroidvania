@@ -298,12 +298,12 @@ MonoBehaviour:
   TargetOffset: {x: 0, y: 0, z: 0}
   TrackerSettings:
     BindingMode: 4
-    PositionDamping: {x: 1, y: 0.4, z: 1}
+    PositionDamping: {x: 0.3, y: 0, z: 0.3}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
   OrbitStyle: 0
-  Radius: 5
+  Radius: 6
   Orbits:
     Top:
       Radius: 2
@@ -329,7 +329,7 @@ MonoBehaviour:
   VerticalAxis:
     Value: 17.5
     Center: 17.5
-    Range: {x: -10, y: 45}
+    Range: {x: 15, y: 45}
     Wrap: 0
     Recentering:
       Enabled: 0
@@ -378,7 +378,7 @@ MonoBehaviour:
   TransparentLayers:
     serializedVersion: 2
     m_Bits: 0
-  MinimumDistanceFromTarget: 1
+  MinimumDistanceFromTarget: 2
   AvoidObstacles:
     Enabled: 1
     DistanceLimit: 0
