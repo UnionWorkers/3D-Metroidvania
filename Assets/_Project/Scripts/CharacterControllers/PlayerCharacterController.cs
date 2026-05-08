@@ -460,11 +460,11 @@ namespace CustomCharacterController
                 }
             }
 
-            if (EffectsController.CharacterAnimator == null)
+            if (!EffectsController.IsValid())
             {
-                EffectsController.CharacterAnimator = GetComponentInChildren<Animator>();
+                EffectsController = new(GetComponentInChildren<Animator>(), this);
 
-                if (EffectsController.CharacterAnimator == null)
+                if (!EffectsController.IsValid())
                 {
                     Debug.LogError("There is no Animator on Player");
                 }
@@ -859,7 +859,7 @@ namespace CustomCharacterController
                 }
             }
 
-            EffectsController.SetRunAnimation(currentVelocity, this);
+            EffectsController.SetRunAnimation(currentVelocity);
 
 
             return currentVelocity * currentMoveDirection;
@@ -943,7 +943,7 @@ namespace CustomCharacterController
                     CurrentDashStage = DashStage.CancelDash;
                 }
 
-                EffectsController.TriggerJumpAnimation(true, this);
+                EffectsController.TriggerJumpAnimation(true);
 
                 JumpStage = JumpStage.CanDoubleJump;
             }
@@ -964,7 +964,7 @@ namespace CustomCharacterController
                     CurrentDashStage = DashStage.CancelDash;
                 }
 
-                EffectsController.TriggerJumpAnimation(false, this);
+                EffectsController.TriggerJumpAnimation(false);
             }
 
         }

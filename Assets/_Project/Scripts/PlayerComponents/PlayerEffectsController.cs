@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -28,6 +29,7 @@ public class PlayerEffectsController
     private AnimationState animationState;
     private GlideState glideState;
     private DashState dashState;
+    private MonoBehaviour player;
 
     private bool canRun = true;
 
@@ -40,6 +42,9 @@ public class PlayerEffectsController
     [SerializeField] private float doubleJumpCooldown = 0.3f;
     private float currentDoubleJumpTimer = 0;
 
+    private float landTimerCooldown = 0.2f;
+    private float currentLandTimer = 0;
+    private bool canPlayLandSound = true;
 
     [Space(15)]
     [SerializeField] private ParticleSystem glideParticles;
@@ -48,9 +53,10 @@ public class PlayerEffectsController
 
 
     [NonSerialized] public Animator CharacterAnimator;
-    public PlayerEffectsController(Animator inCharacterAnimator = null)
+    public PlayerEffectsController(Animator inCharacterAnimator = null, MonoBehaviour inMonoBehaviour = null)
     {
         CharacterAnimator = inCharacterAnimator;
+        player = inMonoBehaviour;
     }
 
     public AnimationState AnimationState
@@ -77,12 +83,20 @@ public class PlayerEffectsController
             {
                 case AnimationState.Grounded:
                     CharacterAnimator.SetTrigger("Landing");
-                    PlayerSFX("Land " + Random.Range(1, 3));
+
+                    if (canPlayLandSound)
+                    {
+                        canPlayLandSound = false;
+                        PlayerSFX("Land " + Random.Range(1, 3));
+                        player.StartCoroutine(LandTurnOff());
+                    }
+
                     if (landParticles != null)
                     {
                         landParticles.Play();
                     }
                     canRun = true;
+
                     break;
                 case AnimationState.InAir:
                     CharacterAnimator.SetBool("InAir", true);
@@ -91,6 +105,30 @@ public class PlayerEffectsController
             animationState = value;
         }
     }
+
+    public bool IsValid()
+    {
+        if (CharacterAnimator == null || player == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private IEnumerator LandTurnOff()
+    {
+        while (landTimerCooldown < currentLandTimer)
+        {
+            landTimerCooldown += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        currentLandTimer = 0;
+        canPlayLandSound = true;
+    }
+
+
+
 
     public GlideState GlideState
     {
@@ -165,7 +203,7 @@ public class PlayerEffectsController
         AnimationState = AnimationState.InAir;
     }
 
-    public void SetRunAnimation(float velocity, MonoBehaviour inMonoBehaviour)
+    public void SetRunAnimation(float velocity)
     {
         if (!canRun) { return; }
 
@@ -174,7 +212,7 @@ public class PlayerEffectsController
         if (velocity > 0.5 && !isWalkCooldownActive)
         {
             PlayerSFX("Run " + Random.Range(1, 5));
-            inMonoBehaviour.StartCoroutine(WalkCooldown());
+            player.StartCoroutine(WalkCooldown());
         }
     }
 
@@ -191,7 +229,7 @@ public class PlayerEffectsController
         currentWalkTimer = 0;
     }
 
-    public void TriggerJumpAnimation(bool isNormalJump, MonoBehaviour inMonoBehaviour)
+    public void TriggerJumpAnimation(bool isNormalJump)
     {
 
         if (isNormalJump)
@@ -204,7 +242,7 @@ public class PlayerEffectsController
             if (doubleJumpPlatform != null)
             {
                 doubleJumpPlatform.gameObject.SetActive(true);
-                inMonoBehaviour.StartCoroutine(DoubleJumpPlatformTurnOff());
+                player.StartCoroutine(DoubleJumpPlatformTurnOff());
             }
 
             CharacterAnimator.Play("Jump", -1, 0f);
