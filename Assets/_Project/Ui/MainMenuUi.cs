@@ -64,6 +64,10 @@ public class MainMenuUi : MonoBehaviour
                 break;
             }
         }
+        if(GameManager.Instance != null)
+        {
+            GameManager.Instance.ChangeGameState(GameState.MainMenu);
+        }
     }
 
     private void NewGame()

@@ -12,6 +12,8 @@ namespace Managers
 {
     public enum GameState : byte
     {
+        MainMenu,
+        LoadingScene,
         Running,
         Paused,
         GameOver,
@@ -89,11 +91,16 @@ namespace Managers
 
         public void ChangeScene(ref SceneData sceneData)
         {
+            enabled = false;
+            ResetCleanUp();
+            ChangeGameState(GameState.LoadingScene);
             sceneLoader.LoadScene(sceneData);
         }
 
         public void LoadThisScene()
         {
+            enabled = false;
+            ResetCleanUp();
             sceneLoader.LoadScene(sceneLoader.CurrentDataScene);
         }
 
@@ -187,17 +194,13 @@ namespace Managers
                 Debug.LogWarning("What do you mean could not load scene 💀💀💀");
                 return;
             }
-
+            enabled = true;
             SceneSetUp();
         }
 
         private void SceneSetUp()
         {
-            OnGameStateChanged = null;
-            activeEntities = new();
-            disabledEntities = new();
-            entitiesChangedQueue = new();
-            gameplayUI = null;
+            ResetCleanUp();
 
             BaseEntity[] allEntities = FindObjectsByType<BaseEntity>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             playerSpawner = FindAnyObjectByType<PlayerSpawner>(FindObjectsInactive.Include);
@@ -277,6 +280,15 @@ namespace Managers
 
             switch (currentGameState)
             {
+                case GameState.MainMenu:
+                    Cursor.lockState = CursorLockMode.Confined;
+                    Cursor.visible = true;
+                    break;
+
+                case GameState.LoadingScene:
+                    // do something 
+                    break;
+
                 case GameState.Running:
                     enabled = true;
 
@@ -294,7 +306,6 @@ namespace Managers
                     Cursor.lockState = CursorLockMode.Confined;
                     Cursor.visible = true;
                     ChangePauseMenuState(true);
-
                     break;
 
                 case GameState.GameOver:
@@ -365,6 +376,19 @@ namespace Managers
             inBaseEntity.OnEntityDestroy = null;
             inBaseEntity.OnEntityStateChanged = null;
             Destroy(inBaseEntity.gameObject);
+        }
+
+        private void ResetCleanUp()
+        {
+            OnGameStateChanged = null;
+            gameplayUI = null;
+
+            activeEntities.Clear();
+            disabledEntities.Clear();
+            entitiesChangedQueue.Clear();
+            activeEntities = new();
+            disabledEntities = new();
+            entitiesChangedQueue = new();
         }
 
         private void CleanUp()

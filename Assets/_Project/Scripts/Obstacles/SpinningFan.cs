@@ -97,8 +97,6 @@ public class SpinningFan : BaseEntity
         }
         else if (currentGameSpeed > gameSpeedRequired && !wallIsBlocking)
         {
-            Debug.Log(wallBlocker);
-
             wallBlocker.SetActive(true);
             wallIsBlocking = true;
         }
