@@ -7,7 +7,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using Utils.SceneLoader;
 
-public class PauseMenuUi : MonoBehaviour
+public class GameWinMenuUi : MonoBehaviour
 {
     private bool hasInitialized = false;
     [SerializeField] private Transform buttonHolder = null;
@@ -43,8 +43,8 @@ public class PauseMenuUi : MonoBehaviour
 
         }
 
-        buttonList.Add(("Resume", Resume));
-        buttonList.Add(("Respawn", Respawn));
+        buttonList.Add(("Continue Playing", Continue));
+        buttonList.Add(("Play Again", Respawn));
         buttonList.Add(("Quit", Quit));
     }
 
@@ -80,14 +80,15 @@ public class PauseMenuUi : MonoBehaviour
         gameObject.SetActive(state);
     }
 
-    private void Resume()
+    private void Continue()
     {
+        ChangeActiveState(false);
         GameManager.Instance.ChangeGameState(GameState.Running);
     }
+
     private void Respawn()
     {
-        GameManager.Instance.RespawnPlayer(Utils.Checkpoint.RespawnType.FullRespawn);
-        GameManager.Instance.ChangeGameState(GameState.Running);
+        GameManager.Instance.LoadThisScene();
     }
     private void Quit()
     {

@@ -40,10 +40,13 @@ namespace Managers
         public Action<GameState> OnGameStateChanged;
 
         private SceneLoader sceneLoader;
+
         [SerializeField] private PauseMenuUi pauseMenuUi;
         [SerializeField] private GameOverMenuUi gameOverMenuUi;
         [SerializeField] private PlayerUiHandler playerUiHandler;
         [SerializeField] private GameplayUI gameplayUI;
+        [SerializeField] private GameWinMenuUi gameWinMenuUi;
+
         [SerializeField] private LayerMask playerSpawnLayerMask;
 
         private List<BaseEntity> activeEntities = new();
@@ -205,6 +208,7 @@ namespace Managers
             BaseEntity[] allEntities = FindObjectsByType<BaseEntity>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             playerSpawner = FindAnyObjectByType<PlayerSpawner>(FindObjectsInactive.Include);
             gameplayUI = FindAnyObjectByType<GameplayUI>(FindObjectsInactive.Include);
+
             ScorePickUpInteractable[] scorePickUps = FindObjectsByType<ScorePickUpInteractable>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
             // this can maybe break stuff in the future, scene can have object controlling this 
@@ -283,10 +287,17 @@ namespace Managers
                 case GameState.MainMenu:
                     Cursor.lockState = CursorLockMode.Confined;
                     Cursor.visible = true;
+
+                    ChangePauseMenuState(false);
+                    ChangeGameOverScreen(false);
+                    ChangeGameWinScreen(false);
+                    
                     break;
 
                 case GameState.LoadingScene:
-                    // do something 
+                    ChangePauseMenuState(false);
+                    ChangeGameOverScreen(false);
+                    ChangeGameWinScreen(false);
                     break;
 
                 case GameState.Running:
@@ -298,6 +309,8 @@ namespace Managers
                     }
 
                     ChangePauseMenuState(false);
+                    ChangeGameOverScreen(false);
+                    ChangeGameWinScreen(false);
 
                     break;
 
@@ -317,8 +330,11 @@ namespace Managers
                     break;
 
                 case GameState.GameCompleted:
-                    Debug.Log("Game Completed ");
-                    ChangeGameState(GameState.Running);
+                    enabled = false;
+                    Cursor.lockState = CursorLockMode.Confined;
+                    Cursor.visible = true;
+                    ChangeGameWinScreen(true);
+
                     return;
             }
 
@@ -433,8 +449,22 @@ namespace Managers
             }
 
             gameOverMenuUi.ChangeActiveState(state);
+        }
+        private void ChangeGameWinScreen(bool state)
+        {
+            if (gameWinMenuUi == null)
+            {
+                gameWinMenuUi = FindAnyObjectByType<GameWinMenuUi>(FindObjectsInactive.Include);
+                if (gameWinMenuUi == null)
+                {
+                    return;
+                }
+            }
+
+            gameWinMenuUi.ChangeActiveState(state);
 
         }
+
 
         public void RespawnPlayer(RespawnType inRespawnType)
         {
