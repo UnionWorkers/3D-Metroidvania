@@ -197,6 +197,7 @@ namespace Managers
                 Debug.LogWarning("What do you mean could not load scene 💀💀💀");
                 return;
             }
+
             enabled = true;
             SceneSetUp();
         }
@@ -266,6 +267,18 @@ namespace Managers
             {
                 playerController.SetCameraController(cameraController);
             }
+
+            if (sceneLoader.CurrentDataScene.LoseCompare(new(-1, "MainHubV2")))
+            {
+                ShowCaseUi showCaseUi = FindAnyObjectByType<ShowCaseUi>(FindObjectsInactive.Include);
+                if (showCaseUi == null)
+                {
+                    return;
+                }
+                showCaseUi.ChangeActiveState(true);
+
+                ChangeGameState(GameState.MainMenu);
+            }
         }
 
         private void GameCompleted()
@@ -291,7 +304,7 @@ namespace Managers
                     ChangePauseMenuState(false);
                     ChangeGameOverScreen(false);
                     ChangeGameWinScreen(false);
-                    
+
                     break;
 
                 case GameState.LoadingScene:
@@ -462,7 +475,6 @@ namespace Managers
             }
 
             gameWinMenuUi.ChangeActiveState(state);
-
         }
 
 
