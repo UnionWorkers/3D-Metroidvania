@@ -6,7 +6,7 @@ public class JumpPad : MonoBehaviour
     public float jumpForce = 15;
 
 
-    private void OnTriggerStay(Collider other)
+    protected virtual void OnTriggerStay(Collider other)
     {
         if (other.CompareTag("Player"))
         {
