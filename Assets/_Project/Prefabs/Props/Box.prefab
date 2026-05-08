@@ -15,7 +15,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4902823009872614045
 Transform:
@@ -102,9 +102,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -6620995083583131248, guid: ebf5592d837d64a4cad6371dc9527e3e, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ebf5592d837d64a4cad6371dc9527e3e, type: 3}
       propertyPath: m_Name
       value: crate
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: ebf5592d837d64a4cad6371dc9527e3e, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 1040552530238638865, guid: ebf5592d837d64a4cad6371dc9527e3e, type: 3}
       propertyPath: m_Materials.Array.size
@@ -118,6 +126,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 37b9d11ea1942e949aa8fe3050d24d45, type: 2}
+    - target: {fileID: 1968357818724871907, guid: ebf5592d837d64a4cad6371dc9527e3e, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 4920449587037906627, guid: ebf5592d837d64a4cad6371dc9527e3e, type: 3}
       propertyPath: m_Materials.Array.size
       value: 2

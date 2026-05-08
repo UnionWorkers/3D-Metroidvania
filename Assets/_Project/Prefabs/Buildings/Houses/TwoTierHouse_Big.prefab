@@ -14,7 +14,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &1139324770489885327
 Transform:
@@ -169,9 +169,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1139324770489885327}
     m_Modifications:
+    - target: {fileID: 401382981906080451, guid: c1cfd308c23447741914ece94d29c58b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 3272908316379075801, guid: c1cfd308c23447741914ece94d29c58b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 3373005524987349249, guid: c1cfd308c23447741914ece94d29c58b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 4164576692336626057, guid: c1cfd308c23447741914ece94d29c58b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 4748319829824189493, guid: c1cfd308c23447741914ece94d29c58b, type: 3}
       propertyPath: m_Name
       value: Awning
+      objectReference: {fileID: 0}
+    - target: {fileID: 4748319829824189493, guid: c1cfd308c23447741914ece94d29c58b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 5863231013630035834, guid: c1cfd308c23447741914ece94d29c58b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -212,6 +232,22 @@ PrefabInstance:
     - target: {fileID: 5863231013630035834, guid: c1cfd308c23447741914ece94d29c58b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6085658923665617901, guid: c1cfd308c23447741914ece94d29c58b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 7507194165469960359, guid: c1cfd308c23447741914ece94d29c58b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 8654507509972572802, guid: c1cfd308c23447741914ece94d29c58b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 9163197522786474031, guid: c1cfd308c23447741914ece94d29c58b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

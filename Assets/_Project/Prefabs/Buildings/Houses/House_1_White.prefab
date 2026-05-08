@@ -14,7 +14,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &814057274244288026
 Transform:
@@ -110,6 +110,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 9e29b1fd08b680b479d4635cca46f56c, type: 3}
       propertyPath: m_Name
       value: SM_Housewalls_a_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9e29b1fd08b680b479d4635cca46f56c, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -838,6 +842,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 9441fe4c1b7270046bafa5ba39d17e58, type: 3}
       propertyPath: m_Name
       value: SM_Roof_a_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9441fe4c1b7270046bafa5ba39d17e58, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

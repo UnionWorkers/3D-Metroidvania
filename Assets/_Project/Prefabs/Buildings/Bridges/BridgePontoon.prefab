@@ -14,7 +14,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4391370021742983253
 Transform:
@@ -136,6 +136,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 1.996
       objectReference: {fileID: 0}
+    - target: {fileID: -1418569527397393372, guid: 015cc955fa820a34fa386051717616a6, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 368577115416376244, guid: 015cc955fa820a34fa386051717616a6, type: 3}
       propertyPath: m_Materials.Array.size
       value: 0
@@ -144,9 +148,17 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: b614321f4e3c30d49a46f5bfd7b3fb10, type: 2}
+    - target: {fileID: 783307824031851190, guid: 015cc955fa820a34fa386051717616a6, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 015cc955fa820a34fa386051717616a6, type: 3}
       propertyPath: m_Name
       value: BridgePontoon
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 015cc955fa820a34fa386051717616a6, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

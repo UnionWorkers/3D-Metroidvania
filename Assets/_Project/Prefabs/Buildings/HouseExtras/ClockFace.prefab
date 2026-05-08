@@ -14,7 +14,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &5815380329190662446
 Transform:
@@ -80,9 +80,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7108526074593422279, guid: 9b4d297572d45a646a570d72643b93c8, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -5797466877858072714, guid: 9b4d297572d45a646a570d72643b93c8, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: -4086367563450888955, guid: 9b4d297572d45a646a570d72643b93c8, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 9b4d297572d45a646a570d72643b93c8, type: 3}
       propertyPath: m_Name
       value: Clock_all
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9b4d297572d45a646a570d72643b93c8, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 7144888972937182979, guid: 9b4d297572d45a646a570d72643b93c8, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'

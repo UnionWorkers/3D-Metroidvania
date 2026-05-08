@@ -14,7 +14,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &257071039156107081
 Transform:
@@ -51,7 +51,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &6679201297312684935
 Transform:
@@ -160,12 +160,12 @@ GameObject:
   - component: {fileID: 2042457373224681113}
   - component: {fileID: 455083731433521507}
   - component: {fileID: 4972254552720218852}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4034313049454383908
 Transform:
@@ -268,13 +268,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 257071039156107081}
     m_Modifications:
+    - target: {fileID: 244043528508849770, guid: ed327484a389ae34dbe60273745f666d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
+      objectReference: {fileID: 0}
     - target: {fileID: 645196832470097801, guid: ed327484a389ae34dbe60273745f666d, type: 3}
       propertyPath: m_Name
       value: SpireJumpPoint
       objectReference: {fileID: 0}
     - target: {fileID: 645196832470097801, guid: ed327484a389ae34dbe60273745f666d, type: 3}
       propertyPath: m_Layer
-      value: 6
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 645196832470097801, guid: ed327484a389ae34dbe60273745f666d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 5603437651488539537, guid: ed327484a389ae34dbe60273745f666d, type: 3}
       propertyPath: m_Radius
@@ -323,6 +331,10 @@ PrefabInstance:
     - target: {fileID: 7423562468536817919, guid: ed327484a389ae34dbe60273745f666d, type: 3}
       propertyPath: m_Layer
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7423562468536817919, guid: ed327484a389ae34dbe60273745f666d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
