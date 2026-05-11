@@ -407,7 +407,7 @@ namespace CustomCharacterController
         {
             if (debugState)
             {
-                if (currentMoveType == MoveType.TestNormal)
+                if (currentMoveType == MoveType.Normal)
                 {
                     Vector3 wantedMoveDir = (wantedMoveDirection * moveStats.MaxSpeed) + transform.position;
                     Vector3 moveDirection = (currentMoveDirection * currentVelocity) + transform.position;
