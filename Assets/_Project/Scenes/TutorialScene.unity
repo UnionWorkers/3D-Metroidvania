@@ -40149,22 +40149,10 @@ PrefabInstance:
       propertyPath: targetTransform
       value: 
       objectReference: {fileID: 709563834}
-    - target: {fileID: 5815858513654576122, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
-      propertyPath: cinemachineInput
-      value: 
-      objectReference: {fileID: 1849648190}
-    - target: {fileID: 8088311219138252517, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
-      propertyPath: Lens.FieldOfView
-      value: 65
-      objectReference: {fileID: 0}
     - target: {fileID: 8088311219138252517, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
       propertyPath: Target.TrackingTarget
       value: 
       objectReference: {fileID: 709563834}
-    - target: {fileID: 8275115798000204167, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
-      propertyPath: field of view
-      value: 65
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -40175,17 +40163,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1082388267408245069, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
   m_PrefabInstance: {fileID: 1849648188}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1849648190 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4131695475561856845, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
-  m_PrefabInstance: {fileID: 1849648188}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 89875cdc57c54474a8a74efd9b2a3b5d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineInputAxisController
 --- !u!1001 &1849939448
 PrefabInstance:
   m_ObjectHideFlags: 0

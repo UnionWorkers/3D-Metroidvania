@@ -12369,22 +12369,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cameras
       objectReference: {fileID: 0}
-    - target: {fileID: 3841375416320529366, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
-      propertyPath: Radius
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 3841375416320529366, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
-      propertyPath: TrackerSettings.PositionDamping.x
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3841375416320529366, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
-      propertyPath: TrackerSettings.PositionDamping.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3841375416320529366, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
-      propertyPath: TrackerSettings.PositionDamping.z
-      value: 0.3
-      objectReference: {fileID: 0}
     - target: {fileID: 5024097490895525838, guid: 24bc866b92bce704883c5360f6767ce8, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9.95229
