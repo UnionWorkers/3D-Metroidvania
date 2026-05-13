@@ -18,6 +18,7 @@ public class MainMenuUi : MonoBehaviour
 {
     [SerializeField] private Transform buttonHolder = null;
     [SerializeField] private SceneReference nextScene;
+    [SerializeField] private CreditMenuUI creditMenuUI;
     private List<(string ButtonText, UnityAction subscribingFunction)> buttonList = new();
 
 
@@ -31,7 +32,7 @@ public class MainMenuUi : MonoBehaviour
 
         buttonList.Add(("New Game", NewGame));
         buttonList.Add(("Continue", Continue));
-        buttonList.Add(("Options", Options));
+        buttonList.Add(("Credits", Credits));
         buttonList.Add(("Quit", Quit));
     }
 
@@ -52,10 +53,6 @@ public class MainMenuUi : MonoBehaviour
                 {
                     button.interactable = false;
                 }
-                else if (buttonList[loopIndex].subscribingFunction == Options)
-                {
-                    button.interactable = false;
-                }
 
                 loopIndex++;
             }
@@ -64,7 +61,7 @@ public class MainMenuUi : MonoBehaviour
                 break;
             }
         }
-        if(GameManager.Instance != null)
+        if (GameManager.Instance != null)
         {
             GameManager.Instance.ChangeGameState(GameState.MainMenu);
         }
@@ -78,7 +75,12 @@ public class MainMenuUi : MonoBehaviour
 
     private void Continue() { }
 
-    private void Options() { }
+    private void Credits()
+    {
+        if (creditMenuUI == null) { return; }
+
+        creditMenuUI.ChangeState(true);
+    }
 
     private void Quit()
     {
