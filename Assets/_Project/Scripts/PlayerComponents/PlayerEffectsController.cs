@@ -165,6 +165,7 @@ public class PlayerEffectsController
                     dashParticles.Stop();
                     break;
                 case DashState.Active:
+                    CharacterAnimator.SetTrigger("Dash");
                     dashParticles.Play();
                     break;
             }
