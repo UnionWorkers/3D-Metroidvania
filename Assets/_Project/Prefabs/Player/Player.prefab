@@ -55,6 +55,8 @@ MonoBehaviour:
     m_Bits: 64
   attackCooldown: 1
   dashCooldown: 1
+  regainControlTimer: 0.6
+  knockbackTimer: 1.5
   healthComponent:
     maxHealth: 3
   invisibilityTimer: 0.3
@@ -102,6 +104,8 @@ MonoBehaviour:
     dashLayerMask:
       serializedVersion: 2
       m_Bits: 449
+  groundFrictionValue: 10
+  airFrictionValue: 6
   attackInfo:
     forwardDistance: 1.5
     radius: 0.5
@@ -115,7 +119,9 @@ MonoBehaviour:
     climbSpeed: 5
     climbAccelerationTime: 0.4
     climbAroundSpeed: 5
-  durationToAttachPoint: 0.05
+  durationToAttachPoint: 0.15
+  knockBackAmount: 10
+  knockUpAmount: 25
   EffectsController:
     walkCooldown: 0.5
     doubleJumpPlatform: {fileID: 190070093962350219}
@@ -123,6 +129,7 @@ MonoBehaviour:
     glideParticles: {fileID: 0}
     landParticles: {fileID: 0}
     dashParticles: {fileID: 0}
+  CanControl: 1
 --- !u!143 &2010560559569310025
 CharacterController:
   m_ObjectHideFlags: 0
